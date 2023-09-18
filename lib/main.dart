@@ -4,7 +4,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:proto_just_design/Intro/Intro.dart';
 import 'package:proto_just_design/Intro/Login.dart';
 import 'package:proto_just_design/Select_screen.dart';
-import 'package:proto_just_design/Tasting.dart';
 import 'package:proto_just_design/profile.dart';
 import 'package:proto_just_design/restaurant.dart';
 import 'package:proto_just_design/review.dart';
@@ -45,16 +44,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       //debugShowCheckedModeBanner: false, //우측 상단 배너 끄기
-      initialRoute: '/Review',
+      initialRoute: '/Select_Screen',
       routes: {
         '/Intro1': (context) => Intro1(),
         '/Intro2': (context) => Intro2(),
         '/Login': (context) => Login(),
         '/GuidePage': (context) => guidePage(),
-        '/Tasting': (context) => Tasting(),
+        '/Tasting': (context) => scriptPage(),
         '/Profile': (context) => Profile_(),
         '/Review': (context) => review(),
         '/Restaurant': (context) => restaurant(),
+        '/Select_Screen': (context) => selectScreen()
       },
     );
   }
