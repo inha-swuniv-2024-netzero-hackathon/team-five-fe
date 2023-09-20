@@ -1369,7 +1369,7 @@ class _reviewPageState extends State<reviewPage> {
             child: Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: wPP * 15, right: wPP * 12),
+                  padding: EdgeInsets.only(left: wPP * 15),
                   child: Container(
                     width: wPP * 34,
                     height: hPP * 34,
@@ -1379,7 +1379,7 @@ class _reviewPageState extends State<reviewPage> {
                 ),
                 Column(
                   children: [
-                    Stack(children: [
+                    Stack(alignment: Alignment.centerLeft, children: [
                       Container(
                           width: 100 * wPP,
                           height: 4 * hPP,
@@ -1387,7 +1387,7 @@ class _reviewPageState extends State<reviewPage> {
                               color: const Color(0xFFD9D9D9),
                               borderRadius: BorderRadius.circular(8))),
                       Container(
-                        width: 100 * wPP * (100 / 115 - 1) / 4,
+                        width: 100 * wPP * (2 - 1) / 4,
                         height: 4 * hPP,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
@@ -1412,6 +1412,7 @@ class _reviewPageState extends State<reviewPage> {
                     ])
                   ],
                 ),
+                Spacer(),
                 IconButton(
                     onPressed: () {},
                     icon: Icon(
