@@ -31,7 +31,7 @@ class _guidePageState extends State<guidePage> {
 
   @override
   void initState() {
-    get_Restaurant_List();
+    // get_Restaurant_List();
     super.initState();
   }
 

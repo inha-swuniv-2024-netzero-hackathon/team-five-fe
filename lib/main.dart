@@ -8,9 +8,6 @@ import 'package:proto_just_design/profile.dart';
 import 'package:proto_just_design/restaurant.dart';
 import 'package:proto_just_design/review.dart';
 
-import 'screen_pages/guide_page.dart';
-import 'screen_pages/script_page.dart';
-
 void main() {
   KakaoSdk.init(nativeAppKey: 'f6cffbfdf469406747f4e7d4c766db25');
 
@@ -47,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       //debugShowCheckedModeBanner: false, //우측 상단 배너 끄기
-      initialRoute: '/Select_Screen',
+      initialRoute: '/Review',
       routes: {
         '/Intro1': (context) => Intro1(),
         '/Intro2': (context) => Intro2(),
