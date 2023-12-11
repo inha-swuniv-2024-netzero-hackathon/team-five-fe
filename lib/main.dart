@@ -8,6 +8,9 @@ import 'package:proto_just_design/profile.dart';
 import 'package:proto_just_design/restaurant.dart';
 import 'package:proto_just_design/review.dart';
 
+import 'screen_pages/guide_page.dart';
+import 'screen_pages/script_page.dart';
+
 void main() {
   KakaoSdk.init(nativeAppKey: 'f6cffbfdf469406747f4e7d4c766db25');
 
@@ -49,8 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
         '/Intro1': (context) => Intro1(),
         '/Intro2': (context) => Intro2(),
         '/Login': (context) => Login(),
-        '/GuidePage': (context) => guidePage(),
-        '/Tasting': (context) => scriptPage(),
         '/Profile': (context) => Profile_(),
         '/Review': (context) => review(),
         '/Restaurant': (context) => restaurant(),
