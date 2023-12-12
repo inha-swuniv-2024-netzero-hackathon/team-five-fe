@@ -39,12 +39,12 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> {  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       //debugShowCheckedModeBanner: false, //우측 상단 배너 끄기
-      initialRoute: '/Review',
+      initialRoute: '/Select_Screen',
       routes: {
         '/Intro1': (context) => Intro1(),
         '/Intro2': (context) => Intro2(),

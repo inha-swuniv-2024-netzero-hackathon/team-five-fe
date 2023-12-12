@@ -13,7 +13,7 @@ class selectScreen extends StatefulWidget {
   @override
   State<selectScreen> createState() => _selectScreenState();
 }
-
+  
 class _selectScreenState extends State<selectScreen> {
   int _selectedIndex = 0;
   // static const TextStyle optionStyle =
@@ -32,6 +32,11 @@ class _selectScreenState extends State<selectScreen> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    
+  }
   // 메인 위젯
   @override
   Widget build(BuildContext context) {
