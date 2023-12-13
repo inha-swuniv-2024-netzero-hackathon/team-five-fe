@@ -39,7 +39,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {  
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
         '/Login': (context) => Login(),
         '/Profile': (context) => Profile_(),
         '/Review': (context) => review(),
-        '/Restaurant': (context) => restaurant(),
+        // '/Restaurant': (context) => restaurant_page(),
         '/Select_Screen': (context) => selectScreen()
       },
     );

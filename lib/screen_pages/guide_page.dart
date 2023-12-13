@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/Class.dart';
 import 'package:proto_just_design/restaurant.dart';
+import 'package:proto_just_design/review.dart';
+
+import '../restaurant_page.dart';
 
 class guidePage extends StatefulWidget {
   const guidePage({super.key});
@@ -20,8 +23,9 @@ class _guidePageState extends State<guidePage> {
   List<String> favList = [];
 
   Future<void> get_Restaurant_List() async {
-    final response = await http.get(Uri.parse(
-        'https://basak.chungran.net/v1/restaurants/restaurants/?area__id=4&ordering=restaurant_info__rating&page=1'));
+    String url =
+        'https://basak.chungran.net/v1/restaurants/restaurants/?area__id=4&ordering=restaurant_info__rating&page=1';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
@@ -236,7 +240,11 @@ class _guidePageState extends State<guidePage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                restaurant_page(uuid: restaurant.uuid)));
                   },
                   child: Container(
                     width: wPP * 171,

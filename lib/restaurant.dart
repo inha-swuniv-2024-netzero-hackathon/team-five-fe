@@ -8,6 +8,8 @@ class restaurant extends StatefulWidget {
 }
 
 class _restaurantState extends State<restaurant> {
+  //여기에 오게 하는 법
+
   List<Widget> restaurantPageList = [
     restaurantMenu(),
     restaurantReview(),
@@ -34,11 +36,10 @@ class _restaurantState extends State<restaurant> {
 
   Widget _buildCarouselItem(BuildContext context, int pageIndex) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.grey,
-      ),
-      child: restaurantPageList[pageIndex]
-    );
+        decoration: const BoxDecoration(
+          color: Colors.grey,
+        ),
+        child: restaurantPageList[pageIndex]);
   }
 }
 

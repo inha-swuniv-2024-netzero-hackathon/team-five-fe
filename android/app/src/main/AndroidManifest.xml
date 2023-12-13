@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="appt"
+        android:label="Basak"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity">
