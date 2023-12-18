@@ -5,7 +5,6 @@ import 'package:proto_just_design/Intro/Intro.dart';
 import 'package:proto_just_design/Intro/Login.dart';
 import 'package:proto_just_design/Select_screen.dart';
 import 'package:proto_just_design/profile.dart';
-import 'package:proto_just_design/restaurant.dart';
 import 'package:proto_just_design/review.dart';
 
 void main() {
@@ -51,7 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
         '/Login': (context) => Login(),
         '/Profile': (context) => Profile_(),
         '/Review': (context) => review(),
-        // '/Restaurant': (context) => restaurant_page(),
         '/Select_Screen': (context) => selectScreen()
       },
     );
