@@ -5,6 +5,7 @@ import 'package:proto_just_design/Class.dart';
 import 'package:proto_just_design/restaurant.dart';
 import 'package:proto_just_design/review.dart';
 
+import '../make_rating_shower.dart';
 import '../restaurant_page.dart';
 
 class guidePage extends StatefulWidget {
@@ -55,150 +56,158 @@ class _guidePageState extends State<guidePage> {
         child: Column(
           children: [
             SizedBox(height: hPP * 30),
-            Container(
-                alignment: Alignment.topCenter,
-                height: hPP * 57,
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Row(children: [
-                    Padding(
-                        padding: EdgeInsets.only(left: wPP * 27),
-                        child: Row(children: [
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Icon(Icons.location_on_outlined,
-                                    size: wPP * 30,
-                                    color: const Color(0xFFF25757)),
-                                Text(area1,
-                                    style: TextStyle(
-                                      fontSize: 25 * wPP,
-                                      fontWeight: FontWeight.w700,
-                                    )),
-                                SizedBox(width: wPP * 8),
-                                Text(area2,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20 * wPP,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w600,
-                                        height: 1))
-                              ])
-                        ]))
-                  ]),
-                  const Spacer(),
-                  Padding(
-                    padding: EdgeInsets.only(right: wPP * 27),
-                    child: Row(
-                      children: [
-                        Container(
-                            width: wPP * 36,
-                            height: hPP * 36,
-                            decoration: const ShapeDecoration(
-                                shape: OvalBorder(),
-                                shadows: [
-                                  BoxShadow(
-                                      color: Color(0x29000000),
-                                      blurRadius: 3,
-                                      offset: Offset(0, 2),
-                                      spreadRadius: 0),
-                                  BoxShadow(
-                                      color: Color(0x15000000),
-                                      blurRadius: 3,
-                                      offset: Offset(0, 0),
-                                      spreadRadius: 0)
-                                ]),
-                            clipBehavior: Clip.antiAlias,
-                            child: ElevatedButton(
-                                onPressed: () {},
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.white)),
-                                child: Transform.translate(
-                                  offset: Offset(-8, 0),
-                                  child: Icon(
-                                    Icons.search,
-                                    size: wPP * 24,
-                                    color: Colors.black,
-                                  ),
-                                ))),
-                        SizedBox(width: wPP * 15),
-                        Container(
-                          width: wPP * 36,
-                          height: hPP * 36,
-                          decoration: const ShapeDecoration(
-                              shape: OvalBorder(),
-                              shadows: [
-                                BoxShadow(
-                                    color: Color(0x29000000),
-                                    blurRadius: 3,
-                                    offset: Offset(0, 2),
-                                    spreadRadius: 0),
-                                BoxShadow(
-                                    color: Color(0x15000000),
-                                    blurRadius: 3,
-                                    offset: Offset(0, 0),
-                                    spreadRadius: 0)
-                              ]),
-                          clipBehavior: Clip.antiAlias,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.white)),
-                            child: Transform.translate(
-                              offset: Offset(-8, 0),
-                              child: Icon(
-                                Icons.map_outlined,
-                                size: wPP * 24,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ])),
-            Container(
-              padding: EdgeInsets.only(left: wPP * 15),
-              height: hPP * 660,
-              width: screenWidth,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      height: hPP * 660,
-                      width: screenWidth - 15 * wPP,
-                      alignment: Alignment.centerLeft,
-                      child: ListView.builder(
-                          itemCount: restaurantList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if ((index % 2 == 0) &&
-                                (index + 2 <= restaurantList.length)) {
-                              Restaurant left_restaurant_data =
-                                  Restaurant(restaurantList[index]);
-                              Restaurant right_restaurant_data =
-                                  Restaurant(restaurantList[index + 1]);
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  restaurantButton(
-                                      context, left_restaurant_data),
-                                  SizedBox(width: wPP * 18),
-                                  restaurantButton(
-                                      context, right_restaurant_data)
-                                ],
-                              );
-                            } else {
-                              return SizedBox(height: 10);
-                            }
-                          })),
-                ],
-              ),
-            ),
+            guide_page_header(context),
+            guide_page_body(context)
           ],
         ),
+      ),
+    );
+  }
+
+  Widget guide_page_header(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double hPP = 1 / 844 * screenHeight;
+    double wPP = 1 / 390 * screenWidth;
+    return Container(
+        alignment: Alignment.topCenter,
+        height: hPP * 57,
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Row(children: [
+            Padding(
+                padding: EdgeInsets.only(left: wPP * 27),
+                child: Row(children: [
+                  Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                    Icon(Icons.location_on_outlined,
+                        size: wPP * 30, color: const Color(0xFFF25757)),
+                    Text(area1,
+                        style: TextStyle(
+                          fontSize: 25 * wPP,
+                          fontWeight: FontWeight.w700,
+                        )),
+                    SizedBox(width: wPP * 8),
+                    Text(area2,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20 * wPP,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            height: 1))
+                  ])
+                ]))
+          ]),
+          const Spacer(),
+          Padding(
+            padding: EdgeInsets.only(right: wPP * 27),
+            child: Row(
+              children: [
+                Container(
+                    width: wPP * 36,
+                    height: hPP * 36,
+                    decoration:
+                        const ShapeDecoration(shape: OvalBorder(), shadows: [
+                      BoxShadow(
+                          color: Color(0x29000000),
+                          blurRadius: 3,
+                          offset: Offset(0, 2),
+                          spreadRadius: 0),
+                      BoxShadow(
+                          color: Color(0x15000000),
+                          blurRadius: 3,
+                          offset: Offset(0, 0),
+                          spreadRadius: 0)
+                    ]),
+                    clipBehavior: Clip.antiAlias,
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.white)),
+                        child: Transform.translate(
+                          offset: Offset(-8, 0),
+                          child: Icon(
+                            Icons.search,
+                            size: wPP * 24,
+                            color: Colors.black,
+                          ),
+                        ))),
+                SizedBox(width: wPP * 15),
+                Container(
+                  width: wPP * 36,
+                  height: hPP * 36,
+                  decoration:
+                      const ShapeDecoration(shape: OvalBorder(), shadows: [
+                    BoxShadow(
+                        color: Color(0x29000000),
+                        blurRadius: 3,
+                        offset: Offset(0, 2),
+                        spreadRadius: 0),
+                    BoxShadow(
+                        color: Color(0x15000000),
+                        blurRadius: 3,
+                        offset: Offset(0, 0),
+                        spreadRadius: 0)
+                  ]),
+                  clipBehavior: Clip.antiAlias,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.white)),
+                    child: Transform.translate(
+                      offset: Offset(-8, 0),
+                      child: Icon(
+                        Icons.map_outlined,
+                        size: wPP * 24,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ]));
+  }
+
+  Widget guide_page_body(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double hPP = 1 / 844 * screenHeight;
+    double wPP = 1 / 390 * screenWidth;
+    return Container(
+      padding: EdgeInsets.only(left: wPP * 15),
+      height: hPP * 660,
+      width: screenWidth,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+              height: hPP * 660,
+              width: screenWidth - 15 * wPP,
+              alignment: Alignment.centerLeft,
+              child: ListView.builder(
+                  itemCount: restaurantList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    if ((index % 2 == 0) &&
+                        (index + 2 <= restaurantList.length)) {
+                      Restaurant left_restaurant_data =
+                          Restaurant(restaurantList[index]);
+                      Restaurant right_restaurant_data =
+                          Restaurant(restaurantList[index + 1]);
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          restaurantButton(context, left_restaurant_data),
+                          SizedBox(width: wPP * 18),
+                          restaurantButton(context, right_restaurant_data)
+                        ],
+                      );
+                    } else {
+                      return SizedBox(height: 10);
+                    }
+                  })),
+        ],
       ),
     );
   }
@@ -339,21 +348,7 @@ class _guidePageState extends State<guidePage> {
               padding: EdgeInsets.fromLTRB(hPP * 7, hPP * 4, 0, hPP * 4),
               child: Row(
                 children: [
-                  Stack(children: [
-                    Container(
-                        width: 100 * wPP,
-                        height: 4 * hPP,
-                        decoration: BoxDecoration(
-                            color: const Color(0xFFD9D9D9),
-                            borderRadius: BorderRadius.circular(8))),
-                    Container(
-                      width: 100 * wPP * (restaurant.rating / 100 - 1) / 4,
-                      height: 4 * hPP,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: const Color(0xFFF2B544)),
-                    )
-                  ]),
+                  make_rating_shower(context, 100, 4, restaurant.rating),
                   Padding(
                     padding: EdgeInsets.only(
                       left: wPP * 10,
@@ -430,23 +425,8 @@ class _guidePageState extends State<guidePage> {
                             Stack(
                                 //alignment: Alignment.bo,
                                 children: [
-                                  Container(
-                                      width: 100 * wPP,
-                                      height: 4 * hPP,
-                                      decoration: BoxDecoration(
-                                          color: const Color(0xFFD9D9D9),
-                                          borderRadius:
-                                              BorderRadius.circular(8))),
-                                  Container(
-                                    width: 100 *
-                                        wPP *
-                                        (restaurant.rating_taste / 100 - 1) /
-                                        4,
-                                    height: 4 * hPP,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: const Color(0xFFF2B544)),
-                                  ),
+                                  make_rating_shower(
+                                      context, 100, 4, restaurant.rating_taste),
                                   Transform.translate(
                                     offset: Offset(
                                         100 *
@@ -505,23 +485,8 @@ class _guidePageState extends State<guidePage> {
                             Stack(
                                 //alignment: Alignment.bo,
                                 children: [
-                                  Container(
-                                      width: 100 * wPP,
-                                      height: 4 * hPP,
-                                      decoration: BoxDecoration(
-                                          color: const Color(0xFFD9D9D9),
-                                          borderRadius:
-                                              BorderRadius.circular(8))),
-                                  Container(
-                                    width: 100 *
-                                        wPP *
-                                        (restaurant.rating_service / 100 - 1) /
-                                        4,
-                                    height: 4 * hPP,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: const Color(0xFFF2B544)),
-                                  ),
+                                  make_rating_shower(context, 100, 4,
+                                      restaurant.rating_service),
                                   Transform.translate(
                                     offset: Offset(
                                         100 *
@@ -580,23 +545,8 @@ class _guidePageState extends State<guidePage> {
                             Stack(
                                 //alignment: Alignment.bo,
                                 children: [
-                                  Container(
-                                      width: 100 * wPP,
-                                      height: 4 * hPP,
-                                      decoration: BoxDecoration(
-                                          color: const Color(0xFFD9D9D9),
-                                          borderRadius:
-                                              BorderRadius.circular(8))),
-                                  Container(
-                                    width: 100 *
-                                        wPP *
-                                        (restaurant.rating_price / 100 - 1) /
-                                        4,
-                                    height: 4 * hPP,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: const Color(0xFFF2B544)),
-                                  ),
+                                  make_rating_shower(
+                                      context, 100, 4, restaurant.rating_price),
                                   Transform.translate(
                                     offset: Offset(
                                         100 *

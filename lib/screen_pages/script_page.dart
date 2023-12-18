@@ -14,6 +14,7 @@ class scriptPage extends StatefulWidget {
 class _scriptPageState extends State<scriptPage> {
   List favListingList = [];
   List restaurant_listing_list = [];
+
   Future<void> get_Restaurant_Listing_List() async {
     final response = await http
         .get(Uri.parse('https://basak.chungran.net/v1/restaurants/listings/'));
@@ -48,87 +49,7 @@ class _scriptPageState extends State<scriptPage> {
           child: Column(
             children: [
               SizedBox(height: 44 * hPP),
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        alignment: Alignment.topCenter,
-                        padding:
-                            EdgeInsets.only(left: 25 * wPP, right: 30 * wPP),
-                        margin: EdgeInsets.only(left: wPP * 15),
-                        width: 299 * wPP,
-                        height: 36 * hPP,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          shadows: const [
-                            BoxShadow(
-                              color: Color(0x29000000),
-                              blurRadius: 3,
-                              offset: Offset(0, 2),
-                              spreadRadius: 0,
-                            ),
-                            BoxShadow(
-                              color: Color(0x15000000),
-                              blurRadius: 3,
-                              offset: Offset(0, 0),
-                              spreadRadius: 0,
-                            )
-                          ],
-                        ),
-                        child: TextField(
-                            controller: findControlloer,
-                            decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: '스크립트에서 원하는 맛집을 찾아보세요',
-                                hintStyle: TextStyle(
-                                  color: Color(0xFF333333),
-                                  fontSize: 13,
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w400,
-                                  height: 0.08,
-                                ))),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: wPP * 20),
-                  Container(
-                    width: wPP * 36,
-                    height: hPP * 36,
-                    decoration:
-                        const ShapeDecoration(shape: OvalBorder(), shadows: [
-                      BoxShadow(
-                          color: Color(0x29000000),
-                          blurRadius: 3,
-                          offset: Offset(0, 2),
-                          spreadRadius: 0),
-                      BoxShadow(
-                          color: Color(0x15000000),
-                          blurRadius: 3,
-                          offset: Offset(0, 0),
-                          spreadRadius: 0)
-                    ]),
-                    clipBehavior: Clip.antiAlias,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.white)),
-                      child: Transform.translate(
-                        offset: Offset(-8, 0),
-                        child: Icon(
-                          Icons.map_outlined,
-                          size: wPP * 24,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+              script_page_header(context),
               SizedBox(height: hPP * 35),
               Container(
                 height: hPP * 700,
@@ -161,6 +82,91 @@ class _scriptPageState extends State<scriptPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget script_page_header(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double hPP = 1 / 844 * screenHeight;
+    double wPP = 1 / 390 * screenWidth;
+    return Row(
+      children: [
+        Stack(
+          children: [
+            Container(
+              alignment: Alignment.topCenter,
+              padding: EdgeInsets.only(left: 25 * wPP, right: 30 * wPP),
+              margin: EdgeInsets.only(left: wPP * 15),
+              width: 299 * wPP,
+              height: 36 * hPP,
+              decoration: ShapeDecoration(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                shadows: const [
+                  BoxShadow(
+                    color: Color(0x29000000),
+                    blurRadius: 3,
+                    offset: Offset(0, 2),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x15000000),
+                    blurRadius: 3,
+                    offset: Offset(0, 0),
+                    spreadRadius: 0,
+                  )
+                ],
+              ),
+              child: TextField(
+                  controller: findControlloer,
+                  decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: '스크립트에서 원하는 맛집을 찾아보세요',
+                      hintStyle: TextStyle(
+                        color: Color(0xFF333333),
+                        fontSize: 13,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        height: 0.08,
+                      ))),
+            ),
+          ],
+        ),
+        SizedBox(width: wPP * 20),
+        Container(
+          width: wPP * 36,
+          height: hPP * 36,
+          decoration: const ShapeDecoration(shape: OvalBorder(), shadows: [
+            BoxShadow(
+                color: Color(0x29000000),
+                blurRadius: 3,
+                offset: Offset(0, 2),
+                spreadRadius: 0),
+            BoxShadow(
+                color: Color(0x15000000),
+                blurRadius: 3,
+                offset: Offset(0, 0),
+                spreadRadius: 0)
+          ]),
+          clipBehavior: Clip.antiAlias,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white)),
+            child: Transform.translate(
+              offset: Offset(-8, 0),
+              child: Icon(
+                Icons.map_outlined,
+                size: wPP * 24,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 
