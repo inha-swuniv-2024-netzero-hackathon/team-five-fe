@@ -101,12 +101,13 @@ class RestaurantDetail {
     this.daytime_price = restaurant_info['daytime_price'];
     this.evening_price = restaurant_info['evening_price'];
 
-    this.telephone_number = restaurant_info['telephone_number'] ?? 'Unknwon';
+    this.telephone_number =
+        restaurant_info['telephone_number'] ?? 'Unknown_tel';
     this.genre = restaurant_info['genre'] ?? [];
-    this.address_korean = restaurant_info['address_korean'] ?? 'Unknwon';
-    this.address_native = restaurant_info['address_native'] ?? 'Unknwon';
-    this.address_english = restaurant_info['address_english'] ?? 'Unknwon';
-    this.area = restaurant_info['area'] ?? 'Unknwon';
+    this.address_korean = restaurant_info['address_korean'] ?? 'Unknwwn_ko';
+    this.address_native = restaurant_info['address_native'] ?? 'Unknown_jp';
+    this.address_english = restaurant_info['address_english'] ?? 'Unknown_en';
+    this.area = restaurant_info['area'] ?? 'Unknown_area';
     this.latitude = restaurant_info['latitude'];
     this.longitude = restaurant_info['longitude'];
     this.service_list = [];
