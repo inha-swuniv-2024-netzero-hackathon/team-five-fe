@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'Class.dart';
 import 'make_rating_shower.dart';
+import 'restaurant_page_detail_state.dart';
 
 class restaurant_page extends StatefulWidget {
   final String uuid;
@@ -17,11 +19,11 @@ class _restaurant_pageState extends State<restaurant_page> {
   late RestaurantDetail? restaurant_data = null;
   bool fav = false;
   Enum restaurant_page_state = Restaurant_page_state.rating;
-
+  Set<Marker> marker = <Marker>{};
   @override
   void initState() {
     super.initState();
-    get_Restaurant_List();
+    get_Restaurant_List().then((value) => get_Marker());
   }
 
   Future<void> get_Restaurant_List() async {
@@ -35,6 +37,15 @@ class _restaurant_pageState extends State<restaurant_page> {
         restaurant_data = RestaurantDetail(responseData);
       });
     }
+  }
+
+  Future<void> get_Marker() async {
+    marker.add(Marker(
+        markerId: MarkerId('${restaurant_data?.name_korean}'),
+        infoWindow: InfoWindow(title: '${restaurant_data?.name_korean}'),
+        position: LatLng(restaurant_data?.latitude ?? 35.6,
+            restaurant_data?.longitude ?? 139.6)));
+    setState(() {});
   }
 
   @override
@@ -52,7 +63,9 @@ class _restaurant_pageState extends State<restaurant_page> {
           restaurant_page_header(context),
           SizedBox(height: 24),
           restaurant_page_store_detail(context),
-          restaurant_page_store_info_list(context)
+          restaurant_page_store_info_list(context),
+          SizedBox(height: 40),
+          restaurant_page_states(context)
         ]),
       )),
     );
@@ -399,8 +412,25 @@ class _restaurant_pageState extends State<restaurant_page> {
     );
   }
 
-  Widget restaurant_page_map_state(BuildContext context) {
-    return Container();
+  Widget restaurant_page_states(BuildContext context) {
+    switch (restaurant_page_state) {
+      case Restaurant_page_state.menu:
+        return restaurant_page_menu_state(context);
+      case Restaurant_page_state.review:
+        return restaurant_page_review_state(context);
+      case Restaurant_page_state.guide:
+        return restaurant_page_guide_state(context);
+      case Restaurant_page_state.photo:
+        return restaurant_page_photo_state(context);
+      case Restaurant_page_state.map:
+        return restaurant_page_map_state(
+            context,
+            restaurant_data?.latitude ?? 35.6,
+            restaurant_data?.longitude ?? 139.6,
+            marker);
+      default:
+        return restaurant_page_rating_state(context);
+    }
   }
 
   Widget favbutton(BuildContext context) {
