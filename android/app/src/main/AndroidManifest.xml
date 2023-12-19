@@ -40,5 +40,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- google map sdk  -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyA0djmMrJRvQKsDpzqlXz0iGQPqnEmNWiA"/>
+        <!-- google map sdk  -->
     </application>
 </manifest>
