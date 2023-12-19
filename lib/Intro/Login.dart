@@ -14,10 +14,9 @@ class _LoginState extends State<Login> {
   TextEditingController passwordContoller = TextEditingController();
 
   checkKakao() async {
-    // 카카오 로그인 구현 예제
 
-// 카카오톡 설치 여부 확인
-// 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+    // 카카오톡 설치 여부 확인
+    // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
     if (await isKakaoTalkInstalled()) {
       try {
         await UserApi.instance.loginWithKakaoTalk();
@@ -34,7 +33,7 @@ class _LoginState extends State<Login> {
         try {
           await UserApi.instance.loginWithKakaoAccount();
           print('카카오계정으로 로그인 성공');
-          Navigator.pushNamed(context, '/HomePage');
+          Navigator.pushNamed(context, '/');
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
         }
@@ -43,7 +42,7 @@ class _LoginState extends State<Login> {
       try {
         await UserApi.instance.loginWithKakaoAccount();
         print('카카오계정으로 로그인 성공');
-        Navigator.pushNamed(context, '/HomePage');
+        Navigator.pushNamed(context, '/');
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
       }
@@ -146,7 +145,7 @@ class _LoginState extends State<Login> {
                   clipBehavior: Clip.antiAlias,
                   child: ElevatedButton(
                     onPressed: () {
-                      checkKakao();
+                      checkKakao().then();
                     },
                     child: Container(),
                     style: ButtonStyle(
