@@ -32,7 +32,6 @@ class _reviewPageState extends State<reviewPage> {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(left: wPP * 15, right: wPP * 15),
-        
         child: Column(children: [
           SizedBox(height: 25),
           review_page_header(context),

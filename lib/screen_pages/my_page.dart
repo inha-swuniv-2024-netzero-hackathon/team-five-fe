@@ -1,5 +1,6 @@
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class myPage extends StatefulWidget {
@@ -10,6 +11,42 @@ class myPage extends StatefulWidget {
 }
 
 class _myPageState extends State<myPage> {
+  late String kakao_token;
+  static final storage = new FlutterSecureStorage();
+  logout() async {
+    await storage.delete(key: 'kakao_token');
+  }
+
+  read_kakao_token() async {
+    kakao_token = await storage.read(key: 'kakao_token') ?? '';
+  }
+
+  get_user_data() async {
+    final url = Uri.parse('https://basak.chungran.net/v1/auth/user/');
+    final response = await http
+        .get(url, headers: {"Authorization": "Bearer ${kakao_token}"});
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
+      print(responseData);
+    } else {
+      print(response.statusCode);
+      print(kakao_token);
+    }
+  }
+
+  @override
+  void initState() {
+    read_kakao_token().then((value) {
+      if (kakao_token != '') {
+        get_user_data();
+      } else {
+        Navigator.pushNamed(context, '/Login');
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -39,8 +76,12 @@ class _myPageState extends State<myPage> {
                                     Colors.transparent),
                                 shadowColor: MaterialStateProperty.all(
                                     Colors.transparent)),
-                            onPressed: () {},
-                            child: Row(
+                            onPressed: () {
+                              logout().then((value) {
+                                Navigator.pushNamed(context, '/Login');
+                              });
+                            },
+                            child: const Row(
                               children: [
                                 Icon(
                                   Icons.output,
@@ -54,10 +95,10 @@ class _myPageState extends State<myPage> {
                               ],
                             )),
                         SizedBox(width: wPP * 55),
-                        Text('마이페이지',
+                        const Text('마이페이지',
                             style:
                                 TextStyle(fontSize: 17, color: Colors.white)),
-                        Spacer(),
+                        const Spacer(),
                         TextButton(
                             onPressed: () {},
                             child: Icon(Icons.settings, color: Colors.white))
@@ -192,4 +233,3 @@ class _myPageState extends State<myPage> {
     );
   }
 }
-

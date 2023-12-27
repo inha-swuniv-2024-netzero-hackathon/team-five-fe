@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../Class.dart';
+import '../provider.dart';
 
 class scriptPage extends StatefulWidget {
   const scriptPage({super.key});
@@ -13,16 +15,17 @@ class scriptPage extends StatefulWidget {
 
 class _scriptPageState extends State<scriptPage> {
   List favListingList = [];
-  List restaurant_listing_list = [];
+  List<dynamic> restaurant_listing_list = [];
 
   Future<void> get_Restaurant_Listing_List() async {
     final response = await http
         .get(Uri.parse('https://basak.chungran.net/v1/restaurants/listings/'));
     if (response.statusCode == 200) {
       List<dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
-      setState(() {
-        restaurant_listing_list = responseData;
-      });
+      restaurant_listing_list = responseData;
+      if (this.mounted) {
+        setState(() {});
+      }
     } else {
       print(response.statusCode);
     }
@@ -31,7 +34,15 @@ class _scriptPageState extends State<scriptPage> {
   @override
   void initState() {
     super.initState();
-    get_Restaurant_Listing_List();
+
+    if (context.read<script_page_data>().page_data == null) {
+      get_Restaurant_Listing_List().then((value) {
+        context.read<script_page_data>().change_data(restaurant_listing_list);
+      });
+    } else {
+      restaurant_listing_list =
+          context.read<script_page_data>().page_data ?? [];
+    }
   }
 
   TextEditingController findControlloer = TextEditingController();

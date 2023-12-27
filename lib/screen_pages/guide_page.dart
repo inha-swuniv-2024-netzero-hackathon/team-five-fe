@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/Class.dart';
-import 'package:proto_just_design/restaurant.dart';
-import 'package:proto_just_design/review.dart';
+import 'package:proto_just_design/default_data/location.dart';
+import 'package:proto_just_design/provider.dart';
+import 'package:provider/provider.dart';
 
 import '../make_rating_shower.dart';
 import '../restaurant_page.dart';
@@ -18,27 +19,39 @@ class guidePage extends StatefulWidget {
 class _guidePageState extends State<guidePage> {
   bool fav = true;
   List<String> restaurantStarDetail = [];
+  List<dynamic> location =
+      location_sets[location_num.loc1] ?? ['지역1', '지역2', 0];
   String area1 = '지역1';
   String area2 = '지역2';
+  int area_num = 1;
   List<dynamic> restaurantList = [];
-  List<String> favList = [];
 
   Future<void> get_Restaurant_List() async {
     String url =
-        'https://basak.chungran.net/v1/restaurants/restaurants/?area__id=4&ordering=restaurant_info__rating&page=1';
+        'https://basak.chungran.net/v1/restaurants/restaurants/?area__id=${area_num}&ordering=restaurant_info__rating&page=1';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
-      setState(() {
-        restaurantList = responseData['results'];
-      });
+      restaurantList = responseData['results'];
+      if (this.mounted) {
+        setState(() {});
+      }
     }
   }
 
   @override
   void initState() {
-    get_Restaurant_List();
+    area1 = location[0];
+    area2 = location[1];
+    if (context.read<guide_page_data>().page_data == null) {
+      get_Restaurant_List().then((value) {
+        context.read<guide_page_data>().change_data(restaurantList);
+      });
+    } else {
+      restaurantList = context.read<guide_page_data>().page_data ?? [];
+    }
+
     super.initState();
   }
 
@@ -98,75 +111,80 @@ class _guidePageState extends State<guidePage> {
           ]),
           const Spacer(),
           Padding(
-            padding: EdgeInsets.only(right: wPP * 27),
-            child: Row(
-              children: [
+              padding: EdgeInsets.only(right: wPP * 20),
+              child: Row(children: [
                 Container(
                     width: wPP * 36,
                     height: hPP * 36,
-                    decoration:
-                        const ShapeDecoration(shape: OvalBorder(), shadows: [
-                      BoxShadow(
-                          color: Color(0x29000000),
-                          blurRadius: 3,
-                          offset: Offset(0, 2),
-                          spreadRadius: 0),
-                      BoxShadow(
-                          color: Color(0x15000000),
-                          blurRadius: 3,
-                          offset: Offset(0, 0),
-                          spreadRadius: 0)
-                    ]),
+                    decoration: const ShapeDecoration(
+                        shape: OvalBorder(),
+                        shadows: [
+                          BoxShadow(
+                              color: Color(0x29000000),
+                              blurRadius: 3,
+                              offset: Offset(0, 2),
+                              spreadRadius: 0),
+                          BoxShadow(
+                              color: Color(0x15000000),
+                              blurRadius: 3,
+                              offset: Offset(0, 0),
+                              spreadRadius: 0)
+                        ],
+                        color: Colors.white),
                     clipBehavior: Clip.antiAlias,
-                    child: ElevatedButton(
+                    child: Stack(alignment: Alignment.center, children: [
+                      Icon(
+                        Icons.search_outlined,
+                        size: wPP * 24,
+                        color: Colors.black.withOpacity(0.85),
+                      ),
+                      ElevatedButton(
                         onPressed: () {},
                         style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white)),
-                        child: Transform.translate(
-                          offset: Offset(-8, 0),
-                          child: Icon(
-                            Icons.search,
-                            size: wPP * 24,
-                            color: Colors.black,
-                          ),
-                        ))),
+                                MaterialStateProperty.all(Colors.transparent),
+                            shadowColor:
+                                MaterialStateProperty.all(Colors.transparent)),
+                        child: Container(),
+                      )
+                    ])),
                 SizedBox(width: wPP * 15),
                 Container(
-                  width: wPP * 36,
-                  height: hPP * 36,
-                  decoration:
-                      const ShapeDecoration(shape: OvalBorder(), shadows: [
-                    BoxShadow(
-                        color: Color(0x29000000),
-                        blurRadius: 3,
-                        offset: Offset(0, 2),
-                        spreadRadius: 0),
-                    BoxShadow(
-                        color: Color(0x15000000),
-                        blurRadius: 3,
-                        offset: Offset(0, 0),
-                        spreadRadius: 0)
-                  ]),
-                  clipBehavior: Clip.antiAlias,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.white)),
-                    child: Transform.translate(
-                      offset: Offset(-8, 0),
-                      child: Icon(
+                    width: wPP * 36,
+                    height: hPP * 36,
+                    decoration: const ShapeDecoration(
+                        shape: OvalBorder(),
+                        shadows: [
+                          BoxShadow(
+                              color: Color(0x29000000),
+                              blurRadius: 3,
+                              offset: Offset(0, 2),
+                              spreadRadius: 0),
+                          BoxShadow(
+                              color: Color(0x15000000),
+                              blurRadius: 3,
+                              offset: Offset(0, 0),
+                              spreadRadius: 0)
+                        ],
+                        color: Colors.white),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(alignment: Alignment.center, children: [
+                      Icon(
                         Icons.map_outlined,
                         size: wPP * 24,
-                        color: Colors.black,
+                        color: Colors.black.withOpacity(0.85),
                       ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            shadowColor:
+                                MaterialStateProperty.all(Colors.transparent)),
+                        child: Container(),
+                      )
+                    ]))
+              ]))
         ]));
   }
 
@@ -250,10 +268,13 @@ class _guidePageState extends State<guidePage> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                restaurant_page(uuid: restaurant.uuid)));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    restaurant_page(uuid: restaurant.uuid)))
+                        .then((value) {
+                      setState(() {});
+                    });
                   },
                   child: Container(
                     width: wPP * 171,
@@ -295,17 +316,30 @@ class _guidePageState extends State<guidePage> {
                       child: IconButton(
                           splashColor: Colors.transparent,
                           onPressed: () {
-                            if (favList.contains(restaurant.uuid) == false) {
-                              setState(() {
-                                favList.add(restaurant.uuid);
-                              });
+                            if (context
+                                    .read<user_info>()
+                                    .user_fav_restaurant_list
+                                    .contains(restaurant.uuid) ==
+                                false) {
+                              context
+                                  .read<user_info>()
+                                  .add_fav_restaurant(restaurant.uuid);
+                              setState(() {});
                             } else {
-                              setState(() {
-                                favList.remove(restaurant.uuid);
-                              });
+                              context
+                                  .read<user_info>()
+                                  .remove_fav_restaurant(restaurant.uuid);
+                              setState(() {});
+                              print(context
+                                  .read<user_info>()
+                                  .user_fav_restaurant_list);
                             }
                           },
-                          icon: (favList.contains(restaurant.uuid) == false)
+                          icon: (context
+                                      .read<user_info>()
+                                      .user_fav_restaurant_list
+                                      .contains(restaurant.uuid) ==
+                                  false)
                               ? Transform.translate(
                                   offset: Offset(0, -hPP * 10),
                                   child: const Icon(
@@ -380,14 +414,11 @@ class _guidePageState extends State<guidePage> {
                               onPressed: () {
                                 if (restaurantStarDetail
                                     .contains(restaurant.uuid)) {
-                                  setState(() {
-                                    restaurantStarDetail
-                                        .remove(restaurant.uuid);
-                                  });
+                                  restaurantStarDetail.remove(restaurant.uuid);
+                                  setState(() {});
                                 } else {
-                                  setState(() {
-                                    restaurantStarDetail.add(restaurant.uuid);
-                                  });
+                                  restaurantStarDetail.add(restaurant.uuid);
+                                  setState(() {});
                                 }
                               },
                               style: ButtonStyle(
@@ -542,38 +573,34 @@ class _guidePageState extends State<guidePage> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Stack(
-                                //alignment: Alignment.bo,
-                                children: [
-                                  make_rating_shower(
-                                      context, 100, 4, restaurant.rating_price),
-                                  Transform.translate(
-                                    offset: Offset(
-                                        100 *
-                                            wPP *
-                                            (restaurant.rating_price / 100 -
-                                                1) /
-                                            4,
-                                        -7 * hPP),
-                                    child: Container(
-                                      width: 16 * wPP,
-                                      height: 16 * wPP,
-                                      decoration: const ShapeDecoration(
-                                        color: Colors.white,
-                                        shape: OvalBorder(
-                                          side: BorderSide(
-                                              width: 1,
-                                              color: Color(0xFFF2B544)),
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.currency_yen_outlined,
-                                        color: Color(0xFFF2B544),
-                                        size: 10,
-                                      ),
+                            Stack(children: [
+                              make_rating_shower(
+                                  context, 100, 4, restaurant.rating_price),
+                              Transform.translate(
+                                offset: Offset(
+                                    100 *
+                                        wPP *
+                                        (restaurant.rating_price / 100 - 1) /
+                                        4,
+                                    -7 * hPP),
+                                child: Container(
+                                  width: 16 * wPP,
+                                  height: 16 * wPP,
+                                  decoration: const ShapeDecoration(
+                                    color: Colors.white,
+                                    shape: OvalBorder(
+                                      side: BorderSide(
+                                          width: 1, color: Color(0xFFF2B544)),
                                     ),
-                                  )
-                                ]),
+                                  ),
+                                  child: const Icon(
+                                    Icons.currency_yen_outlined,
+                                    color: Color(0xFFF2B544),
+                                    size: 10,
+                                  ),
+                                ),
+                              )
+                            ]),
                             Padding(
                               padding: EdgeInsets.only(
                                   left: wPP * 10, right: wPP * 5),
