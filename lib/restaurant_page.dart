@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import 'Class.dart';
 import 'make_rating_shower.dart';
+import 'provider.dart';
 import 'restaurant_page_detail_state.dart';
 
 class restaurant_page extends StatefulWidget {
@@ -50,10 +51,6 @@ class _restaurant_pageState extends State<restaurant_page> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    double hPP = 1 / 844 * screenHeight;
-    double wPP = 1 / 390 * screenWidth;
     return Scaffold(
       body: SingleChildScrollView(
           child: Container(
@@ -199,6 +196,15 @@ class _restaurant_pageState extends State<restaurant_page> {
           child: Stack(
             alignment: Alignment.center,
             children: [
+              Text(
+                '평점',
+                style: TextStyle(
+                    color: restaurant_page_state == Restaurant_page_state.rating
+                        ? Colors.white
+                        : Color(0xFF333333),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500),
+              ),
               ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
@@ -211,15 +217,6 @@ class _restaurant_pageState extends State<restaurant_page> {
                     });
                   },
                   child: Container()),
-              Text(
-                '평점',
-                style: TextStyle(
-                    color: restaurant_page_state == Restaurant_page_state.rating
-                        ? Colors.white
-                        : Color(0xFF333333),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500),
-              )
             ],
           ),
         ),
@@ -437,30 +434,32 @@ class _restaurant_pageState extends State<restaurant_page> {
     return IconButton(
         splashColor: Colors.transparent,
         onPressed: () {
-          if (!fav) {
-            setState(() {
-              fav = true;
-            });
+          if (context
+              .read<user_info>()
+              .user_fav_restaurant_list
+              .contains(uuid)) {
+            context.read<user_info>().remove_fav_restaurant(uuid);
+            setState(() {});
           } else {
-            setState(() {
-              fav = false;
-            });
+            context.read<user_info>().add_fav_restaurant(uuid);
+            setState(() {});
+            print(context.read<user_info>().user_fav_restaurant_list);
           }
         },
-        icon: fav
+        icon: context.read<user_info>().user_fav_restaurant_list.contains(uuid)
             ? Transform.translate(
                 offset: Offset(0, 10),
                 child: const Icon(
-                  Icons.bookmark_border_sharp,
-                  color: Colors.black,
+                  Icons.bookmark,
+                  color: Color(0xFFF25757),
                   size: 32,
                 ),
               )
             : Transform.translate(
                 offset: Offset(0, 10),
                 child: const Icon(
-                  Icons.bookmark,
-                  color: Color(0xFFF25757),
+                  Icons.bookmark_border_sharp,
+                  color: Colors.black,
                   size: 32,
                 ),
               ));
