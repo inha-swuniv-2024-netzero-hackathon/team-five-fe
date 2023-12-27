@@ -1,8 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.release.basak">
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="Basak"
+        android:label="SutaPoint"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity">
@@ -11,7 +12,7 @@
 	        	<category android:name="android.intent.category.DEFAULT" />
 	        	<category android:name="android.intent.category.BROWSABLE" />
 	        	<!-- Redirect URI, "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식 -->
-	        	<data android:scheme="kakaof6cffbfdf469406747f4e7d4c766db25" android:host="oauth"/>
+	        	<data android:scheme="kakao2877c074948b1c5bf00e656eae65ab32" android:host="oauth"/>
 	        </intent-filter>
         </activity>
         <activity

@@ -1,3 +1,11 @@
+// start of Gradle 서명 구성
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('app/key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+// end of Gradle 서명 구성
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -45,13 +53,23 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.release.basak"
+        applicationId "com.basak.starpoint"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+    }
+
+    //카카오등 릴리즈 해쉬 관련, 출시할 때 사용
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
     }
 
     buildTypes {
@@ -61,6 +79,20 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+// 릴리즈할 때(배포할 때 바꿔서 사용) + 난독화
+//     buildTypes {
+//         release {
+//            signingConfig signingConfigs.release
+
+//            minifyEnabled true
+//            useProguard true
+
+//            ProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//         }
+//     }
+
+    
+    
 }
 
 flutter {
