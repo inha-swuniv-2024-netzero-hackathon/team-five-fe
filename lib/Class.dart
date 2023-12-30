@@ -104,7 +104,7 @@ class RestaurantDetail {
     this.telephone_number =
         restaurant_info['telephone_number'] ?? 'Unknown_tel';
     this.genre = restaurant_info['genre'] ?? [];
-    this.address_korean = restaurant_info['address_korean'] ?? 'Unknwwn_ko';
+    this.address_korean = restaurant_info['address_korean'] ?? 'Unknown_ko';
     this.address_native = restaurant_info['address_native'] ?? 'Unknown_jp';
     this.address_english = restaurant_info['address_english'] ?? 'Unknown_en';
     this.area = restaurant_info['area'] ?? 'Unknown_area';
