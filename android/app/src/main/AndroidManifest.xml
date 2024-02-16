@@ -2,6 +2,9 @@
     package="com.release.basak">
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:label="SutaPoint"
         android:name="${applicationName}"
@@ -42,8 +45,16 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <!-- google map sdk  -->
+        <!-- 개인키 -->
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyA0djmMrJRvQKsDpzqlXz0iGQPqnEmNWiA"/>
+               android:value="AIzaSyCciiCGfG8CvnhAwU8eamSGdV4ETXjptz0"/>
+        <!-- 배포키 -->
+        <!-- <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyCkcLoi0fz85wN9iB697qbS6Rnlw0Zs3jk"/> 
+        -->
+               
         <!-- google map sdk  -->
+        <meta-data android:name="com.kakao.sdk.AppKey"
+        android:value="2877c074948b1c5bf00e656eae65ab32" />
     </application>
 </manifest>
