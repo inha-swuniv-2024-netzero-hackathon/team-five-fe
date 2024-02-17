@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/class/misiklog_class.dart';
 import 'package:proto_just_design/class/restaurant_review_class.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
-import 'package:proto_just_design/screen_pages/Select_screen.dart';
+import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/my_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/screen_pages/select_screen/Select_screen.dart';
 import 'package:proto_just_design/screen_pages/login_page/login_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
@@ -42,8 +45,8 @@ class _MyPageState extends State<MyPage> {
   }
 
   clearFavData() {
-    context.read<GuidePageData>().clearFavRestaurant();
-    context.read<MisiklogPageData>().clearFavMisiklog();
+    context.read<GuidePageProvider>().clearFavRestaurant();
+    context.read<MisiklistProvider>().clearFavMisiklog();
   }
 
   getMyReviewData() async {
@@ -56,7 +59,7 @@ class _MyPageState extends State<MyPage> {
       final reviews = responseData['results'];
       myReview.addAll(reviews);
       if (mounted) {
-        context.read<MyPageData>().changeMyReviewData(myReview);
+        context.read<MyPageProvider>().changeMyReviewData(myReview);
         setState(() {});
       }
       // print(responseData);
@@ -79,7 +82,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   void setToken() {
-    final getToken = context.read<UserData>().userToken;
+    final getToken = context.read<UserData>().token;
     if (getToken != null) {
       token = getToken;
     }
@@ -88,11 +91,11 @@ class _MyPageState extends State<MyPage> {
   @override
   void initState() {
     setToken();
-    if (context.read<MyPageData>().myPageReviews.isEmpty) {
+    if (context.read<MyPageProvider>().myPageReviews.isEmpty) {
       getMyReviewData();
     } else {
       if (mounted) {
-        myReview = context.read<MyPageData>().myPageReviews;
+        myReview = context.read<MyPageProvider>().myPageReviews;
         setState(() {});
       }
     }

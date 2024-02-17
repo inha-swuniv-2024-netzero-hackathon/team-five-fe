@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/class/misiklog_class.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_widget.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:provider/provider.dart';
@@ -15,11 +16,11 @@ class ScriptPage extends StatefulWidget {
 }
 
 class _ScriptPageState extends State<ScriptPage> {
-  String? token;
-  List<Misiklog> misiklogList = [];
-
   Future<void> getMisiklogList() async {
+    List<Misiklog> misiklogList = [];
+    String? token = context.read<UserData>().token;
     final url = Uri.parse('${rootURL}v1/misiklogu/');
+
     final response = (token == null)
         ? await http.get(url)
         : await http.get(url, headers: {"Authorization": "Bearer $token"});
@@ -31,40 +32,25 @@ class _ScriptPageState extends State<ScriptPage> {
         misiklogList.add(misiklog);
         if (misiklog.isBookmarked) {
           if (mounted) {
-            context.read<MisiklogPageData>().addFavMisiklog(misiklog.uuid);
+            context.read<MisiklistProvider>().addFavMisiklog(misiklog.uuid);
           }
         }
         if (mounted) {
-          context.read<MisiklogPageData>().changeData(misiklogList);
+          context.read<MisiklistProvider>().changeData(misiklogList);
         }
       }
       if (mounted) {
         setState(() {});
       }
-    } else {
-      print(response.statusCode);
-    }
-  }
-
-  void setToken() {
-    final getToken = context.read<UserData>().userToken;
-    if (getToken != null) {
-      token = getToken;
-    }
+    } else {}
   }
 
   @override
   void initState() {
     super.initState();
-    setToken();
 
-    if (context.read<MisiklogPageData>().misiklogPageList.isEmpty) {
+    if (context.read<MisiklistProvider>().misiklogs.isEmpty) {
       getMisiklogList();
-    } else {
-      misiklogList = context.read<MisiklogPageData>().misiklogPageList;
-      if (mounted) {
-        setState(() {});
-      }
     }
   }
 
@@ -76,7 +62,7 @@ class _ScriptPageState extends State<ScriptPage> {
           children: [
             const SizedBox(height: 30),
             scriptPageHeader(context),
-            scriptPageBody(context)
+            misiklistPageBody(context)
           ],
         ),
       ),
@@ -123,8 +109,9 @@ class _ScriptPageState extends State<ScriptPage> {
     );
   }
 
-  Widget scriptPageBody(BuildContext context) {
-    int len = misiklogList.length;
+  Widget misiklistPageBody(BuildContext context) {
+    List<Misiklog> misiklogs = context.watch<MisiklistProvider>().misiklogs;
+    int len = misiklogs.length;
     return Container(
       alignment: Alignment.topCenter,
       padding: const EdgeInsets.only(left: 15, right: 15),
@@ -141,7 +128,7 @@ class _ScriptPageState extends State<ScriptPage> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  misiklogButton(context, misiklogList[index]),
+                  misiklogButton(context, misiklogs[index]),
                   const SizedBox(width: 20),
                   Container(width: 171)
                 ],
@@ -150,9 +137,9 @@ class _ScriptPageState extends State<ScriptPage> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                misiklogButton(context, misiklogList[index]),
+                misiklogButton(context, misiklogs[index]),
                 const SizedBox(width: 20),
-                misiklogButton(context, misiklogList[index + 1])
+                misiklogButton(context, misiklogs[index + 1])
               ],
             );
           }

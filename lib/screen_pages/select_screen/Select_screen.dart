@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/screen_pages/misiklog_page/misiklog_write_page.dart';
 import 'package:proto_just_design/screen_pages/review_page/review_page.dart';
-import 'package:proto_just_design/screen_pages/review_page/review_restaurant_select_page.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_dialog.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/screen_pages/guide_page/guide_page.dart';
-import 'my_page/my_page.dart';
-import 'misiklog_page/misiklog_page.dart';
+import '../my_page/my_page.dart';
+import '../misiklist_page/misiklist_page.dart';
 
 class SelectScreen extends StatefulWidget {
   const SelectScreen({super.key});
@@ -79,62 +78,46 @@ class _SelectScreenState extends State<SelectScreen> {
             type: BottomNavigationBarType.fixed,
           ),
         ),
-        floatingActionButton: _selectedIndex == 1
+        floatingActionButton: ((_selectedIndex == 1) || (_selectedIndex == 2))
             ? SizedBox(
                 width: 70,
                 height: 70,
                 child: FloatingActionButton(
                   onPressed: () async {
                     if (await checkLogin(context)) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MisiklogWritePage(),
-                          ));
+                      if (_selectedIndex == 1) {
+                        if (mounted) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => const AddMisikList());
+                        }
+                      } else if (_selectedIndex == 2) {}
                     }
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(90)),
                   backgroundColor: ColorStyles.red,
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.speaker_notes, color: Colors.white, size: 25),
-                      Text(
-                        '로그 쓰기',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      )
-                    ],
-                  ),
+                  child: (_selectedIndex == 1)
+                      ? const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.speaker_notes,
+                                color: Colors.white, size: 25),
+                            Text(
+                              '리스트+',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        )
+                      : const Icon(Icons.create_outlined,
+                          color: Colors.white, size: 40),
                 ),
               )
-            : _selectedIndex == 2
-                ? SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: FloatingActionButton(
-                      onPressed: () async {
-                        if (await checkLogin(context)) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const ReviewRestaurantSelectPage(),
-                              ));
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(90)),
-                      backgroundColor: ColorStyles.red,
-                      child: Icon(Icons.create_outlined,
-                          color: Colors.white, size: 40),
-                    ),
-                  )
-                : null,
+            : null,
       ),
     );
   }

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/functions/default_function.dart';
@@ -92,7 +91,6 @@ class _LoginState extends State<Login> {
     }
   }
 
- 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

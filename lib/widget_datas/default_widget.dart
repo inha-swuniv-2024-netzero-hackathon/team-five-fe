@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/misiklog_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
-import 'package:proto_just_design/screen_pages/misiklog_page/misiklog_detail_page.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -208,7 +208,7 @@ Widget misiklogButton(BuildContext context, Misiklog misiklog) {
                         icon: Icon(
                           Icons.bookmark,
                           color: context
-                                  .watch<MisiklogPageData>()
+                                  .watch<MisiklistProvider>()
                                   .favMisiklogList
                                   .contains(misiklog.uuid)
                               ? ColorStyles.red

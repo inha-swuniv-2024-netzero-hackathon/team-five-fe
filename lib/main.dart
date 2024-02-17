@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:proto_just_design/screen_pages/Select_screen.dart';
+import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
+import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/my_page_provider.dart';
+import 'package:proto_just_design/providers/review_page_provier.dart';
+import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/screen_pages/select_screen/Select_screen.dart';
 import 'package:proto_just_design/splash.dart';
 import 'package:provider/provider.dart';
-import 'providers/custom_provider.dart';
 
 String rootURL = 'https://api.misiklog.com/';
 void main() {
@@ -27,9 +32,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserData()),
-        ChangeNotifierProvider(create: (context) => GuidePageData()),
-        ChangeNotifierProvider(create: (context) => MyPageData()),
-        ChangeNotifierProvider(create: (context) => MisiklogPageData())
+        ChangeNotifierProvider(create: (context) => GuidePageProvider()),
+        ChangeNotifierProvider(create: (context) => MyPageProvider()),
+        ChangeNotifierProvider(create: (context) => MisiklistProvider()),
+        ChangeNotifierProvider(create: (context) => MisiklistDetailProvider()),
+        ChangeNotifierProvider(create: (context) => ReviewPageData()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

@@ -18,7 +18,7 @@ class _MisiklogWritePageState extends State<MisiklogWritePage> {
           Container(
             width: 60,
             height: 60,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage('assets/images/location_images/1.jpg'))),
           ),

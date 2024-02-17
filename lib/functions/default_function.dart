@@ -1,9 +1,10 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
+import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/login_page/login_page.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -45,10 +46,10 @@ Future setRestaurantBookmark(
 }
 
 void changeRestaurantBookmark(BuildContext context, String uuid) {
-  if (context.read<GuidePageData>().favRestaurantList.contains(uuid) == false) {
-    context.read<GuidePageData>().addFavRestaurant(uuid);
+  if (context.read<GuidePageProvider>().favRestaurantList.contains(uuid) == false) {
+    context.read<GuidePageProvider>().addFavRestaurant(uuid);
   } else {
-    context.read<GuidePageData>().removeFavRestaurant(uuid);
+    context.read<GuidePageProvider>().removeFavRestaurant(uuid);
   }
 }
 
@@ -56,7 +57,7 @@ void setMisiklogBookmark(BuildContext context, String uuid) async {
   changeMisiklogBookmark(context, uuid);
   final url = Uri.parse('${rootURL}v1/misiklogu/$uuid/bookmark/');
   final response = await http.post(url, headers: {
-    "Authorization": "Bearer ${context.read<UserData>().userToken}"
+    "Authorization": "Bearer ${context.read<UserData>().token}"
   });
 
   if (response.statusCode != 200) {
@@ -66,11 +67,11 @@ void setMisiklogBookmark(BuildContext context, String uuid) async {
 }
 
 changeMisiklogBookmark(BuildContext context, String uuid) {
-  if (context.read<MisiklogPageData>().favMisiklogList.contains(uuid) ==
+  if (context.read<MisiklistProvider>().favMisiklogList.contains(uuid) ==
       false) {
-    context.read<MisiklogPageData>().addFavMisiklog(uuid);
+    context.read<MisiklistProvider>().addFavMisiklog(uuid);
   } else {
-    context.read<MisiklogPageData>().removeFavMisiklog(uuid);
+    context.read<MisiklistProvider>().removeFavMisiklog(uuid);
   }
 }
 

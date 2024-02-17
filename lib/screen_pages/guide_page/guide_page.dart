@@ -8,15 +8,16 @@ import 'package:http/http.dart' as http;
 import 'package:proto_just_design/class/restaurant_class.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/functions/default_function.dart';
+import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/guide_page/change_area.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/widget_datas/default_widget.dart';
 import 'package:proto_just_design/datas/default_location.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/screen_pages/restaurant_pages/restaurant_page.dart';
+import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page.dart';
 import 'package:provider/provider.dart';
 
 class GuidePage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _GuidePageState extends State<GuidePage> {
 
   makeMarker() {
     if (mounted) {
-      final focusArea = context.read<GuidePageData>().focusArea;
+      final focusArea = context.read<GuidePageProvider>().focusArea;
 
       markers.add(Marker(
           markerId: MarkerId('${focusArea.bigArea} ${focusArea.smallArea}'),
@@ -73,12 +74,12 @@ class _GuidePageState extends State<GuidePage> {
         restaurantList.add(restaurant);
         if (restaurant.isBookmarked == true) {
           if (mounted) {
-            context.read<GuidePageData>().addFavRestaurant(restaurant.uuid);
+            context.read<GuidePageProvider>().addFavRestaurant(restaurant.uuid);
           }
         }
       }
       if (mounted) {
-        context.read<GuidePageData>().changeData(restaurantList);
+        context.read<GuidePageProvider>().changeData(restaurantList);
         setState(() {});
       }
     } else if (response.statusCode == 401) {
@@ -132,7 +133,7 @@ class _GuidePageState extends State<GuidePage> {
   }
 
   void setToken() {
-    final getToken = context.read<UserData>().userToken;
+    final getToken = context.read<UserData>().token;
     if (getToken != null) {
       token = getToken;
     }
@@ -155,15 +156,15 @@ class _GuidePageState extends State<GuidePage> {
   void initState() {
     setToken();
     makeMarker();
-    areaNum = context.read<GuidePageData>().focusArea.areaNum;
+    areaNum = context.read<GuidePageProvider>().focusArea.areaNum;
     listViewController.addListener(() {
       _scrollListener();
     });
 
-    if (context.read<GuidePageData>().guidePageRestaurants.isEmpty) {
+    if (context.read<GuidePageProvider>().guidePageRestaurants.isEmpty) {
       getRestaurantList().then((value) => setRestaurantMarker());
     } else {
-      restaurantList = context.read<GuidePageData>().guidePageRestaurants;
+      restaurantList = context.read<GuidePageProvider>().guidePageRestaurants;
       setRestaurantMarker();
       if (mounted) {
         setState(() {});
@@ -192,7 +193,7 @@ class _GuidePageState extends State<GuidePage> {
 
   Widget backgroundMap(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final guidePageData = context.read<GuidePageData>();
+    final guidePageData = context.read<GuidePageProvider>();
     return SizedBox(
         height: screenHeight * 0.85,
         child: GoogleMap(
@@ -396,7 +397,7 @@ class _GuidePageState extends State<GuidePage> {
                           children: [
                             Text(
                                 context
-                                    .watch<GuidePageData>()
+                                    .watch<GuidePageProvider>()
                                     .focusArea
                                     .bigArea,
                                 style: const TextStyle(
@@ -407,7 +408,7 @@ class _GuidePageState extends State<GuidePage> {
                             const Gap(8),
                             Text(
                                 context
-                                    .watch<GuidePageData>()
+                                    .watch<GuidePageProvider>()
                                     .focusArea
                                     .smallArea,
                                 style: const TextStyle(
@@ -422,19 +423,19 @@ class _GuidePageState extends State<GuidePage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      if (context.read<GuidePageData>().sorting ==
+                      if (context.read<GuidePageProvider>().sorting ==
                           RestaurantSortStandard.sortRating) {
                         sortByDistance();
-                        context.read<GuidePageData>().changeSortingStandard(
+                        context.read<GuidePageProvider>().changeSortingStandard(
                             RestaurantSortStandard.sortDistance);
-                      } else if (context.read<GuidePageData>().sorting ==
+                      } else if (context.read<GuidePageProvider>().sorting ==
                           RestaurantSortStandard.sortDistance) {
                         sortByReviews();
-                        context.read<GuidePageData>().changeSortingStandard(
+                        context.read<GuidePageProvider>().changeSortingStandard(
                             RestaurantSortStandard.sortReview);
                       } else {
                         sortByRating();
-                        context.read<GuidePageData>().changeSortingStandard(
+                        context.read<GuidePageProvider>().changeSortingStandard(
                             RestaurantSortStandard.sortRating);
                       }
                     },
@@ -443,10 +444,10 @@ class _GuidePageState extends State<GuidePage> {
                         const Gap(10),
                         Row(
                           children: [
-                            Icon(context.read<GuidePageData>().sorting.icon),
+                            Icon(context.read<GuidePageProvider>().sorting.icon),
                             const Gap(3),
                             Text(
-                              context.read<GuidePageData>().sorting.text,
+                              context.read<GuidePageProvider>().sorting.text,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 color: ColorStyles.black,
@@ -591,7 +592,7 @@ class _GuidePageState extends State<GuidePage> {
                             }
                           },
                           icon: (context
-                                      .watch<GuidePageData>()
+                                      .watch<GuidePageProvider>()
                                       .favRestaurantList
                                       .contains(restaurant.uuid) ==
                                   false)

@@ -5,12 +5,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/detail_restaurant_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
+import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/review_page/review_write_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/widget_datas/default_widget.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:provider/provider.dart';
 import 'restaurant_page_detail_state.dart';
@@ -40,7 +41,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
   @override
   void initState() {
     super.initState();
-    token = context.read<UserData>().userToken;
+    token = context.read<UserData>().token;
     getRestaurantData().then((value) => setRestaurantData());
   }
 
@@ -129,22 +130,23 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   void changeBookmark(String uuid) {
-    if (context.read<GuidePageData>().favRestaurantList.contains(uuid) ==
+    if (context.read<GuidePageProvider>().favRestaurantList.contains(uuid) ==
         false) {
       if (mounted) {
-        context.read<GuidePageData>().addFavRestaurant(uuid);
+        context.read<GuidePageProvider>().addFavRestaurant(uuid);
         setState(() {});
       }
     } else {
       if (mounted) {
-        context.read<GuidePageData>().removeFavRestaurant(uuid);
+        context.read<GuidePageProvider>().removeFavRestaurant(uuid);
         setState(() {});
       }
     }
   }
 
   void checkDay() {
-    int now = DateTime.now().weekday;
+    int now = DateTime.now().weekday - 1;
+    now = 1;
     List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     String day = weekdays[now];
     opening =
@@ -401,9 +403,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
         return restaurantPageMapState(
             context,
             restaurantData?.latitude ??
-                context.read<GuidePageData>().focusArea.latitude,
+                context.read<GuidePageProvider>().focusArea.latitude,
             restaurantData?.longitude ??
-                context.read<GuidePageData>().focusArea.longitude,
+                context.read<GuidePageProvider>().focusArea.longitude,
             markers);
       default:
         return restaurantPageMenuState(context);
@@ -434,7 +436,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
             )
           ],
         ),
-        child: context.read<GuidePageData>().favRestaurantList.contains(uuid)
+        child: context.read<GuidePageProvider>().favRestaurantList.contains(uuid)
             ? const Icon(
                 Icons.bookmark,
                 color: ColorStyles.red,

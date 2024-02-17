@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
+import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/datas/default_location.dart';
@@ -64,7 +65,7 @@ class _ChangeAreaState extends State<ChangeArea> {
             Row(
               children: [
                 Text(
-                    bigArea ?? context.watch<GuidePageData>().focusArea.bigArea,
+                    bigArea ?? context.watch<GuidePageProvider>().focusArea.bigArea,
                     style: const TextStyle(
                         color: ColorStyles.black,
                         fontSize: 25,
@@ -99,8 +100,8 @@ class _ChangeAreaState extends State<ChangeArea> {
                     }
                   }
                   if (mounted) {
-                    context.read<GuidePageData>().changeArea(area);
-                    context.read<GuidePageData>().changeData([]);
+                    context.read<GuidePageProvider>().changeArea(area);
+                    context.read<GuidePageProvider>().changeData([]);
                     Navigator.pushNamed(context, '/Select_Screen');
                   }
                 },
@@ -409,9 +410,9 @@ class _ChangeAreaState extends State<ChangeArea> {
                 onPressed: () {
                   if (selectedArea != null) {
                     context
-                        .read<GuidePageData>()
+                        .read<GuidePageProvider>()
                         .changeArea(selectedArea ?? LocationList.area1);
-                    context.read<GuidePageData>().changeData([]);
+                    context.read<GuidePageProvider>().changeData([]);
                     Navigator.pushNamed(context, '/Select_Screen');
                   }
                 },

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {

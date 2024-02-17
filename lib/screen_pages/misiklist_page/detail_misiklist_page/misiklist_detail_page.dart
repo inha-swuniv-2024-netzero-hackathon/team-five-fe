@@ -6,7 +6,10 @@ import 'package:proto_just_design/class/misiklog_class.dart';
 import 'package:proto_just_design/class/restaurant_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/providers/custom_provider.dart';
+import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_bottomsheet.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/widget_datas/default_widget.dart';
@@ -26,10 +29,8 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
   late Misiklog misiklog = widget.misiklog;
   String? token;
   MisiklogDetail? misiklogdata;
-  bool isDetailText = false;
-  bool? isGood;
 
-  getMisiklogPageData() async {
+  Future<void> getMisiklogPageData() async {
     // final url = Uri.parse('${rootURL}v1/misiklogu/${misiklog.uuid}');
     final url = Uri.parse(
         '${rootURL}v1/misiklogu/7776a142-359f-4cc3-bb7a-41d10f889117');
@@ -40,13 +41,16 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
       misiklogdata = MisiklogDetail(responseData);
+      context
+          .read<MisiklistDetailProvider>()
+          .setdetailList(misiklogdata!.restaurantList);
       if (mounted) {
         setState(() {});
       }
     }
   }
 
-  setLike() async {
+  Future<void> setLike() async {
     final url = Uri.parse(
         '${rootURL}v1/misiklogu/7776a142-359f-4cc3-bb7a-41d10f889117/like/');
     // final url = Uri.parse(
@@ -55,19 +59,11 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
         ? await http.get(url)
         : await http.get(url, headers: {"Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
-      String responseData =
-          json.decode(utf8.decode(response.bodyBytes))['status'];
-      if (responseData == '좋아요 설정됨') {
-        isGood = true;
-      } else if (responseData == '좋아요 해제됨') {
-        isGood = null;
-      } else {
-        print(responseData);
-      }
+      context.read<MisiklistDetailProvider>().setLike();
     }
   }
 
-  setdislike() async {
+  Future<void> setdislike() async {
     final url = Uri.parse(
         '${rootURL}v1/misiklogu/7776a142-359f-4cc3-bb7a-41d10f889117/dislike/');
     // final url = Uri.parse(
@@ -76,20 +72,12 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
         ? await http.get(url)
         : await http.get(url, headers: {"Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
-      String responseData =
-          json.decode(utf8.decode(response.bodyBytes))['status'];
-      if (responseData == '싫어요 설정됨') {
-        isGood = false;
-      } else if (responseData == '싫어요 해제됨') {
-        isGood = null;
-      } else {
-        print(responseData);
-      }
+      context.read<MisiklistDetailProvider>().setDislike();
     }
   }
 
   void setToken() {
-    final getToken = context.read<UserData>().userToken;
+    final getToken = context.read<UserData>().token;
     if (getToken != null) {
       token = getToken;
     }
@@ -228,7 +216,7 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             '큰 제목',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -240,7 +228,11 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                           ),
                           Text(
                             '글들\n a\n b\n c',
-                            maxLines: isDetailText ? 5 : 1,
+                            maxLines: context
+                                    .read<MisiklistDetailProvider>()
+                                    .isDetailText
+                                ? 5
+                                : 1,
                             style: const TextStyle(
                               color: ColorStyles.white,
                               fontSize: 13,
@@ -254,8 +246,7 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                   ),
                   TextButton(
                       onPressed: () {
-                        isDetailText = !isDetailText;
-                        print(isDetailText);
+                        context.read<MisiklistDetailProvider>().setDetailText();
                         setState(() {});
                       },
                       child: Stack(
@@ -288,7 +279,12 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
       children: [
         GestureDetector(
           onTap: () {
-            print('object');
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return const SortBottomSheet();
+              },
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -301,12 +297,12 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                 borderRadius: BorderRadius.circular(90),
                 color: ColorStyles.white),
             width: 95,
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.thumb_up, color: ColorStyles.red, size: 20),
-                Gap(5),
-                Text('추천순')
+                context.watch<MisiklistProvider>().detailIcon,
+                const Gap(5),
+                Text(context.watch<MisiklistProvider>().detailSorting)
               ],
             ),
           ),
@@ -315,13 +311,16 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
           margin: const EdgeInsets.symmetric(vertical: 15),
           child: SizedBox(
             width: MediaQuery.sizeOf(context).width - 30,
-            height: misiklogdata!.restaurantList.length * 120 + 10,
+            height: context.read<MisiklistDetailProvider>().detailList.length *
+                    120 +
+                10,
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: misiklogdata!.restaurantList.length + 3,
+              itemCount:
+                  context.read<MisiklistDetailProvider>().detailList.length,
               itemBuilder: (context, index) {
-                return misiklogRestaurantButton(
-                    context, misiklogdata!.restaurantList[0]);
+                return misiklogRestaurantButton(context,
+                    context.read<MisiklistDetailProvider>().detailList[index]);
               },
             ),
           ),
@@ -514,7 +513,7 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
   }
 
   Widget misiklogDetailPageLowerButtons(BuildContext context) {
-    final misiklogList = context.read<MisiklogPageData>().misiklogPageList;
+    final misiklogList = context.watch<MisiklistProvider>().misiklogs;
     final preMisiklogData = misiklogList.indexOf(misiklog) > 0
         ? misiklogList[misiklogList.indexOf(misiklog) - 1]
         : null;
@@ -618,10 +617,8 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                 onTap: () async {
                   final check = await checkLogin(context);
                   if (check) {
-                    if (isGood == true) {
-                      isGood = null;
-                    } else {
-                      isGood = true;
+                    if (mounted) {
+                      context.read<MisiklistDetailProvider>().setLike();
                     }
                     setState(() {});
                   }
@@ -630,10 +627,11 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      (isGood == true)
+                      (context.watch<MisiklistDetailProvider>().isGood == true)
                           ? Icons.thumb_up
                           : Icons.thumb_up_outlined,
-                      color: (isGood == true)
+                      color: (context.watch<MisiklistDetailProvider>().isGood ==
+                              true)
                           ? ColorStyles.red
                           : ColorStyles.black,
                     ),
@@ -641,7 +639,10 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                     Text(
                       '추천',
                       style: TextStyle(
-                          color: (isGood == true)
+                          color: (context
+                                      .watch<MisiklistDetailProvider>()
+                                      .isGood ==
+                                  true)
                               ? ColorStyles.red
                               : ColorStyles.black),
                     )
@@ -654,11 +655,7 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                 onTap: () async {
                   final check = await checkLogin(context);
                   if (check) {
-                    if (isGood == false) {
-                      isGood = null;
-                    } else {
-                      isGood = false;
-                    }
+                    context.read<MisiklistDetailProvider>().setDislike();
                     setState(() {});
                   }
                 },
@@ -666,10 +663,11 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      (isGood == true)
+                      (context.watch<MisiklistDetailProvider>().isGood == true)
                           ? Icons.thumb_down
                           : Icons.thumb_down_outlined,
-                      color: (isGood == false)
+                      color: (context.watch<MisiklistDetailProvider>().isGood ==
+                              false)
                           ? ColorStyles.red
                           : ColorStyles.black,
                     ),
@@ -677,7 +675,10 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                     Text(
                       '비추천',
                       style: TextStyle(
-                          color: (isGood == false)
+                          color: (context
+                                      .watch<MisiklistDetailProvider>()
+                                      .isGood ==
+                                  false)
                               ? ColorStyles.red
                               : ColorStyles.black),
                     )
@@ -715,7 +716,7 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                     Icon(
                       Icons.bookmark,
                       color: (context
-                              .read<MisiklogPageData>()
+                              .watch<MisiklistProvider>()
                               .favMisiklogList
                               .contains(misiklog.uuid))
                           ? ColorStyles.red
@@ -726,7 +727,7 @@ class _MisiklogDetailPageState extends State<MisiklogDetailPage> {
                       '찜',
                       style: TextStyle(
                           color: (context
-                                  .read<MisiklogPageData>()
+                                  .watch<MisiklistProvider>()
                                   .favMisiklogList
                                   .contains(misiklog.uuid))
                               ? ColorStyles.red
