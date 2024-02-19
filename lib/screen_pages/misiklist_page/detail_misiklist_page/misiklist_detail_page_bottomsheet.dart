@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
@@ -70,10 +69,9 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
         context
             .read<MisiklistDetailProvider>()
             .setDetailMisiklistSort(name, icon);
-        Navigator.pop(context);
         context
             .read<MisiklistDetailProvider>()
-            .setdetailList(context.read<MisiklistDetailProvider>().detailList);
+            .setdetailList(context.read<MisiklistDetailProvider>().restaurantList);
         if (name == '거리순') {
           context.read<MisiklistDetailProvider>().sortDetailDistance(
               context.read<UserData>().latitude,
@@ -81,6 +79,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
         } else if (name == '추천순') {
           context.read<MisiklistDetailProvider>().sortDetailRating();
         }
+        Navigator.pop(context);
       },
       child: Container(
         width: double.infinity,
@@ -95,13 +94,13 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
               decoration: BoxDecoration(
                   border: Border.all(
                       color:
-                          (context.watch<MisiklistProvider>().detailSorting ==
+                          (context.watch<MisiklistDetailProvider>().sorting ==
                                   name)
                               ? ColorStyles.red
                               : ColorStyles.gray,
                       width: 2),
                   borderRadius: BorderRadius.circular(90)),
-              child: (context.watch<MisiklistProvider>().detailSorting == name)
+              child: (context.watch<MisiklistDetailProvider>().sorting == name)
                   ? Container(
                       width: 9,
                       height: 9,

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MisiklogWritePage extends StatefulWidget {
-  const MisiklogWritePage({super.key});
+class MisiklistWritePage extends StatefulWidget {
+  const MisiklistWritePage({super.key});
 
   @override
-  State<MisiklogWritePage> createState() => _MisiklogWritePageState();
+  State<MisiklistWritePage> createState() => _MisiklistWritePageState();
 }
 
-class _MisiklogWritePageState extends State<MisiklogWritePage> {
+class _MisiklistWritePageState extends State<MisiklistWritePage> {
   double bottomModalHeight = 500;
   double delayedHeight = 500;
   @override

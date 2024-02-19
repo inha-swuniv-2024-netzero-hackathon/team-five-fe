@@ -19,7 +19,7 @@ class _SelectScreenState extends State<SelectScreen> {
 
   final List<Widget> _widgetOptions = <Widget>[
     const GuidePage(),
-    const ScriptPage(),
+    const MisiklistPage(),
     const ReviewPage(),
     const MyPage()
   ];
@@ -59,7 +59,7 @@ class _SelectScreenState extends State<SelectScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.speaker_notes),
-                label: '미식로그',
+                label: '리스트',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.rate_review_outlined),

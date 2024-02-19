@@ -403,9 +403,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
         return restaurantPageMapState(
             context,
             restaurantData?.latitude ??
-                context.read<GuidePageProvider>().focusArea.latitude,
+                context.read<GuidePageProvider>().selectArea.latitude,
             restaurantData?.longitude ??
-                context.read<GuidePageProvider>().focusArea.longitude,
+                context.read<GuidePageProvider>().selectArea.longitude,
             markers);
       default:
         return restaurantPageMenuState(context);

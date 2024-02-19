@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -11,6 +9,7 @@ import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/guide_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/guide_page/change_area.dart';
+import 'package:proto_just_design/screen_pages/guide_page/guide_page_map.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -29,50 +28,41 @@ class GuidePage extends StatefulWidget {
 
 class _GuidePageState extends State<GuidePage> {
   ScrollController listViewController = ScrollController();
-  bool searchOpen = false;
   TextEditingController findControlloer = TextEditingController();
-  String? token;
-  String? next;
 
   bool withMap = false;
-  List<String> restaurantStarDetail = [];
-  LocationList area = LocationList.area1;
-  int areaNum = 1;
-  List<Restaurant> restaurantList = [];
-  Set<Marker> markers = <Marker>{};
+  // List<Restaurant> restaurantList = [];
 
   makeMarker() {
     if (mounted) {
-      final focusArea = context.read<GuidePageProvider>().focusArea;
-
-      markers.add(Marker(
-          markerId: MarkerId('${focusArea.bigArea} ${focusArea.smallArea}'),
+      final selectArea = context.read<GuidePageProvider>().selectArea;
+      Marker marker = (Marker(
+          markerId: MarkerId('${selectArea.bigArea} ${selectArea.smallArea}'),
           infoWindow:
-              InfoWindow(title: '${focusArea.bigArea}${focusArea.smallArea}'),
-          position: LatLng(focusArea.latitude, focusArea.longitude)));
-
-      setState(() {});
+              InfoWindow(title: '${selectArea.bigArea}${selectArea.smallArea}'),
+          position: LatLng(selectArea.latitude, selectArea.longitude)));
+      context.read<GuidePageProvider>().addMarker(marker);
     }
   }
 
-  Future<void> getRestaurantList() async {
+  Future<void> getRestaurantList(
+      String? token, String? next, LocationList area) async {
+    List<Restaurant> restaurantList = [];
     final url = Uri.parse(next ??
-        '${rootURL}v1/restaurants/restaurants/?area__id=$areaNum&ordering=restaurant_info__rating&page=1');
+        '${rootURL}v1/restaurants/restaurants/?area__id=${area.areaNum}&ordering=restaurant_info__rating&page=1');
     next = null;
     final response = (token == null)
         ? await http.get(url)
         : await http.get(url, headers: {"Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
-      print('suc');
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
       final resposeRestaurantList = responseData['results'];
       next = responseData['next'];
-      print(next);
       for (var restaurantData in resposeRestaurantList) {
         Restaurant restaurant = Restaurant(restaurantData);
         restaurantList.add(restaurant);
-        if (restaurant.isBookmarked == true) {
+        if (restaurant.isBookmarked) {
           if (mounted) {
             context.read<GuidePageProvider>().addFavRestaurant(restaurant.uuid);
           }
@@ -80,96 +70,51 @@ class _GuidePageState extends State<GuidePage> {
       }
       if (mounted) {
         context.read<GuidePageProvider>().changeData(restaurantList);
-        setState(() {});
       }
     } else if (response.statusCode == 401) {
       if (mounted) {
         // if (!context.read<UserData>().isLogin) {}
       }
     }
-    print(restaurantList.length);
   }
 
   void setRestaurantMarker() {
-    for (Restaurant restaurant in restaurantList) {
-      markers.add(Marker(
+    for (Restaurant restaurant
+        in context.read<GuidePageProvider>().restaurantList) {
+      Marker marker = (Marker(
           markerId: MarkerId(restaurant.name),
           infoWindow: InfoWindow(title: restaurant.name),
           position: LatLng(restaurant.latitude, restaurant.longitude)));
-    }
-  }
-
-  void sortByRating() {
-    restaurantList.sort((preRestaurant, postRestaurant) =>
-        postRestaurant.rating.compareTo(preRestaurant.rating));
-    if (mounted) {
-      setState(() {});
-      print('별점 정렬');
-    }
-  }
-
-  void sortByDistance() {
-    final userData = context.read<UserData>();
-    restaurantList.sort((preRestaurant, postRestaurant) => checkDistance(
-            userData.latitude,
-            userData.longitude,
-            preRestaurant.latitude,
-            preRestaurant.longitude)
-        .compareTo(checkDistance(userData.latitude, userData.longitude,
-            postRestaurant.latitude, postRestaurant.longitude)));
-    if (mounted) {
-      setState(() {});
-      print('거리 정렬');
-    }
-  }
-
-  void sortByReviews() {
-    restaurantList.sort((preRestaurant, postRestaurant) =>
-        postRestaurant.ratingCount.compareTo(preRestaurant.ratingCount));
-    if (mounted) {
-      setState(() {});
-      print('리뷰수 정렬');
-    }
-  }
-
-  void setToken() {
-    final getToken = context.read<UserData>().token;
-    if (getToken != null) {
-      token = getToken;
+      context.read<GuidePageProvider>().addMarker(marker);
     }
   }
 
   Future<void> _scrollListener() async {
-    // print(restaurantList.length);
     if ((listViewController.position.pixels ==
             listViewController.position.maxScrollExtent) &&
-        (next != null)) {
-      await getRestaurantList();
-      if (mounted) {
-        setState(() {});
-      }
+        (context.read<GuidePageProvider>().nextUrl != null)) {
+      await getRestaurantList(
+          context.read<UserData>().token,
+          context.watch<GuidePageProvider>().nextUrl,
+          context.watch<GuidePageProvider>().selectArea);
     }
     await Future.delayed(const Duration(seconds: 2));
   }
 
   @override
   void initState() {
-    setToken();
     makeMarker();
-    areaNum = context.read<GuidePageProvider>().focusArea.areaNum;
     listViewController.addListener(() {
       _scrollListener();
     });
 
     if (context.read<GuidePageProvider>().guidePageRestaurants.isEmpty) {
-      getRestaurantList().then((value) => setRestaurantMarker());
-    } else {
-      restaurantList = context.read<GuidePageProvider>().guidePageRestaurants;
-      setRestaurantMarker();
-      if (mounted) {
-        setState(() {});
-      }
+      getRestaurantList(
+          context.read<UserData>().token,
+          context.watch<GuidePageProvider>().nextUrl,
+          context.watch<GuidePageProvider>().selectArea);
     }
+    setRestaurantMarker();
 
     super.initState();
   }
@@ -181,7 +126,7 @@ class _GuidePageState extends State<GuidePage> {
       width: double.infinity,
       child: Stack(
         children: [
-          backgroundMap(context),
+          const GuidePageMap(),
           restaurantListModal(context),
           Column(
             children: [const Gap(30), upperButtons(context)],
@@ -191,28 +136,9 @@ class _GuidePageState extends State<GuidePage> {
     );
   }
 
-  Widget backgroundMap(BuildContext context) {
-    final screenHeight = MediaQuery.sizeOf(context).height;
-    final guidePageData = context.read<GuidePageProvider>();
-    return SizedBox(
-        height: screenHeight * 0.85,
-        child: GoogleMap(
-            scrollGesturesEnabled: true,
-            zoomGesturesEnabled: true,
-            markers: markers,
-            initialCameraPosition: CameraPosition(
-                target: LatLng(guidePageData.focusArea.latitude,
-                    guidePageData.focusArea.longitude),
-                zoom: 16),
-            //스크롤 우선권 부여 코드
-            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-              Factory<OneSequenceGestureRecognizer>(
-                  () => EagerGestureRecognizer())
-            },
-            mapType: MapType.normal));
-  }
-
   Widget upperButtons(BuildContext context) {
+    bool searchOpen = false;
+
     return Container(
       alignment: Alignment.topCenter,
       height: 50,
@@ -398,7 +324,7 @@ class _GuidePageState extends State<GuidePage> {
                             Text(
                                 context
                                     .watch<GuidePageProvider>()
-                                    .focusArea
+                                    .selectArea
                                     .bigArea,
                                 style: const TextStyle(
                                   color: ColorStyles.black,
@@ -409,7 +335,7 @@ class _GuidePageState extends State<GuidePage> {
                             Text(
                                 context
                                     .watch<GuidePageProvider>()
-                                    .focusArea
+                                    .selectArea
                                     .smallArea,
                                 style: const TextStyle(
                                   color: ColorStyles.black,
@@ -425,26 +351,25 @@ class _GuidePageState extends State<GuidePage> {
                     onPressed: () {
                       if (context.read<GuidePageProvider>().sorting ==
                           RestaurantSortStandard.sortRating) {
-                        sortByDistance();
-                        context.read<GuidePageProvider>().changeSortingStandard(
-                            RestaurantSortStandard.sortDistance);
+                        context.read<GuidePageProvider>().sortByDistance(
+                            context.read<UserData>().latitude,
+                            context.read<UserData>().longitude);
                       } else if (context.read<GuidePageProvider>().sorting ==
                           RestaurantSortStandard.sortDistance) {
-                        sortByReviews();
-                        context.read<GuidePageProvider>().changeSortingStandard(
-                            RestaurantSortStandard.sortReview);
+                        context.read<GuidePageProvider>().sortByReviews();
                       } else {
-                        sortByRating();
-                        context.read<GuidePageProvider>().changeSortingStandard(
-                            RestaurantSortStandard.sortRating);
+                        context.read<GuidePageProvider>().sortByRating();
                       }
+                      context.read<GuidePageProvider>().changeSortingStandard(
+                          RestaurantSortStandard.sortDistance);
                     },
                     child: Row(
                       children: [
                         const Gap(10),
                         Row(
                           children: [
-                            Icon(context.read<GuidePageProvider>().sorting.icon),
+                            Icon(
+                                context.read<GuidePageProvider>().sorting.icon),
                             const Gap(3),
                             Text(
                               context.read<GuidePageProvider>().sorting.text,
@@ -472,7 +397,9 @@ class _GuidePageState extends State<GuidePage> {
 
   Widget guidePageBody(BuildContext context, double height) {
     final screenWidth = MediaQuery.of(context).size.width;
-    int len = restaurantList.length;
+    List<Restaurant> restaurantList =
+        context.watch<GuidePageProvider>().restaurantList;
+    int len = context.watch<GuidePageProvider>().restaurantList.length;
     return Container(
         height: height,
         width: screenWidth,
@@ -512,6 +439,8 @@ class _GuidePageState extends State<GuidePage> {
   }
 
   Widget restaurantButton(BuildContext context, Restaurant restaurant) {
+    List<String> restaurantStarDetail = [];
+
     return Container(
       width: 171,
       decoration: const BoxDecoration(
@@ -585,10 +514,21 @@ class _GuidePageState extends State<GuidePage> {
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
                           onPressed: () async {
-                            final check = await checkLogin(context);
-                            if (check) {
-                              setRestaurantBookmark(
-                                  context, token!, restaurant.uuid);
+                            if (await checkLogin(context)) {
+                              if (mounted) {
+                                {
+                                  if (await setRestaurantBookmark(
+                                          context,
+                                          context.read<UserData>().token!,
+                                          restaurant.uuid) !=
+                                      200) {
+                                    if (mounted) {
+                                      changeRestaurantBookmark(
+                                          context, restaurant.uuid);
+                                    }
+                                  }
+                                }
+                              }
                             }
                           },
                           icon: (context

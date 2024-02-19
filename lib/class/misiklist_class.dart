@@ -2,6 +2,7 @@ class Misiklist {
   late String uuid;
   late String title;
   late String username;
+  late String thumbnail;
   late String profileImage;
   late bool isBookmarked;
   late List<dynamic> restaurantList;
@@ -12,8 +13,8 @@ class Misiklist {
     username = createdBy['username'];
     profileImage = createdBy['profile_image'] ??
         "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
-    // thumbnail = misiklogData["thumbnail"] ??
-    //     "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
+    thumbnail = data["thumbnail"] ??
+        "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
     isBookmarked = data['is_bookmarked'];
     restaurantList = data['restaurant_list'];
   }

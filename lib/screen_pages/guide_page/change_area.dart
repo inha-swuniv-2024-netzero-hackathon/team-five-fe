@@ -65,7 +65,7 @@ class _ChangeAreaState extends State<ChangeArea> {
             Row(
               children: [
                 Text(
-                    bigArea ?? context.watch<GuidePageProvider>().focusArea.bigArea,
+                    bigArea ?? context.watch<GuidePageProvider>().selectArea.bigArea,
                     style: const TextStyle(
                         color: ColorStyles.black,
                         fontSize: 25,

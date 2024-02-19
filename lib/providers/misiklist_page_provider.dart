@@ -1,42 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/detail_misiklog_class.dart';
-import 'package:proto_just_design/class/misiklog_class.dart';
-import 'package:proto_just_design/widget_datas/default_color.dart';
+import 'package:proto_just_design/class/detail_misiklist_class.dart';
+import 'package:proto_just_design/class/misiklist_class.dart';
 
 class MisiklistProvider extends ChangeNotifier {
-  List<Misiklog> misiklogs = [];
-  List<String> favMisiklogList = [];
-  String detailSorting = '추천순';
-  Icon detailIcon = const Icon(
-    Icons.thumb_up,
-    color: ColorStyles.red,
-    size: 20,
-  );
-  MisiklogDetail? misiklogdata;
+  List<Misiklist> misiklists = [];
+  List<String> favMisiklists = [];
 
-  changeData(List<Misiklog> misiklistList) {
-    misiklogs = misiklistList;
+  MisikListDetail? misiklistdata;
+
+  changeData(List<Misiklist> misiklistList) {
+    misiklists = misiklistList;
     notifyListeners();
   }
 
-  addFavMisiklog(String uuid) {
-    if (favMisiklogList.contains(uuid)) {
+  addFavMisiklist(String uuid) {
+    if (favMisiklists.contains(uuid)) {
     } else {
-      favMisiklogList.add(uuid);
+      favMisiklists.add(uuid);
     }
 
     notifyListeners();
   }
 
-  removeFavMisiklog(String uuid) {
-    if (favMisiklogList.contains(uuid)) {
-      favMisiklogList.remove(uuid);
+  removeFavMisiklist(String uuid) {
+    if (favMisiklists.contains(uuid)) {
+      favMisiklists.remove(uuid);
     }
     notifyListeners();
   }
 
-  clearFavMisiklog() {
-    favMisiklogList.clear();
+  clearFavMisiklist() {
+    favMisiklists.clear();
     notifyListeners();
   }
 }

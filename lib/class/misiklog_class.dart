@@ -10,8 +10,7 @@ class Misiklog {
   Misiklog(Map<String, dynamic> data) {
     uuid = data['uuid'];
     title = data['title'];
-    Map<String, dynamic> createdBy =
-        data['created_by'] ?? {'username': 'name'};
+    Map<String, dynamic> createdBy = data['created_by'] ?? {'username': 'name'};
     username = createdBy['username'];
     profileImage = createdBy['profile_image'] ??
         "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";

@@ -33,48 +33,40 @@ Future<bool> checkLogin(BuildContext context) async {
   return true;
 }
 
-Future setRestaurantBookmark(
+Future<int> setRestaurantBookmark(
     BuildContext context, String token, String uuid) async {
   changeRestaurantBookmark(context, uuid);
   final url = Uri.parse('${rootURL}v1/restaurants/restaurants/$uuid/bookmark/');
   final response =
       await http.post(url, headers: {"Authorization": 'Bearer $token'});
-
-  if (response.statusCode != 200) {
-    changeRestaurantBookmark(context, uuid);
-  }
+  return response.statusCode;
 }
 
 void changeRestaurantBookmark(BuildContext context, String uuid) {
-  if (context.read<GuidePageProvider>().favRestaurantList.contains(uuid) == false) {
+  if (context.read<GuidePageProvider>().favRestaurantList.contains(uuid) ==
+      false) {
     context.read<GuidePageProvider>().addFavRestaurant(uuid);
   } else {
     context.read<GuidePageProvider>().removeFavRestaurant(uuid);
   }
 }
 
-void setMisiklogBookmark(BuildContext context, String uuid) async {
-  changeMisiklogBookmark(context, uuid);
-  final url = Uri.parse('${rootURL}v1/misiklogu/$uuid/bookmark/');
-  final response = await http.post(url, headers: {
-    "Authorization": "Bearer ${context.read<UserData>().token}"
-  });
-
-  if (response.statusCode != 200) {
-    changeMisiklogBookmark(context, uuid);
-  }
-  print(response.statusCode);
+Future<int> setMisiklistBookmark(BuildContext context, String uuid) async {
+  changeMisiklistBookmark(context, uuid);
+  final url = Uri.parse('${rootURL}v1/misiklist/$uuid/bookmark/');
+  final response = await http.post(url,
+      headers: {"Authorization": "Bearer ${context.read<UserData>().token}"});
+  return response.statusCode;
 }
 
-changeMisiklogBookmark(BuildContext context, String uuid) {
-  if (context.read<MisiklistProvider>().favMisiklogList.contains(uuid) ==
-      false) {
-    context.read<MisiklistProvider>().addFavMisiklog(uuid);
+changeMisiklistBookmark(BuildContext context, String uuid) {
+  if (context.read<MisiklistProvider>().favMisiklists.contains(uuid) == false) {
+    context.read<MisiklistProvider>().addFavMisiklist(uuid);
   } else {
-    context.read<MisiklistProvider>().removeFavMisiklog(uuid);
+    context.read<MisiklistProvider>().removeFavMisiklist(uuid);
   }
 }
 
-num checkDistance(nowLat, nowLon, lat, lon) {
+num checkDistance(double nowLat, double nowLon, double lat, double lon) {
   return pow((nowLat - lat), 2) + pow((nowLon - lon), 2);
 }

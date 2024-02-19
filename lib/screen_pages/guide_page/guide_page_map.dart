@@ -6,16 +6,13 @@ import 'package:proto_just_design/providers/guide_page_provider.dart';
 import 'package:provider/provider.dart';
 
 class GuidePageMap extends StatefulWidget {
-  final Set<Marker> marker;
-  const GuidePageMap({Key? key, required this.marker}) : super(key: key);
+  const GuidePageMap({Key? key}) : super(key: key);
 
   @override
   State<GuidePageMap> createState() => _GuidePageMapState();
 }
 
 class _GuidePageMapState extends State<GuidePageMap> {
-  late Set<Marker> markers = widget.marker;
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
@@ -25,10 +22,10 @@ class _GuidePageMapState extends State<GuidePageMap> {
         child: GoogleMap(
             scrollGesturesEnabled: true,
             zoomGesturesEnabled: true,
-            markers: markers,
+            markers: context.watch<GuidePageProvider>().marker,
             initialCameraPosition: CameraPosition(
-                target: LatLng(guidePageData.focusArea.latitude,
-                    guidePageData.focusArea.longitude),
+                target: LatLng(guidePageData.selectArea.latitude,
+                    guidePageData.selectArea.longitude),
                 zoom: 16),
             //스크롤 우선권 부여 코드
             gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{

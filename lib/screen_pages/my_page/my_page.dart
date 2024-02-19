@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:proto_just_design/class/misiklog_class.dart';
+import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/class/restaurant_review_class.dart';
 import 'package:proto_just_design/providers/guide_page_provider.dart';
 import 'package:proto_just_design/providers/misiklist_page_provider.dart';
@@ -24,7 +24,7 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   List myReview = [];
-  List myMisiklog = [];
+  List myMisiklist = [];
   String? token;
 
   logout() async {
@@ -32,24 +32,28 @@ class _MyPageState extends State<MyPage> {
     if (mounted) {
       clearFavData();
     }
-    if (await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Login(),
-            )) ==
+    if ((mounted
+            ? await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Login(),
+                ))
+            : true) ==
         false) {
-      Navigator.pop(context);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const SelectScreen()));
+      if (mounted) {
+        Navigator.pop(context);
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const SelectScreen()));
+      }
     }
   }
 
   clearFavData() {
     context.read<GuidePageProvider>().clearFavRestaurant();
-    context.read<MisiklistProvider>().clearFavMisiklog();
+    context.read<MisiklistProvider>().clearFavMisiklist();
   }
 
-  getMyReviewData() async {
+  getReviewData() async {
     final url = Uri.parse('${rootURL}v1/reviews/my/');
     final response =
         await http.get(url, headers: {"Authorization": "Bearer $token"});
@@ -68,15 +72,15 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  getMyMisiklogData() async {
-    final url = Uri.parse('${rootURL}v1/misiklogu/my/');
+  getMisiklists() async {
+    final url = Uri.parse('${rootURL}v1/misiklist/my/');
     final response =
         await http.get(url, headers: {"Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
       List<dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
-      final misiklogs = responseData;
-      for (final misiklog in misiklogs) {
-        myMisiklog.add(Misiklog(misiklog));
+      final misiklists = responseData;
+      for (final misiklist in misiklists) {
+        myMisiklist.add(Misiklist(misiklist));
       }
     }
   }
@@ -92,7 +96,7 @@ class _MyPageState extends State<MyPage> {
   void initState() {
     setToken();
     if (context.read<MyPageProvider>().myPageReviews.isEmpty) {
-      getMyReviewData();
+      getReviewData();
     } else {
       if (mounted) {
         myReview = context.read<MyPageProvider>().myPageReviews;
