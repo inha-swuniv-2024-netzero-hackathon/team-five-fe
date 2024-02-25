@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/screen_pages/review_page/review_page.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_dialog.dart';
+import 'package:proto_just_design/screen_pages/review_page/review_write/review_restaurant_select_page.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/screen_pages/guide_page/guide_page.dart';
 import '../my_page/my_page.dart';
@@ -91,7 +92,16 @@ class _SelectScreenState extends State<SelectScreen> {
                               context: context,
                               builder: (context) => const AddMisikList());
                         }
-                      } else if (_selectedIndex == 2) {}
+                      } else if (_selectedIndex == 2) {
+                        if (mounted) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ReviewRestaurantSelectPage(),
+                              ));
+                        }
+                      }
                     }
                   },
                   shape: RoundedRectangleBorder(

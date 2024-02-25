@@ -67,6 +67,10 @@ changeMisiklistBookmark(BuildContext context, String uuid) {
   }
 }
 
-num checkDistance(double nowLat, double nowLon, double lat, double lon) {
-  return pow((nowLat - lat), 2) + pow((nowLon - lon), 2);
+num checkDistance(double lat1, double lon1, double lat2, double lon2) {
+  double p = pi / 180;
+  return 12742 *
+      asin(sqrt(0.5 -
+          cos((lat1 - lat2) * p) / 2 +
+          cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2));
 }

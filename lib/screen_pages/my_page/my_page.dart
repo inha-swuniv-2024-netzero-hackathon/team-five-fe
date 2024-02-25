@@ -66,9 +66,6 @@ class _MyPageState extends State<MyPage> {
         context.read<MyPageProvider>().changeMyReviewData(myReview);
         setState(() {});
       }
-      // print(responseData);
-    } else {
-      print(response.statusCode);
     }
   }
 
@@ -261,9 +258,7 @@ class _MyPageState extends State<MyPage> {
                           Expanded(
                               child: TextButton(
                                   style: ButtonStyles.transparenBtuttonStyle,
-                                  onPressed: () {
-                                    print('찜');
-                                  },
+                                  onPressed: () {},
                                   child: Container())),
                         ],
                       ),
@@ -430,7 +425,7 @@ class _MyPageState extends State<MyPage> {
               Icon(Icons.drive_file_rename_outline_outlined, size: 20),
               SizedBox(width: 5),
               Text(
-                '내 로그',
+                '내 리스트',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: ColorStyles.black,

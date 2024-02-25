@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:proto_just_design/widget_datas/default_color.dart';
 
-enum RestaurantSortStandard {
-  sortDefault(Icons.star_border, '기본정렬'),
-  sortRating(Icons.star, '별점순'),
-  sortDistance(Icons.location_on_sharp, '거리순'),
-  sortReview(Icons.text_snippet, '리뷰갯수순');
+enum SortState {
+  sortRating(Icon(Icons.star, color: ColorStyles.yellow), '별점순'),
+  sortThumb(Icon(Icons.thumb_up, color: ColorStyles.red, size: 20), '추천순'),
+  sortDistance(Icon(Icons.pin_drop_rounded, color: ColorStyles.green), '거리순'),
+  sortRecent(Icon(Icons.update, color: ColorStyles.blue), '최근순'),
+  sortCost(Icon(Icons.sell, color: ColorStyles.red), '가격순');
 
-  final IconData icon;
-  final String text;
-  const RestaurantSortStandard(this.icon, this.text);
+  final Icon icon;
+  final String name;
+  const SortState(this.icon, this.name);
 }
 
 enum MisiklogSortStandard {

@@ -9,16 +9,20 @@ class GuidePageProvider extends ChangeNotifier {
   List<Restaurant> guidePageRestaurants = [];
   LocationList selectArea = LocationList.area1;
   Set<String> favRestaurantList = {};
-  RestaurantSortStandard sorting = RestaurantSortStandard.sortDefault;
+  SortState sorting = SortState.sortRating;
   String? nextUrl;
-  Set<Marker> marker = {};
-  List<Restaurant> restaurantList = [];
-  changeData(List<Restaurant> restaurants) {
+  Set<Marker> markers = {};
+  String bigArea = LocationList.area1.bigArea;
+  List<LocationList> areaList = [];
+  bool searchOpen = false;
+  bool withMap = false;
+
+  setRestaurants(List<Restaurant> restaurants) {
     guidePageRestaurants = restaurants;
     notifyListeners();
   }
 
-  changeArea(LocationList data) {
+  setArea(LocationList data) {
     selectArea = data;
     notifyListeners();
   }
@@ -43,35 +47,53 @@ class GuidePageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  changeSortingStandard(RestaurantSortStandard standard) {
-    sorting = standard;
+  changeSortingStandard(SortState state) {
+    sorting = state;
     notifyListeners();
   }
 
   addMarker(Marker data) {
-    marker.add(data);
+    markers.add(data);
     notifyListeners();
   }
 
   sortByRating() {
-    if (restaurantList.isNotEmpty) {
-      restaurantList.sort((a, b) =>
-          b.rating.compareTo(a.rating));
+    if (guidePageRestaurants.isNotEmpty) {
+      guidePageRestaurants.sort((a, b) => b.rating.compareTo(a.rating));
     }
     notifyListeners();
   }
 
   sortByDistance(double lat, double lon) {
-    if (restaurantList.isNotEmpty) {
-      restaurantList.sort((a, b) =>
+    if (guidePageRestaurants.isNotEmpty) {
+      guidePageRestaurants.sort((a, b) =>
           checkDistance(lat, lon, a.latitude, a.latitude)
               .compareTo(checkDistance(lat, lon, b.latitude, b.longitude)));
     }
     notifyListeners();
   }
 
-  void sortByReviews() {
-    restaurantList.sort((a, b) =>
-        b.ratingCount.compareTo(a.ratingCount));
+  sortByReviews() {
+    guidePageRestaurants.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+    notifyListeners();
+  }
+
+  setBigArea(String data) {
+    bigArea = data;
+    notifyListeners();
+  }
+
+  setSearch() {
+    searchOpen = !searchOpen;
+    notifyListeners();
+  }
+
+  setWithmap() {
+    withMap = !withMap;
+    notifyListeners();
+  }
+
+  setNextUrl(String? data) {
+    nextUrl = data;
   }
 }

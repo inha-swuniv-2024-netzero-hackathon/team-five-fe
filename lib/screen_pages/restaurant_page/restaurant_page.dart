@@ -7,7 +7,7 @@ import 'package:proto_just_design/class/detail_restaurant_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/guide_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
-import 'package:proto_just_design/screen_pages/review_page/review_write_page.dart';
+import 'package:proto_just_design/screen_pages/review_page/review_write/review_write_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';

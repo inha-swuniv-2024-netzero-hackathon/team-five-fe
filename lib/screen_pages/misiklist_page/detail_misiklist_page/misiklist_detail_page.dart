@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_bottomsheet.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_restaurant_button.dart';
@@ -30,6 +32,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
+      print(responseData);
       MisikListDetail misiklistdata = MisikListDetail(responseData);
       if (mounted) {
         context.read<MisiklistDetailProvider>().setMisikList(misiklistdata);
@@ -83,13 +86,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
     return PopScope(
       onPopInvoked: (didPop) {
         context.read<MisiklistDetailProvider>().setMisikList(null);
-        context.read<MisiklistDetailProvider>().setDetailMisiklistSort(
-            '추천순',
-            const Icon(
-              Icons.thumb_up,
-              color: ColorStyles.red,
-              size: 20,
-            ));
+        context.read<MisiklistDetailProvider>().setSort(SortState.sortRating);
       },
       child: Scaffold(
         body: context.watch<MisiklistDetailProvider>().misiklist == null
@@ -140,7 +137,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                     left: 5, right: 10, top: 5, bottom: 5),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(90),
-                                    color: ColorStyles.black.withOpacity(0.5)),
+                                    color: Colors.black.withOpacity(0.5)),
                                 child: Row(
                                   children: [
                                     Container(
@@ -160,9 +157,9 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          ('익명'),
+                                          ('${misiklist.username}'),
                                           style: const TextStyle(
-                                            color: ColorStyles.black,
+                                            color: ColorStyles.white,
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -196,23 +193,19 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                               const Spacer(),
                               Container(
                                 alignment: Alignment.center,
-                                width: 62,
-                                height: 26,
+                                width: 36,
+                                height: 36,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(90),
-                                    color: ColorStyles.black.withOpacity(0.5)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.star,
-                                        color: ColorStyles.yellow, size: 20),
-                                    const Gap(1),
-                                    Text(
-                                      (300 / 100).toStringAsFixed(2),
-                                      style: const TextStyle(
-                                          color: ColorStyles.yellow),
-                                    )
-                                  ],
+                                    color: Colors.black.withOpacity(0.5)),
+                                child: Icon(
+                                  Icons.bookmark,
+                                  color: context
+                                          .watch<MisiklistProvider>()
+                                          .favMisiklists
+                                          .contains(misiklist.uuid)
+                                      ? ColorStyles.red
+                                      : ColorStyles.white,
                                 ),
                               ),
                             ]),
@@ -224,15 +217,44 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  '큰 제목',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: ColorStyles.white,
-                                    fontSize: 20,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      '큰 제목',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: ColorStyles.white,
+                                        fontSize: 20,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const Gap(10),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: 62,
+                                      height: 26,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(90),
+                                          color: Colors.black.withOpacity(0.5)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.star,
+                                              color: ColorStyles.yellow,
+                                              size: 20),
+                                          const Gap(1),
+                                          Text(
+                                            (300 / 100).toStringAsFixed(2),
+                                            style: const TextStyle(
+                                                color: ColorStyles.yellow),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                   '글들\n a\n b\n c',
@@ -294,7 +316,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
             showModalBottomSheet(
               context: context,
               builder: (BuildContext context) {
-                return const SortBottomSheet();
+                return const MisikListDetailBottomSheet();
               },
             );
           },
@@ -309,12 +331,13 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                 borderRadius: BorderRadius.circular(90),
                 color: ColorStyles.white),
             width: 95,
+            height: 30,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                context.watch<MisiklistDetailProvider>().icon,
+                context.watch<MisiklistDetailProvider>().sort.icon,
                 const Gap(5),
-                Text(context.watch<MisiklistDetailProvider>().sorting)
+                Text(context.watch<MisiklistDetailProvider>().sort.name)
               ],
             ),
           ),
@@ -323,12 +346,8 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
           margin: const EdgeInsets.symmetric(vertical: 15),
           child: SizedBox(
             width: MediaQuery.sizeOf(context).width - 30,
-            height:
-                context.read<MisiklistDetailProvider>().restaurantList.length *
-                        120 +
-                    10,
+            height: 400,
             child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
               itemCount:
                   context.read<MisiklistDetailProvider>().restaurantList.length,
               itemBuilder: (context, index) {

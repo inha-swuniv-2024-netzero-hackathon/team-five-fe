@@ -15,23 +15,22 @@ class ChangeArea extends StatefulWidget {
 }
 
 class _ChangeAreaState extends State<ChangeArea> {
-  List<String> bigAreaList =
-      LocationList.values.map((location) => location.bigArea).toSet().toList();
-  String? bigArea;
-  LocationList? selectedArea;
-  List<LocationList> areaList = [];
-
-  void changeBigArea() {
-    if (bigArea != null) {
-      areaList =
-          LocationList.values.where((area) => area.bigArea == bigArea).toList();
-    }
+  late LocationList initLocation;
+  LocationList? loc;
+  @override
+  void initState() {
+    initLocation = context.read<GuidePageProvider>().selectArea;
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {},
+      onPopInvoked: (didPop) {
+        if (loc == null) {
+          context.read<GuidePageProvider>().setArea(initLocation);
+        }
+      },
       child: Scaffold(
           body: Column(
         children: [
@@ -64,14 +63,13 @@ class _ChangeAreaState extends State<ChangeArea> {
             const Icon(Icons.where_to_vote, size: 30, color: ColorStyles.red),
             Row(
               children: [
-                Text(
-                    bigArea ?? context.watch<GuidePageProvider>().selectArea.bigArea,
+                Text(context.watch<GuidePageProvider>().selectArea.bigArea,
                     style: const TextStyle(
                         color: ColorStyles.black,
                         fontSize: 25,
                         fontWeight: FontWeight.w700)),
                 const SizedBox(width: 8),
-                Text(selectedArea?.smallArea ?? '',
+                Text(context.read<GuidePageProvider>().selectArea.smallArea,
                     style: const TextStyle(
                         color: ColorStyles.black,
                         fontSize: 20,
@@ -90,7 +88,7 @@ class _ChangeAreaState extends State<ChangeArea> {
                   final nowLat = context.read<UserData>().latitude;
                   final nowLon = context.read<UserData>().longitude;
                   double min = 10000;
-                  late LocationList area;
+                  LocationList area = LocationList.area1;
                   for (LocationList location in LocationList.values) {
                     final distance = checkDistance(
                         nowLat, nowLon, location.latitude, location.longitude);
@@ -100,9 +98,9 @@ class _ChangeAreaState extends State<ChangeArea> {
                     }
                   }
                   if (mounted) {
-                    context.read<GuidePageProvider>().changeArea(area);
-                    context.read<GuidePageProvider>().changeData([]);
-                    Navigator.pushNamed(context, '/Select_Screen');
+                    context.read<GuidePageProvider>().setArea(area);
+                    context.read<GuidePageProvider>().setRestaurants([]);
+                    Navigator.pop(context, true);
                   }
                 },
                 child: const Row(
@@ -126,6 +124,10 @@ class _ChangeAreaState extends State<ChangeArea> {
   }
 
   Widget selectBigArea(BuildContext context) {
+    List<String> bigAreaList = LocationList.values
+        .map((location) => location.bigArea)
+        .toSet()
+        .toList();
     return Column(
       children: [
         const Row(
@@ -235,7 +237,7 @@ class _ChangeAreaState extends State<ChangeArea> {
             ),
           ),
         ),
-        (bigArea == area)
+        (context.read<GuidePageProvider>().bigArea == area)
             ? Container(
                 width: 102,
                 height: 102,
@@ -253,10 +255,7 @@ class _ChangeAreaState extends State<ChangeArea> {
                 child: TextButton(
                     style: ButtonStyles.transparenBtuttonStyle,
                     onPressed: () {
-                      bigArea = area;
-                      selectedArea = null;
-                      setState(() {});
-                      changeBigArea();
+                      context.read<GuidePageProvider>().setBigArea(area);
                     },
                     child: const SizedBox()),
               )
@@ -265,6 +264,10 @@ class _ChangeAreaState extends State<ChangeArea> {
   }
 
   Widget selectSmallArea(BuildContext context) {
+    List areaList = LocationList.values
+        .where((area) =>
+            area.bigArea == context.watch<GuidePageProvider>().bigArea)
+        .toList();
     return Column(
       children: [
         const Row(children: [
@@ -347,7 +350,7 @@ class _ChangeAreaState extends State<ChangeArea> {
                           AssetImage('assets/images/${location.areaNum}.jpg'),
                       fit: BoxFit.cover)),
             ),
-            selectedArea == location
+            context.read<GuidePageProvider>().selectArea == location
                 ? Container(
                     width: 80,
                     height: 80,
@@ -367,8 +370,8 @@ class _ChangeAreaState extends State<ChangeArea> {
                     child: TextButton(
                         style: ButtonStyles.transparenBtuttonStyle,
                         onPressed: () {
-                          selectedArea = location;
-                          setState(() {});
+                          context.read<GuidePageProvider>().setArea(location);
+                          loc = location;
                         },
                         child: Container()),
                   )
@@ -388,42 +391,25 @@ class _ChangeAreaState extends State<ChangeArea> {
   }
 
   Widget checkButton(BuildContext context) {
-    return selectedArea == null
-        ? Container(
-            alignment: AlignmentDirectional.center,
-            width: double.infinity,
-            height: 66,
-            color: ColorStyles.silver,
-            child: const Text(
-              '확 인',
-              style: TextStyle(
-                  color: ColorStyles.ash,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w700),
-            ),
-          )
-        : Container(
-            width: double.infinity,
-            height: 66,
-            color: ColorStyles.red,
-            child: TextButton(
-                onPressed: () {
-                  if (selectedArea != null) {
-                    context
-                        .read<GuidePageProvider>()
-                        .changeArea(selectedArea ?? LocationList.area1);
-                    context.read<GuidePageProvider>().changeData([]);
-                    Navigator.pushNamed(context, '/Select_Screen');
-                  }
-                },
-                child: const Text(
-                  '확 인',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w700,
-                  ),
-                )),
-          );
+    return GestureDetector(
+      onTap: () {
+        loc = context.read<GuidePageProvider>().selectArea;
+        context.read<GuidePageProvider>().setRestaurants([]);
+        Navigator.pop(context, true);
+      },
+      child: Container(
+        alignment: AlignmentDirectional.center,
+        width: double.infinity,
+        height: 66,
+        color: ColorStyles.red,
+        child: const Text(
+          '확 인',
+          style: TextStyle(
+              color: ColorStyles.ash,
+              fontSize: 25,
+              fontWeight: FontWeight.w700),
+        ),
+      ),
+    );
   }
 }

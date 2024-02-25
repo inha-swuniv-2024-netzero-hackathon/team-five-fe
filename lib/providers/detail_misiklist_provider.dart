@@ -2,15 +2,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
-import 'package:proto_just_design/widget_datas/default_color.dart';
+import 'package:proto_just_design/datas/default_sorting.dart';
 
 class MisiklistDetailProvider with ChangeNotifier {
-  String sorting = '추천순';
-  Icon icon = const Icon(
-    Icons.thumb_up,
-    color: ColorStyles.red,
-    size: 20,
-  );
+  SortState sort = SortState.sortRating;
   MisikListDetail? misiklist;
   List<MisiklistRestaurant> restaurantList = [];
   bool isDetailText = false;
@@ -20,9 +15,8 @@ class MisiklistDetailProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  setDetailMisiklistSort(String name, Icon iconData) {
-    sorting = name;
-    icon = iconData;
+  setSort(SortState data) {
+    sort = data;
     notifyListeners();
   }
 
@@ -31,12 +25,12 @@ class MisiklistDetailProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  sortDetailRating() {
+  sortByRating() {
     restaurantList.sort((pre, post) => pre.rating.compareTo(post.rating));
     notifyListeners();
   }
 
-  sortDetailDistance(num lat, num lon) {
+  sortByDistance(num lat, num lon) {
     restaurantList.sort(
       (pre, post) => (pow((pre.latitude! - lat), 2) +
               pow(pre.longitude! - lon, 2))
@@ -45,6 +39,9 @@ class MisiklistDetailProvider with ChangeNotifier {
     );
   }
 
+  sortByThumb() {
+    restaurantList.sort((a, b) => a.rating.compareTo(b.rating));
+  }
   // setLike() {
   //   if (isGood == true) {
   //     isGood = null;

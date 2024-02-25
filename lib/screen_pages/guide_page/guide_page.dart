@@ -4,19 +4,17 @@ import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/class/restaurant_class.dart';
-import 'package:proto_just_design/datas/default_sorting.dart';
-import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/guide_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/guide_page/change_area.dart';
+import 'package:proto_just_design/screen_pages/guide_page/guide_page_bottomsheet.dart';
 import 'package:proto_just_design/screen_pages/guide_page/guide_page_map.dart';
+import 'package:proto_just_design/screen_pages/guide_page/restaurant_button.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
-import 'package:proto_just_design/widget_datas/default_widget.dart';
 import 'package:proto_just_design/datas/default_location.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page.dart';
 import 'package:provider/provider.dart';
 
 class GuidePage extends StatefulWidget {
@@ -27,39 +25,29 @@ class GuidePage extends StatefulWidget {
 }
 
 class _GuidePageState extends State<GuidePage> {
+  bool isFirst = true;
   ScrollController listViewController = ScrollController();
   TextEditingController findControlloer = TextEditingController();
 
-  bool withMap = false;
-  // List<Restaurant> restaurantList = [];
-
-  makeMarker() {
-    if (mounted) {
-      final selectArea = context.read<GuidePageProvider>().selectArea;
-      Marker marker = (Marker(
-          markerId: MarkerId('${selectArea.bigArea} ${selectArea.smallArea}'),
-          infoWindow:
-              InfoWindow(title: '${selectArea.bigArea}${selectArea.smallArea}'),
-          position: LatLng(selectArea.latitude, selectArea.longitude)));
-      context.read<GuidePageProvider>().addMarker(marker);
-    }
-  }
-
   Future<void> getRestaurantList(
       String? token, String? next, LocationList area) async {
-    List<Restaurant> restaurantList = [];
+    Set<Restaurant> restaurantList =
+        context.read<GuidePageProvider>().guidePageRestaurants.toSet();
     final url = Uri.parse(next ??
-        '${rootURL}v1/restaurants/restaurants/?area__id=${area.areaNum}&ordering=restaurant_info__rating&page=1');
-    next = null;
+        '${rootURL}v1/restaurants/?area__id=${area.areaNum}&ordering=restaurant_info__rating&page=1');
+    context.read<GuidePageProvider>().setNextUrl(null);
     final response = (token == null)
         ? await http.get(url)
         : await http.get(url, headers: {"Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
-      final resposeRestaurantList = responseData['results'];
-      next = responseData['next'];
-      for (var restaurantData in resposeRestaurantList) {
+      print(responseData);
+      final responseRestaurantList = responseData['results'];
+      if (mounted) {
+        context.read<GuidePageProvider>().setNextUrl(responseData['next']);
+      }
+      for (var restaurantData in responseRestaurantList) {
         Restaurant restaurant = Restaurant(restaurantData);
         restaurantList.add(restaurant);
         if (restaurant.isBookmarked) {
@@ -69,7 +57,9 @@ class _GuidePageState extends State<GuidePage> {
         }
       }
       if (mounted) {
-        context.read<GuidePageProvider>().changeData(restaurantList);
+        context
+            .read<GuidePageProvider>()
+            .setRestaurants(restaurantList.toList());
       }
     } else if (response.statusCode == 401) {
       if (mounted) {
@@ -80,7 +70,7 @@ class _GuidePageState extends State<GuidePage> {
 
   void setRestaurantMarker() {
     for (Restaurant restaurant
-        in context.read<GuidePageProvider>().restaurantList) {
+        in context.read<GuidePageProvider>().guidePageRestaurants) {
       Marker marker = (Marker(
           markerId: MarkerId(restaurant.name),
           infoWindow: InfoWindow(title: restaurant.name),
@@ -92,59 +82,96 @@ class _GuidePageState extends State<GuidePage> {
   Future<void> _scrollListener() async {
     if ((listViewController.position.pixels ==
             listViewController.position.maxScrollExtent) &&
-        (context.read<GuidePageProvider>().nextUrl != null)) {
+        (context.read<GuidePageProvider>().nextUrl != null) &&
+        context.read<GuidePageProvider>().guidePageRestaurants.isNotEmpty) {
       await getRestaurantList(
           context.read<UserData>().token,
-          context.watch<GuidePageProvider>().nextUrl,
-          context.watch<GuidePageProvider>().selectArea);
+          context.read<GuidePageProvider>().nextUrl,
+          context.read<GuidePageProvider>().selectArea);
+    }
+  }
+
+  makeMarker() {
+    if (mounted) {
+      final guidePageProvider = context.read<GuidePageProvider>();
+      Marker marker = (Marker(
+          markerId: MarkerId(
+              '${guidePageProvider.selectArea.bigArea} ${guidePageProvider.selectArea.smallArea}'),
+          infoWindow: InfoWindow(
+              title:
+                  '${guidePageProvider.selectArea.bigArea}${guidePageProvider.selectArea.smallArea}'),
+          position: LatLng(guidePageProvider.selectArea.latitude,
+              guidePageProvider.selectArea.longitude)));
+      if (mounted) {
+        context.read<GuidePageProvider>().addMarker(marker);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    listViewController.addListener(() {
+      _scrollListener();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  Future<void> getinitdata() async {
+    if (isFirst) {
+      isFirst = false;
+      if (context.read<GuidePageProvider>().guidePageRestaurants.isEmpty) {
+        getRestaurantList(
+          context.read<UserData>().token,
+          context.read<GuidePageProvider>().nextUrl,
+          context.read<GuidePageProvider>().selectArea,
+        ).then((value) {
+          setRestaurantMarker();
+          makeMarker();
+        });
+      }
     }
     await Future.delayed(const Duration(seconds: 2));
   }
 
   @override
-  void initState() {
-    makeMarker();
-    listViewController.addListener(() {
-      _scrollListener();
-    });
-
-    if (context.read<GuidePageProvider>().guidePageRestaurants.isEmpty) {
-      getRestaurantList(
-          context.read<UserData>().token,
-          context.watch<GuidePageProvider>().nextUrl,
-          context.watch<GuidePageProvider>().selectArea);
-    }
-    setRestaurantMarker();
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.topCenter,
-      width: double.infinity,
-      child: Stack(
-        children: [
-          const GuidePageMap(),
-          restaurantListModal(context),
-          Column(
-            children: [const Gap(30), upperButtons(context)],
+    final guidePageProvider = context.watch<GuidePageProvider>();
+    return FutureBuilder(
+      future: getinitdata(),
+      builder: (context, snapshot) {
+        return Container(
+          alignment: Alignment.topCenter,
+          width: double.infinity,
+          child: Stack(
+            children: [
+              const GuidePageMap(),
+              restaurantListModal(context, guidePageProvider),
+              Column(
+                children: [
+                  const Gap(30),
+                  upperButtons(context, guidePageProvider)
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget upperButtons(BuildContext context) {
-    bool searchOpen = false;
-
+  Widget upperButtons(
+      BuildContext context, GuidePageProvider guidePageProvider) {
     return Container(
       alignment: Alignment.topCenter,
       height: 50,
       child: Row(children: [
         const Spacer(),
-        (searchOpen || withMap)
+        (guidePageProvider.searchOpen || guidePageProvider.withMap)
             ? Container(
                 alignment: Alignment.topCenter,
                 padding: const EdgeInsets.only(left: 25, right: 30),
@@ -157,10 +184,9 @@ class _GuidePageState extends State<GuidePage> {
                         borderRadius: BorderRadius.circular(90)),
                     shadows: Boxshadows.defaultShadow),
                 child: TextField(
-                    autofocus: searchOpen,
+                    autofocus: guidePageProvider.searchOpen,
                     onTapOutside: (event) {
-                      searchOpen = false;
-                      setState(() {});
+                      guidePageProvider.setSearch();
                     },
                     controller: findControlloer,
                     decoration: const InputDecoration(
@@ -186,15 +212,15 @@ class _GuidePageState extends State<GuidePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      searchOpen = true;
-                      setState(() {});
+                      guidePageProvider.setSearch();
+                      guidePageProvider.setWithmap();
                     },
                     style: ButtonStyles.transparenBtuttonStyle,
                     child: Container(),
                   )
                 ])),
         const Gap(15),
-        (withMap == false)
+        (guidePageProvider.withMap == false)
             ? Container(
                 width: 36,
                 height: 36,
@@ -208,8 +234,7 @@ class _GuidePageState extends State<GuidePage> {
                       size: 24, color: ColorStyles.black),
                   ElevatedButton(
                       onPressed: () {
-                        withMap = true;
-                        setState(() {});
+                        guidePageProvider.setWithmap();
                       },
                       style: ButtonStyles.transparenBtuttonStyle,
                       child: Container())
@@ -230,8 +255,7 @@ class _GuidePageState extends State<GuidePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      withMap = false;
-                      setState(() {});
+                      guidePageProvider.setWithmap();
                     },
                     style: ButtonStyles.transparenBtuttonStyle,
                     child: Container(),
@@ -242,24 +266,27 @@ class _GuidePageState extends State<GuidePage> {
     );
   }
 
-  Widget restaurantListModal(BuildContext context) {
+  Widget restaurantListModal(
+      BuildContext context, GuidePageProvider guidePageProvider) {
     final screenHeight = MediaQuery.sizeOf(context).height;
 
     return SizedBox(
       child: DraggableScrollableSheet(
         snapAnimationDuration: const Duration(milliseconds: 200),
-        initialChildSize: withMap ? 0.85 : 1,
-        minChildSize: withMap ? 0.05 : 1,
-        maxChildSize: withMap ? 0.85 : 1,
+        initialChildSize: guidePageProvider.withMap ? 0.85 : 1,
+        minChildSize: guidePageProvider.withMap ? 0.05 : 1,
+        maxChildSize: guidePageProvider.withMap ? 0.85 : 1,
         builder: (context, scrollController) {
           return SingleChildScrollView(
-              controller: withMap ? scrollController : null,
+              controller: guidePageProvider.withMap ? scrollController : null,
               child: Container(
-                height: withMap ? screenHeight * 0.85 - 58 : screenHeight * 0.9,
+                height: guidePageProvider.withMap
+                    ? screenHeight * 0.85 - 58
+                    : screenHeight * 0.9,
                 decoration: BoxDecoration(
                     boxShadow: Boxshadows.defaultShadow,
                     border: Border.all(color: ColorStyles.ash),
-                    borderRadius: withMap
+                    borderRadius: guidePageProvider.withMap
                         ? const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20))
@@ -267,7 +294,7 @@ class _GuidePageState extends State<GuidePage> {
                     color: ColorStyles.white),
                 child: Column(
                   children: [
-                    withMap
+                    guidePageProvider.withMap
                         ? Container(
                             height: 40,
                             alignment: Alignment.center,
@@ -283,12 +310,13 @@ class _GuidePageState extends State<GuidePage> {
                             ),
                           )
                         : const Gap(50),
-                    guidePageHeader(context), //110
-                    guidePageBody(
+                    header(context, guidePageProvider),
+                    body(
                         context,
-                        withMap
+                        guidePageProvider.withMap
                             ? screenHeight * 0.85 - 210
-                            : screenHeight * 0.9 - 162)
+                            : screenHeight * 0.9 - 162,
+                        guidePageProvider)
                   ],
                 ),
               ));
@@ -297,127 +325,117 @@ class _GuidePageState extends State<GuidePage> {
     );
   }
 
-  Widget guidePageHeader(BuildContext context) {
+  Widget header(BuildContext context, GuidePageProvider guidePageProvider) {
     return Container(
         alignment: Alignment.topCenter,
         height: 110,
-        child: Column(
-          children: [
-            Row(children: [
-              const Gap(25),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ChangeArea()));
-                    },
-                    child: Row(
+        child: Row(children: [
+          const Gap(25),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton(
+                onPressed: () async {
+                  final check = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChangeArea()));
+                  if (check == true) {
+                    if (mounted) {
+                      getRestaurantList(
+                          context.read<UserData>().token,
+                          guidePageProvider.nextUrl,
+                          guidePageProvider.selectArea);
+                    }
+                  }
+                },
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined,
+                        size: 30, color: ColorStyles.red),
+                    Row(
                       children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 30, color: ColorStyles.red),
-                        Row(
-                          children: [
-                            Text(
-                                context
-                                    .watch<GuidePageProvider>()
-                                    .selectArea
-                                    .bigArea,
-                                style: const TextStyle(
-                                  color: ColorStyles.black,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w700,
-                                )),
-                            const Gap(8),
-                            Text(
-                                context
-                                    .watch<GuidePageProvider>()
-                                    .selectArea
-                                    .smallArea,
-                                style: const TextStyle(
-                                  color: ColorStyles.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ))
-                          ],
-                        ),
+                        Text(guidePageProvider.selectArea.bigArea,
+                            style: const TextStyle(
+                              color: ColorStyles.black,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w700,
+                            )),
+                        const Gap(8),
+                        Text(guidePageProvider.selectArea.smallArea,
+                            style: const TextStyle(
+                              color: ColorStyles.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ))
                       ],
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      if (context.read<GuidePageProvider>().sorting ==
-                          RestaurantSortStandard.sortRating) {
-                        context.read<GuidePageProvider>().sortByDistance(
-                            context.read<UserData>().latitude,
-                            context.read<UserData>().longitude);
-                      } else if (context.read<GuidePageProvider>().sorting ==
-                          RestaurantSortStandard.sortDistance) {
-                        context.read<GuidePageProvider>().sortByReviews();
-                      } else {
-                        context.read<GuidePageProvider>().sortByRating();
-                      }
-                      context.read<GuidePageProvider>().changeSortingStandard(
-                          RestaurantSortStandard.sortDistance);
-                    },
-                    child: Row(
-                      children: [
-                        const Gap(10),
-                        Row(
-                          children: [
-                            Icon(
-                                context.read<GuidePageProvider>().sorting.icon),
-                            const Gap(3),
-                            Text(
-                              context.read<GuidePageProvider>().sorting.text,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: ColorStyles.black,
-                                fontSize: 13,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            const Icon(Icons.expand_more,
-                                color: ColorStyles.gray, size: 22)
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                  ],
+                ),
               ),
-            ]),
-          ],
-        ));
+              TextButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return const GuidePageBottomSheet();
+                    },
+                  );
+                },
+                child: Row(
+                  children: [
+                    const Gap(10),
+                    Row(
+                      children: [
+                        guidePageProvider.sorting.icon,
+                        const Gap(3),
+                        Text(
+                          guidePageProvider.sorting.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: ColorStyles.black,
+                            fontSize: 13,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const Icon(Icons.expand_more,
+                            color: ColorStyles.gray, size: 22)
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ]));
   }
 
-  Widget guidePageBody(BuildContext context, double height) {
+  Widget body(BuildContext context, double height,
+      GuidePageProvider guidePageProvider) {
     final screenWidth = MediaQuery.of(context).size.width;
-    List<Restaurant> restaurantList =
-        context.watch<GuidePageProvider>().restaurantList;
-    int len = context.watch<GuidePageProvider>().restaurantList.length;
     return Container(
         height: height,
         width: screenWidth,
         alignment: Alignment.center,
         child: ListView.builder(
             controller: listViewController,
-            itemCount: len + 1,
+            itemCount: guidePageProvider.guidePageRestaurants.length,
             itemBuilder: (BuildContext context, int index) {
-              if (index == len) {
+              if (index == guidePageProvider.guidePageRestaurants.length) {
                 return const SizedBox(height: 40);
               }
               if ((index % 2 == 0)) {
-                if ((len % 2 == 1) && (index + 2 > len)) {
+                if ((guidePageProvider.guidePageRestaurants.length % 2 == 1) &&
+                    (index + 2 >
+                        guidePageProvider.guidePageRestaurants.length)) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      restaurantButton(context, restaurantList[index]),
+                      RestaurantButton(
+                          restaurant:
+                              guidePageProvider.guidePageRestaurants[index]),
                       const Gap(20),
                       Container(width: 171)
                     ],
@@ -427,261 +445,18 @@ class _GuidePageState extends State<GuidePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    restaurantButton(context, restaurantList[index]),
+                    RestaurantButton(
+                        restaurant:
+                            guidePageProvider.guidePageRestaurants[index]),
                     const Gap(20),
-                    restaurantButton(context, restaurantList[index + 1])
+                    RestaurantButton(
+                        restaurant:
+                            guidePageProvider.guidePageRestaurants[index + 1])
                   ],
                 );
               }
 
               return const SizedBox(height: 10);
             }));
-  }
-
-  Widget restaurantButton(BuildContext context, Restaurant restaurant) {
-    List<String> restaurantStarDetail = [];
-
-    return Container(
-      width: 171,
-      decoration: const BoxDecoration(
-        color: ColorStyles.white,
-        boxShadow: Boxshadows.defaultShadow,
-        borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(15), bottomLeft: Radius.circular(15)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          Column(children: [
-            Stack(
-              children: [
-                Container(
-                  width: 171,
-                  height: 151,
-                  decoration: BoxDecoration(
-                    boxShadow: Boxshadows.defaultShadow,
-                    borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    color: ColorStyles.gray,
-                    image: DecorationImage(
-                      image: NetworkImage(restaurant.thumbnail),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                RestaurantPage(uuid: restaurant.uuid)));
-                  },
-                  style: ButtonStyles.transparenBtuttonStyle,
-                  child: const SizedBox(
-                    width: 171,
-                    height: 138,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-                width: 171,
-                height: 28,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 5, top: 5, bottom: 5),
-                      child: SizedBox(
-                        width: 110,
-                        child: Text(
-                          restaurant.name,
-                          style: const TextStyle(
-                            color: ColorStyles.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    Transform.translate(
-                      offset: const Offset(0, 5),
-                      child: IconButton(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onPressed: () async {
-                            if (await checkLogin(context)) {
-                              if (mounted) {
-                                {
-                                  if (await setRestaurantBookmark(
-                                          context,
-                                          context.read<UserData>().token!,
-                                          restaurant.uuid) !=
-                                      200) {
-                                    if (mounted) {
-                                      changeRestaurantBookmark(
-                                          context, restaurant.uuid);
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          icon: (context
-                                      .watch<GuidePageProvider>()
-                                      .favRestaurantList
-                                      .contains(restaurant.uuid) ==
-                                  false)
-                              ? Transform.translate(
-                                  offset: const Offset(0, -10),
-                                  child: const Icon(Icons.bookmark_border_sharp,
-                                      color: Colors.black, size: 30),
-                                )
-                              : Transform.translate(
-                                  offset: const Offset(0, -10),
-                                  child: const Icon(
-                                    Icons.bookmark,
-                                    color: ColorStyles.red,
-                                    size: 30,
-                                  ),
-                                )),
-                    )
-                  ],
-                )),
-            Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 3, right: 4),
-                  child: Icon(Icons.currency_yen, size: 15),
-                ),
-                Text(
-                  (DateTime.now().hour >= 14)
-                      ? '${restaurant.daytimePrice}'
-                      : '${restaurant.eveningPrice}',
-                  style: const TextStyle(
-                    color: ColorStyles.black,
-                    fontSize: 11,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                  ),
-                )
-              ],
-            ),
-            Container(
-              width: 171,
-              padding: const EdgeInsets.fromLTRB(7, 4, 0, 4),
-              child: Row(
-                children: [
-                  makeRatingShower(context, 100, 4, restaurant.rating),
-                  Container(
-                    margin: const EdgeInsets.only(left: 10),
-                    width: 23,
-                    child: Text(
-                      '${restaurant.rating / 100}',
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                          color: ColorStyles.yellow,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                  Stack(
-                    children: [
-                      Icon(
-                        restaurantStarDetail.contains(restaurant.uuid) == true
-                            ? Icons.keyboard_arrow_down_outlined
-                            : Icons.keyboard_arrow_left_outlined,
-                        color: Colors.black,
-                      ),
-                      Container(
-                          width: 25,
-                          height: 26,
-                          color: Colors.transparent,
-                          child: TextButton(
-                            onPressed: () {
-                              if (restaurantStarDetail
-                                  .contains(restaurant.uuid)) {
-                                restaurantStarDetail.remove(restaurant.uuid);
-                                setState(() {});
-                              } else {
-                                restaurantStarDetail.add(restaurant.uuid);
-                                setState(() {});
-                              }
-                            },
-                            style: ButtonStyles.transparenBtuttonStyle,
-                            child: Container(),
-                          )),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            restaurantStarDetail.contains(restaurant.uuid)
-                ? Column(
-                    children: [
-                      detailRatingShower(context, restaurant.ratingTaste,
-                          Icons.restaurant_menu),
-                      detailRatingShower(
-                          context, restaurant.ratingService, Icons.handshake),
-                      detailRatingShower(
-                          context, restaurant.ratingPrice, Icons.currency_yen)
-                    ],
-                  )
-                : Container(),
-          ]),
-        ],
-      ),
-    );
-  }
-
-  Widget detailRatingShower(BuildContext context, int rating, IconData icon) {
-    if (rating < 100) rating = 100;
-    return Container(
-      width: 171,
-      height: 26,
-      padding: const EdgeInsets.fromLTRB(7, 4, 0, 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(alignment: Alignment.topLeft, children: [
-            makeRatingShower(context, 100, 4, rating),
-            Transform.translate(
-              offset: Offset(85 * (rating / 100 - 1) / 4, -7),
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: const ShapeDecoration(
-                  color: Colors.white,
-                  shape: OvalBorder(
-                    side: BorderSide(width: 1, color: ColorStyles.yellow),
-                  ),
-                ),
-                child: Icon(icon, color: ColorStyles.yellow, size: 10),
-              ),
-            )
-          ]),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 5),
-            child: SizedBox(
-              width: 23,
-              child: Text(
-                '${rating / 100}',
-                textAlign: TextAlign.left,
-                style: const TextStyle(
-                  color: ColorStyles.yellow,
-                  fontSize: 11,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -1,4 +1,3 @@
-
 enum LocationList {
   area1('도쿄', '신주쿠', 35.6929127999999, 139.709008, 1),
   area2('도쿄', '시부야', 35.6603981, 139.7051782, 2),
@@ -26,4 +25,3 @@ enum LocationList {
   const LocationList(this.bigArea, this.smallArea, this.latitude,
       this.longitude, this.areaNum);
 }
-

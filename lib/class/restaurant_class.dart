@@ -5,7 +5,7 @@ class Restaurant {
   late double latitude;
   late double longitude;
   late bool isBookmarked;
-  late int ratingCount;
+  late int reviewCount;
   late int rating;
   late int ratingTaste;
   late int ratingPrice;
@@ -21,8 +21,8 @@ class Restaurant {
     latitude = restaurantData['latitude'];
     longitude = restaurantData['longitude'];
     isBookmarked = restaurantData['is_bookmarked'] ?? false;
+    reviewCount = restaurantData['review_count'];
     Map restaurantInfo = restaurantData['restaurant_info'];
-    ratingCount = restaurantInfo['rating_count'];
     rating = restaurantInfo['rating'];
     ratingTaste = restaurantInfo['rating_taste'];
     ratingPrice = restaurantInfo['rating_price'];

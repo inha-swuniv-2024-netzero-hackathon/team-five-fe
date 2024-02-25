@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    getCurrentLocation(context);
     getUserToken();
   }
 
@@ -29,13 +31,14 @@ class _SplashScreenState extends State<SplashScreen> {
             json.decode(utf8.decode(response.bodyBytes));
         final token = responseData['access'];
         final userName = responseData['user']['username'];
-        print(token);
 
         await storage.write(key: "token", value: kakaoToken);
         provideUserData(userName, null, token);
       }
     }
-    Navigator.pushNamed(context, '/Select_Screen');
+    if (mounted) {
+      Navigator.pushNamed(context, '/Select_Screen');
+    }
   }
 
   void provideUserData(String? name, String? profile, String token) {
@@ -52,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: MediaQuery.sizeOf(context).width,
         height: MediaQuery.sizeOf(context).height,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/images/loading.gif'),
                 fit: BoxFit.contain)),

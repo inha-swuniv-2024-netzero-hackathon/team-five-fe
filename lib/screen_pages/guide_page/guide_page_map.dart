@@ -14,6 +14,16 @@ class GuidePageMap extends StatefulWidget {
 
 class _GuidePageMapState extends State<GuidePageMap> {
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final guidePageData = context.read<GuidePageProvider>();
@@ -22,7 +32,7 @@ class _GuidePageMapState extends State<GuidePageMap> {
         child: GoogleMap(
             scrollGesturesEnabled: true,
             zoomGesturesEnabled: true,
-            markers: context.watch<GuidePageProvider>().marker,
+            markers: context.watch<GuidePageProvider>().markers,
             initialCameraPosition: CameraPosition(
                 target: LatLng(guidePageData.selectArea.latitude,
                     guidePageData.selectArea.longitude),

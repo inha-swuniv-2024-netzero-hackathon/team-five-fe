@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/datas/default_sorting.dart';
 
 class MisiklistProvider extends ChangeNotifier {
   List<Misiklist> misiklists = [];
   List<String> favMisiklists = [];
-
-  MisikListDetail? misiklistdata;
+  List<Misiklist> myMisiklists = [];
+  SortState sorting = SortState.sortRating;
 
   changeData(List<Misiklist> misiklistList) {
     misiklists = misiklistList;
@@ -18,7 +18,6 @@ class MisiklistProvider extends ChangeNotifier {
     } else {
       favMisiklists.add(uuid);
     }
-
     notifyListeners();
   }
 
@@ -31,6 +30,21 @@ class MisiklistProvider extends ChangeNotifier {
 
   clearFavMisiklist() {
     favMisiklists.clear();
+    notifyListeners();
+  }
+
+  sortByRecent() {
+    misiklists.sort((a, b) => a.updatedAt.compareTo(b.updatedAt));
+    notifyListeners();
+  }
+
+  sortByThumb() {
+    misiklists.sort((a, b) => a.bookmarkCount.compareTo(b.bookmarkCount));
+    notifyListeners();
+  }
+
+  changeSortingStandard(SortState state) {
+    sorting = state;
     notifyListeners();
   }
 }

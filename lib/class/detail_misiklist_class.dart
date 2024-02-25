@@ -28,7 +28,7 @@ class MisikListDetail {
     isBookmarked = detailData['is_bookmarked'];
     List dataList = detailData['restaurant_list'];
     restaurantList = dataList
-        .map((data) => MisiklistRestaurant(data['restaurant']))
+        .map((data) => MisiklistRestaurant(data))
         .toList();
     if (restaurantList.isNotEmpty) {
       rating = restaurantList

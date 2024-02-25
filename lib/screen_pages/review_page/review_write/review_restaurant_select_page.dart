@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/restaurant_class.dart';
+import 'package:proto_just_design/screen_pages/review_page/review_write/review_write_restaurant_button.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 
 class ReviewRestaurantSelectPage extends StatefulWidget {
@@ -25,16 +26,13 @@ class _ReviewRestaurantSelectPageState
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          children: [
-            reviewRestaurantSelectPageAppbar(context),
-            reviewRestaurantSelectPageBody(context)
-          ],
+          children: [realAppbar(context), pageBody(context)],
         ),
       ),
     );
   }
 
-  Widget reviewWritePageAppbar(BuildContext context, String pageName) {
+  Widget appbar(BuildContext context, String pageName) {
     return Column(
       children: [
         const SizedBox(height: 30),
@@ -91,10 +89,10 @@ class _ReviewRestaurantSelectPageState
     );
   }
 
-  Widget reviewRestaurantSelectPageAppbar(BuildContext context) {
+  Widget realAppbar(BuildContext context) {
     return Column(
       children: [
-        reviewWritePageAppbar(context, '식당 선택'),
+        appbar(context, '식당 선택'),
         const SizedBox(height: 40),
         Row(
           children: [
@@ -194,7 +192,7 @@ class _ReviewRestaurantSelectPageState
     );
   }
 
-  Widget reviewRestaurantSelectPageBody(BuildContext context) {
+  Widget pageBody(BuildContext context) {
     return Column(
       children: [
         SizedBox(
@@ -220,58 +218,13 @@ class _ReviewRestaurantSelectPageState
             ],
           ),
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.sizeOf(context).width,
           height: 500,
           child: ListView.builder(
             itemCount: nearRestaurant.length + 2,
             itemBuilder: (context, index) {
-              return Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                height: 125,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 108,
-                      child: Stack(
-                        children: [
-                          Container(
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 15,
-                                  height: 15,
-                                  decoration: ShapeDecoration(
-                                    color: ColorStyles.red,
-                                    shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          width: 0.70,
-                                          color: Color(0xFF8E8E93)),
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                Container(
-                                  height: 77,
-                                  width: 77,
-                                  color: Colors.black,
-                                )
-                              ],
-                            ),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                print(index);
-                              },
-                              child: Container()),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              );
+              return ReviewWriteRestaurantButton();
             },
           ),
         )

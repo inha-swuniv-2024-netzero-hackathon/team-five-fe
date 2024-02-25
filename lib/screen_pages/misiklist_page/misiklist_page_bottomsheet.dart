@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
-import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
-import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/providers/misiklist_page_provider.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
 
-class MisikListDetailBottomSheet extends StatefulWidget {
-  const MisikListDetailBottomSheet({super.key});
+class MisiklistBottomSheet extends StatefulWidget {
+  const MisiklistBottomSheet({super.key});
 
   @override
-  State<MisikListDetailBottomSheet> createState() =>
-      _MisikListDetailBottomSheetState();
+  State<MisiklistBottomSheet> createState() => _MisiklistBottomSheetState();
 }
 
-class _MisikListDetailBottomSheetState
-    extends State<MisikListDetailBottomSheet> {
+class _MisiklistBottomSheetState extends State<MisiklistBottomSheet> {
   @override
   Widget build(BuildContext context) {
+    final misiklistProvider = context.watch<MisiklistProvider>();
+
     return SizedBox(
       width: double.infinity,
       height: 320,
@@ -30,23 +29,17 @@ class _MisikListDetailBottomSheetState
               '정렬기준',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: ColorStyles.black,
-                fontSize: 15,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-              ),
+                  color: ColorStyles.black,
+                  fontSize: 15,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600),
             ),
           ),
-          sortingButton(context, SortState.sortRating, onPressed: () {
-            context.read<MisiklistDetailProvider>().sortByRating();
+          sortingButton(context, SortState.sortRecent, onPressed: () {
+            misiklistProvider.sortByRecent();
           }),
           sortingButton(context, SortState.sortThumb, onPressed: () {
-            context.read<MisiklistDetailProvider>().sortByThumb();
-          }),
-          sortingButton(context, SortState.sortDistance, onPressed: () {
-            context.read<MisiklistDetailProvider>().sortByDistance(
-                context.read<UserData>().latitude,
-                context.read<UserData>().longitude);
+            misiklistProvider.sortByThumb();
           })
         ],
       ),
@@ -54,11 +47,12 @@ class _MisikListDetailBottomSheetState
   }
 
   Widget sortingButton(BuildContext context, SortState state,
-      {required VoidCallback onPressed}) {
+      {required VoidCallback? onPressed}) {
+    final misiklistProvider = context.watch<MisiklistProvider>();
     return GestureDetector(
       onTap: () {
-        onPressed.call();
-        context.read<MisiklistDetailProvider>().setSort(state);
+        misiklistProvider.changeSortingStandard(state);
+        onPressed?.call();
         Navigator.pop(context);
       },
       child: Container(
@@ -73,13 +67,12 @@ class _MisikListDetailBottomSheetState
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   border: Border.all(
-                      color: (context.watch<MisiklistDetailProvider>().sort ==
-                              state)
+                      color: (misiklistProvider.sorting == state)
                           ? ColorStyles.red
                           : ColorStyles.gray,
                       width: 2),
                   borderRadius: BorderRadius.circular(90)),
-              child: (context.watch<MisiklistDetailProvider>().sort == state)
+              child: (misiklistProvider.sorting == state)
                   ? Container(
                       width: 9,
                       height: 9,
