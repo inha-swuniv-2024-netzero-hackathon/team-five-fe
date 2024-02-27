@@ -8,7 +8,6 @@ import 'package:proto_just_design/functions/default_function.dart';
 class GuidePageProvider extends ChangeNotifier {
   List<Restaurant> guidePageRestaurants = [];
   LocationList selectArea = LocationList.area1;
-  Set<String> favRestaurantList = {};
   SortState sorting = SortState.sortRating;
   String? nextUrl;
   Set<Marker> markers = {};
@@ -24,26 +23,6 @@ class GuidePageProvider extends ChangeNotifier {
 
   setArea(LocationList data) {
     selectArea = data;
-    notifyListeners();
-  }
-
-  addFavRestaurant(String uuid) {
-    if (favRestaurantList.contains(uuid)) {
-    } else {
-      favRestaurantList.add(uuid);
-    }
-    notifyListeners();
-  }
-
-  removeFavRestaurant(String uuid) {
-    if (favRestaurantList.contains(uuid)) {
-      favRestaurantList.remove(uuid);
-    }
-    notifyListeners();
-  }
-
-  clearFavRestaurant() {
-    favRestaurantList.clear();
     notifyListeners();
   }
 

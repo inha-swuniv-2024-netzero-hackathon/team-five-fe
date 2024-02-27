@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:http/http.dart' as http;
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -54,6 +55,10 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> getUserToken() async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     final url = Uri.parse('${rootURL}v1/auth/kakao/login/finish/');
     final response = await http.post(url, body: {'access_token': kakaoToken});
     if (response.statusCode == 200) {

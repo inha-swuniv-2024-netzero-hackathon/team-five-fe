@@ -2,7 +2,7 @@ class Misiklist {
   late String uuid;
   late String title;
   late String username;
-  late String thumbnail;
+  String? thumbnail;
   late String profileImage;
   late String updatedAt;
   late bool isBookmarked;
@@ -15,8 +15,7 @@ class Misiklist {
     username = createdBy['username'];
     profileImage = createdBy['profile_image'] ??
         "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
-    thumbnail = data["thumbnail"] ??
-        "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
+    thumbnail = data["thumbnail"];
     updatedAt = data['updated_at'];
     isBookmarked = data['is_bookmarked'];
     bookmarkCount = data['bookmark_count'];

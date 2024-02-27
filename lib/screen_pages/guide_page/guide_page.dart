@@ -4,7 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/class/restaurant_class.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/guide_page/change_area.dart';
 import 'package:proto_just_design/screen_pages/guide_page/guide_page_bottomsheet.dart';
@@ -31,6 +32,10 @@ class _GuidePageState extends State<GuidePage> {
 
   Future<void> getRestaurantList(
       String? token, String? next, LocationList area) async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     Set<Restaurant> restaurantList =
         context.read<GuidePageProvider>().guidePageRestaurants.toSet();
     final url = Uri.parse(next ??
@@ -42,7 +47,6 @@ class _GuidePageState extends State<GuidePage> {
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
-      print(responseData);
       final responseRestaurantList = responseData['results'];
       if (mounted) {
         context.read<GuidePageProvider>().setNextUrl(responseData['next']);
@@ -52,7 +56,7 @@ class _GuidePageState extends State<GuidePage> {
         restaurantList.add(restaurant);
         if (restaurant.isBookmarked) {
           if (mounted) {
-            context.read<GuidePageProvider>().addFavRestaurant(restaurant.uuid);
+            context.read<UserData>().addFavRestaurant(restaurant.uuid);
           }
         }
       }

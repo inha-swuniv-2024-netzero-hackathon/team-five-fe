@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:proto_just_design/class/restaurant_class.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
@@ -24,7 +26,6 @@ class _RestaurantButtonState extends State<RestaurantButton> {
   @override
   Widget build(BuildContext context) {
     late Restaurant restaurant = widget.restaurant;
-    final guidePageProvider = context.read<GuidePageProvider>();
     return Container(
       width: 171,
       decoration: const BoxDecoration(
@@ -39,33 +40,29 @@ class _RestaurantButtonState extends State<RestaurantButton> {
           Column(children: [
             Stack(
               children: [
-                Container(
-                  width: 171,
-                  height: 151,
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    boxShadow: Boxshadows.defaultShadow,
-                    borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    color: ColorStyles.gray,
-                    image: DecorationImage(
-                      image: NetworkImage(restaurant.thumbnail),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
                 GestureDetector(
-                  onTap: () async {
+                  onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
                                 RestaurantPage(uuid: restaurant.uuid)));
                   },
-                  child: const SizedBox(
+                  child: Container(
                     width: 171,
-                    height: 138,
+                    height: 151,
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      boxShadow: Boxshadows.defaultShadow,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15)),
+                      color: ColorStyles.gray,
+                      image: DecorationImage(
+                        image: NetworkImage(restaurant.thumbnail),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -98,6 +95,12 @@ class _RestaurantButtonState extends State<RestaurantButton> {
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
                           onPressed: () async {
+                            bool isNetwork = await context
+                                .read<NetworkProvider>()
+                                .checkNetwork();
+                            if (!isNetwork) {
+                              return;
+                            }
                             if (await checkLogin(context)) {
                               if (mounted) {
                                 {
@@ -115,7 +118,9 @@ class _RestaurantButtonState extends State<RestaurantButton> {
                               }
                             }
                           },
-                          icon: (guidePageProvider.favRestaurantList
+                          icon: (context
+                                      .watch<UserData>()
+                                      .favRestaurantList
                                       .contains(restaurant.uuid) ==
                                   false)
                               ? Transform.translate(

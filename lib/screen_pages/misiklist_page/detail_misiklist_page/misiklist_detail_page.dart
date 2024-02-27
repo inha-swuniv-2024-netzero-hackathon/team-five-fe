@@ -5,8 +5,9 @@ import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_bottomsheet.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_restaurant_button.dart';
@@ -25,6 +26,10 @@ class MisiklistDetailPage extends StatefulWidget {
 
 class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
   Future<void> getMisiklistPageData(String? token, String uuid) async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     final url = Uri.parse('${rootURL}v1/misiklist/$uuid');
     final response = (token == null)
         ? await http.get(url)
@@ -32,7 +37,6 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
-      print(responseData);
       MisikListDetail misiklistdata = MisikListDetail(responseData);
       if (mounted) {
         context.read<MisiklistDetailProvider>().setMisikList(misiklistdata);
@@ -219,10 +223,10 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                               children: [
                                 Row(
                                   children: [
-                                    const Text(
-                                      '큰 제목',
+                                    Text(
+                                      misiklist.title,
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: ColorStyles.white,
                                         fontSize: 20,
                                         fontFamily: 'Inter',
@@ -257,12 +261,8 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                   ],
                                 ),
                                 Text(
-                                  '글들\n a\n b\n c',
-                                  maxLines: context
-                                          .read<MisiklistDetailProvider>()
-                                          .isDetailText
-                                      ? 5
-                                      : 1,
+                                  'text',
+                                  maxLines: 1,
                                   style: const TextStyle(
                                     color: ColorStyles.white,
                                     fontSize: 13,

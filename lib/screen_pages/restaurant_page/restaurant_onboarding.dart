@@ -149,65 +149,63 @@ class _RestaurantMenuState extends State<RestaurantMenu> {
                     ),
                   ),
                   const SizedBox(width: 20),
-                  Container(
-                      child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                        Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 3.50, vertical: 4),
-                            child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: 12,
-                                          height: 12,
-                                          decoration: const ShapeDecoration(
-                                            shape: OvalBorder(
-                                              side: BorderSide(
-                                                  width: 0.40,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
+                  Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                    Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 3.50, vertical: 4),
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 12,
+                                      height: 12,
+                                      decoration: const ShapeDecoration(
+                                        shape: OvalBorder(
+                                          side: BorderSide(
+                                              width: 0.40,
+                                              color: Colors.white),
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Container(
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                        Container(
-                                          height: 12,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: BoxDecoration(),
-                                        ),
-                                        Text('$cost',
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 13,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w400,
-                                              height: 1,
-                                            ))
-                                      ]))
-                                ]))
-                      ]))
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                  children: [
+                                Container(
+                                  height: 12,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: const BoxDecoration(),
+                                ),
+                                Text('$cost',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w400,
+                                      height: 1,
+                                    ))
+                              ])
+                            ]))
+                  ])
                 ]),
           ),
           const SizedBox(height: 10),

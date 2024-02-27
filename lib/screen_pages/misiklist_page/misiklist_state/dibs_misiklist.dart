@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/main.dart';
+import 'package:proto_just_design/providers/misiklist_provider/dibs_misiklist_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
@@ -10,20 +11,19 @@ import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_button.d
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-class DefaultMisiklist extends StatefulWidget {
-  const DefaultMisiklist({super.key});
+class DibsMisiklist extends StatefulWidget {
+  const DibsMisiklist({super.key});
 
   @override
-  State<DefaultMisiklist> createState() => _DefaultMisiklistState();
+  State<DibsMisiklist> createState() => _DibsMisiklistState();
 }
 
-class _DefaultMisiklistState extends State<DefaultMisiklist> {
+class _DibsMisiklistState extends State<DibsMisiklist> {
   Future<void> getMisiklists() async {
     bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
     if (!isNetwork) {
       return;
     }
-    List<Misiklist> misiklists = [];
     String? token = context.read<UserData>().token;
     final url = Uri.parse('${rootURL}v1/misiklist/');
 
@@ -36,14 +36,13 @@ class _DefaultMisiklistState extends State<DefaultMisiklist> {
       List<dynamic> responseMisiklists = responseData['results'];
       for (var misiklistData in responseMisiklists) {
         Misiklist misiklist = Misiklist(misiklistData);
-        misiklists.add(misiklist);
+        if (mounted) {
+          context.read<DibsMisiklistProvider>().addMisiklist(misiklist);
+        }
         if (misiklist.isBookmarked) {
           if (mounted) {
             context.read<MisiklistProvider>().addFavMisiklist(misiklist.uuid);
           }
-        }
-        if (mounted) {
-          context.read<MisiklistProvider>().changeData(misiklists);
         }
       }
       if (mounted) {
@@ -55,14 +54,15 @@ class _DefaultMisiklistState extends State<DefaultMisiklist> {
   @override
   void initState() {
     super.initState();
-    if (context.read<MisiklistProvider>().misiklists.isEmpty) {
+    if (context.read<DibsMisiklistProvider>().dibsMisiklists.isEmpty) {
       getMisiklists();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Misiklist> misiklists = context.watch<MisiklistProvider>().misiklists;
+    List<Misiklist> misiklists =
+        context.watch<DibsMisiklistProvider>().dibsMisiklists.toList();
     int len = misiklists.length;
     return Container(
       alignment: Alignment.topCenter,

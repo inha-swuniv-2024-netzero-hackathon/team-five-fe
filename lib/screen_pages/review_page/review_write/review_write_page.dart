@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
@@ -71,10 +72,15 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
   }
 
   Future<void> registReview() async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     var request = http.MultipartRequest('POST',
-        Uri.parse('${rootURL}v1/restaurants/restaurants/$uuid/reviews/'));
+        Uri.parse('${rootURL}v1/restaurants/$uuid/reviews/'));
+    String token = context.read<UserData>().token!;
     request.headers.addAll({
-      'Authorization': 'Bearer ${context.read<UserData>().token}',
+      'Authorization': 'Bearer $token',
     });
     request.fields['title'] = titleLineController.text;
     request.fields['content'] = reviewController.text;

@@ -18,7 +18,7 @@ class MisiklistRestaurant {
     Map<String, dynamic> restaurantDetail = data['restaurant'];
     uuid = restaurantDetail['uuid'];
     name = restaurantDetail['name'] ?? '';
-    thumbnail = restaurantDetail['thumbnail'] ??
+    thumbnail = restaurantDetail['thumbnail_url'] ??
         "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
     latitude = restaurantDetail['latitude'];
     longitude = restaurantDetail['longitude'];

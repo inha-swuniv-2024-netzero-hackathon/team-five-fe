@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
@@ -40,8 +41,11 @@ class _MisiklistButtonState extends State<MisiklistButton> {
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15)),
                 color: Colors.grey,
-                image: DecorationImage(
-                    image: NetworkImage(misiklist.thumbnail), fit: BoxFit.fill),
+                image: misiklist.thumbnail != null
+                    ? DecorationImage(
+                        image: NetworkImage(misiklist.thumbnail!),
+                        fit: BoxFit.fill)
+                    : null,
               ),
               child: TextButton(
                   style: ButtonStyles.transparenBtuttonStyle,
@@ -75,10 +79,12 @@ class _MisiklistButtonState extends State<MisiklistButton> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(90),
                           color: Colors.grey,
-                          image: DecorationImage(
-                            image: NetworkImage(misiklist.thumbnail),
-                            fit: BoxFit.fill,
-                          ),
+                          image: misiklist.thumbnail != null
+                              ? DecorationImage(
+                                  image: NetworkImage(misiklist.thumbnail!),
+                                  fit: BoxFit.fill,
+                                )
+                              : null,
                         )),
                     const SizedBox(width: 8),
                     Padding(
@@ -90,20 +96,26 @@ class _MisiklistButtonState extends State<MisiklistButton> {
                       offset: const Offset(0, -6),
                       child: IconButton(
                           onPressed: () async {
-                            if (await checkLogin(context)) {
-                              if (mounted) {
+                            bool isNetwork = await context
+                                .read<NetworkProvider>()
+                                .checkNetwork();
+                            if (!isNetwork) {
+                              return;
+                            }
+                            await checkLogin(context).then((value) async {
+                              if (value) {
                                 if (mounted) {
-                                  if (await setMisiklistBookmark(
-                                          context, misiklist.uuid) !=
-                                      200) {
-                                    if (mounted) {
+                                  await setMisiklistBookmark(
+                                          context, misiklist.uuid)
+                                      .then((v) {
+                                    if (v != 200) {
                                       changeMisiklistBookmark(
                                           context, misiklist.uuid);
                                     }
-                                  }
+                                  });
                                 }
                               }
-                            }
+                            });
                           },
                           icon: Icon(
                             Icons.bookmark,

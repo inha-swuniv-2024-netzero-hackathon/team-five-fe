@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/class/restaurant_review_class.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/my_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/select_screen/Select_screen.dart';
 import 'package:proto_just_design/screen_pages/login_page/login_page.dart';
@@ -49,11 +49,15 @@ class _MyPageState extends State<MyPage> {
   }
 
   clearFavData() {
-    context.read<GuidePageProvider>().clearFavRestaurant();
     context.read<MisiklistProvider>().clearFavMisiklist();
+    context.read<UserData>().clearFavRestaurant();
   }
 
   getReviewData() async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     final url = Uri.parse('${rootURL}v1/reviews/my/');
     final response =
         await http.get(url, headers: {"Authorization": "Bearer $token"});
@@ -70,6 +74,10 @@ class _MyPageState extends State<MyPage> {
   }
 
   getMisiklists() async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     final url = Uri.parse('${rootURL}v1/misiklist/my/');
     final response =
         await http.get(url, headers: {"Authorization": "Bearer $token"});

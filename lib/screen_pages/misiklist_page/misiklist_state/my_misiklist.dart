@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/my_misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_button.dart';
 import 'package:provider/provider.dart';
@@ -17,14 +19,16 @@ class MyMisiklist extends StatefulWidget {
 
 class _MyMisiklistState extends State<MyMisiklist> {
   Future<void> getMyMisiklists() async {
-    List<Misiklist> misiklists = [];
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     String? token = context.read<UserData>().token;
     final url = Uri.parse('https://api.misiklog.com/v1/misiklist/my/');
 
     final response = (token == null)
         ? await http.get(url)
         : await http.get(url, headers: {"Authorization": "Bearer $token"});
-    print(response.body);
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
@@ -32,18 +36,14 @@ class _MyMisiklistState extends State<MyMisiklist> {
       List<dynamic> responseMisiklists = responseData['results'];
       for (var misiklistData in responseMisiklists) {
         Misiklist misiklist = Misiklist(misiklistData);
-        misiklists.add(misiklist);
+        if (mounted) {
+          context.read<MyMisiklistProvider>().addMisiklist(misiklist);
+        }
         if (misiklist.isBookmarked) {
           if (mounted) {
             context.read<MisiklistProvider>().addFavMisiklist(misiklist.uuid);
           }
         }
-        if (mounted) {
-          context.read<MisiklistProvider>().changeData(misiklists);
-        }
-      }
-      if (mounted) {
-        setState(() {});
       }
     } else {}
   }

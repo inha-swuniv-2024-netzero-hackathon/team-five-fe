@@ -2,8 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/login_page/login_page.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +15,14 @@ Future<void> getCurrentLocation(BuildContext context) async {
     permission = await Geolocator.requestPermission();
   }
   try {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    context.read<UserData>().setLocation(position.latitude, position.longitude);
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((position) => context
+            .read<UserData>()
+            .setLocation(position.latitude, position.longitude));
+    // context.read<UserData>().setLocation(position.latitude, position.longitude);
   } catch (e) {
-    print(e);
+    // print(e);
+    return;
   }
 }
 
@@ -36,18 +38,17 @@ Future<bool> checkLogin(BuildContext context) async {
 Future<int> setRestaurantBookmark(
     BuildContext context, String token, String uuid) async {
   changeRestaurantBookmark(context, uuid);
-  final url = Uri.parse('${rootURL}v1/restaurants/restaurants/$uuid/bookmark/');
+  final url = Uri.parse('${rootURL}v1/restaurants/$uuid/bookmark/');
   final response =
       await http.post(url, headers: {"Authorization": 'Bearer $token'});
   return response.statusCode;
 }
 
 void changeRestaurantBookmark(BuildContext context, String uuid) {
-  if (context.read<GuidePageProvider>().favRestaurantList.contains(uuid) ==
-      false) {
-    context.read<GuidePageProvider>().addFavRestaurant(uuid);
+  if (context.read<UserData>().favRestaurantList.contains(uuid) == false) {
+    context.read<UserData>().addFavRestaurant(uuid);
   } else {
-    context.read<GuidePageProvider>().removeFavRestaurant(uuid);
+    context.read<UserData>().removeFavRestaurant(uuid);
   }
 }
 

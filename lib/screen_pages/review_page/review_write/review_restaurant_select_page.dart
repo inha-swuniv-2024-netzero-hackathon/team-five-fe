@@ -122,7 +122,9 @@ class _ReviewRestaurantSelectPageState
                 Divider(
                   height: 1,
                   thickness: 2,
-                  color: selected == 0 ? Color(0x4CF25757) : Color(0x19000000),
+                  color: selected == 0
+                      ? const Color(0x4CF25757)
+                      : const Color(0x19000000),
                 )
               ],
             )),
@@ -152,7 +154,9 @@ class _ReviewRestaurantSelectPageState
                 Divider(
                   height: 1,
                   thickness: 2,
-                  color: selected == 1 ? Color(0x4CF25757) : Color(0x19000000),
+                  color: selected == 1
+                      ? const Color(0x4CF25757)
+                      : const Color(0x19000000),
                 )
               ],
             )),
@@ -182,7 +186,9 @@ class _ReviewRestaurantSelectPageState
                 Divider(
                   height: 1,
                   thickness: 2,
-                  color: selected == 2 ? Color(0x4CF25757) : Color(0x19000000),
+                  color: selected == 2
+                      ? const Color(0x4CF25757)
+                      : const Color(0x19000000),
                 )
               ],
             )),
@@ -205,7 +211,7 @@ class _ReviewRestaurantSelectPageState
                   onPressed: () {
                     print('좌표');
                   },
-                  child: Row(
+                  child: const Row(
                     children: [Icon(Icons.my_location), Text('장소')],
                   )),
               const Spacer(),
@@ -213,7 +219,7 @@ class _ReviewRestaurantSelectPageState
                   onPressed: () {
                     print('???');
                   },
-                  child: Icon(Icons.tune)),
+                  child: const Icon(Icons.tune)),
               const SizedBox(width: 25)
             ],
           ),
@@ -224,7 +230,7 @@ class _ReviewRestaurantSelectPageState
           child: ListView.builder(
             itemCount: nearRestaurant.length + 2,
             itemBuilder: (context, index) {
-              return ReviewWriteRestaurantButton();
+              return const ReviewWriteRestaurantButton();
             },
           ),
         )

@@ -4,8 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/detail_misiklist_provider.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
@@ -23,10 +23,6 @@ class _DetailMisiklistRestaurantButtonState
     extends State<DetailMisiklistRestaurantButton> {
   @override
   void initState() {
-    print(context.read<UserData>().latitude);
-    print(widget.restaurant.latitude);
-    print(context.read<UserData>().longitude);
-    print(widget.restaurant.longitude);
     super.initState();
   }
 
@@ -151,6 +147,12 @@ class _DetailMisiklistRestaurantButtonState
                           ),
                           child: GestureDetector(
                             onTap: () async {
+                              bool isNetwork = await context
+                                  .read<NetworkProvider>()
+                                  .checkNetwork();
+                              if (!isNetwork) {
+                                return;
+                              }
                               if (await checkLogin(context)) {
                                 if (mounted) {
                                   if (await setRestaurantBookmark(
@@ -165,7 +167,7 @@ class _DetailMisiklistRestaurantButtonState
                               }
                             },
                             child: (context
-                                    .watch<GuidePageProvider>()
+                                    .watch<UserData>()
                                     .favRestaurantList
                                     .contains(restaurant.uuid))
                                 ? const Icon(Icons.bookmark,

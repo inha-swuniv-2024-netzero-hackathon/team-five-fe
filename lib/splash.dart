@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getUserToken() async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     final String kakaoToken = await storage.read(key: "token") ?? '';
     if (kakaoToken != '') {
       final url = Uri.parse('${rootURL}v1/auth/kakao/login/finish/');

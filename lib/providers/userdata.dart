@@ -9,6 +9,8 @@ class UserData extends ChangeNotifier {
   double latitude = 0;
   double longitude = 0;
 
+  List<String> favRestaurantList = [];
+
   inputUserData(String name, String profile) {
     userName = name;
     userProfile = profile;
@@ -36,5 +38,19 @@ class UserData extends ChangeNotifier {
 
   setToken(String data) {
     token = data;
+  }
+
+  addFavRestaurant(String uuid) {
+    favRestaurantList.add(uuid);
+    notifyListeners();
+  }
+
+  removeFavRestaurant(String uuid) {
+    favRestaurantList.remove(uuid);
+  }
+
+  clearFavRestaurant() {
+    favRestaurantList.clear();
+    notifyListeners();
   }
 }

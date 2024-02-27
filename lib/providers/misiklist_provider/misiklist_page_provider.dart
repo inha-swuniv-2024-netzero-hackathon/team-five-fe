@@ -6,7 +6,7 @@ class MisiklistProvider extends ChangeNotifier {
   List<Misiklist> misiklists = [];
   List<String> favMisiklists = [];
   List<Misiklist> myMisiklists = [];
-  SortState sorting = SortState.sortRating;
+  SortState sorting = SortState.sortRecent;
 
   changeData(List<Misiklist> misiklistList) {
     misiklists = misiklistList;
@@ -47,4 +47,6 @@ class MisiklistProvider extends ChangeNotifier {
     sorting = state;
     notifyListeners();
   }
+
+  
 }

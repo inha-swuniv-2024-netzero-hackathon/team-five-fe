@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/detail_restaurant_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/review_page/review_write/review_write_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
@@ -51,7 +52,12 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   Future<void> getRestaurantData() async {
-    String url = '${rootURL}v1/restaurants/restaurants/$uuid';
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
+    print('${widget.uuid}');
+    String url = '${rootURL}v1/restaurants/$uuid';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
@@ -66,7 +72,11 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   getRestaurantReview() async {
     if (restaurantreviews.isEmpty) {
-      String url = '${rootURL}v1/restaurants/restaurants/$uuid/reviews/';
+      bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+      if (!isNetwork) {
+        return;
+      }
+      String url = '${rootURL}v1/restaurants/$uuid/reviews/';
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         List<dynamic>? responseData =
@@ -83,7 +93,11 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   getRestaurantPhoto() async {
     if (restaurantreviews.isEmpty) {
-      String url = '${rootURL}v1/restaurants/restaurants/$uuid/image/';
+      bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+      if (!isNetwork) {
+        return;
+      }
+      String url = '${rootURL}v1/restaurants/$uuid/image/';
       final response = await http.get(Uri.parse(url)
           .replace(queryParameters: <String, dynamic>{'page': '$photoCount'}));
       if (response.statusCode == 200) {
@@ -115,10 +129,13 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   Future setBookmark(String uuid) async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
     if (await checkLogin(context)) {
       changeBookmark(uuid);
-      final url =
-          Uri.parse('${rootURL}v1/restaurants/restaurants/$uuid/bookmark/');
+      final url = Uri.parse('${rootURL}v1/restaurants/$uuid/bookmark/');
       final response = (token == null)
           ? await http.post(url)
           : await http.post(url, headers: {"Authorization": 'Bearer $token'});
@@ -130,15 +147,14 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   void changeBookmark(String uuid) {
-    if (context.read<GuidePageProvider>().favRestaurantList.contains(uuid) ==
-        false) {
+    if (context.read<UserData>().favRestaurantList.contains(uuid) == false) {
       if (mounted) {
-        context.read<GuidePageProvider>().addFavRestaurant(uuid);
+        context.read<UserData>().addFavRestaurant(uuid);
         setState(() {});
       }
     } else {
       if (mounted) {
-        context.read<GuidePageProvider>().removeFavRestaurant(uuid);
+        context.read<UserData>().removeFavRestaurant(uuid);
         setState(() {});
       }
     }
@@ -149,9 +165,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
     now = 1;
     List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     String day = weekdays[now];
-    opening =
-        '${restaurantData!.openingHour[day]['open']} ~ ${restaurantData!.openingHour[day]['close']}';
-    lastOrder = '${restaurantData!.openingHour[day]['last_order']}';
+    opening = '';
+    //     '${restaurantData!.openingHour[day]['open']} ~ ${restaurantData!.openingHour[day]['close']}';
+    // lastOrder = '${restaurantData!.openingHour[day]['last_order']}';
   }
 
   @override
@@ -164,16 +180,18 @@ class _RestaurantPageState extends State<RestaurantPage> {
               height: 70,
               child: FloatingActionButton(
                 onPressed: () async {
-                  if (await checkLogin(context)) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReviewWritingPage(
-                            restaurantName: restaurantData?.nameKorean ?? '',
-                            uuid: uuid,
-                          ),
-                        ));
-                  }
+                  await checkLogin(context).then((value) {
+                    if (value) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReviewWritingPage(
+                              restaurantName: restaurantData?.nameKorean ?? '',
+                              uuid: uuid,
+                            ),
+                          ));
+                    }
+                  });
                 },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(90)),
@@ -436,7 +454,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
             )
           ],
         ),
-        child: context.read<GuidePageProvider>().favRestaurantList.contains(uuid)
+        child: context.read<UserData>().favRestaurantList.contains(uuid)
             ? const Icon(
                 Icons.bookmark,
                 color: ColorStyles.red,

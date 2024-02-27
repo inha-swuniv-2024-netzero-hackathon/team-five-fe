@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
-import 'package:proto_just_design/providers/guide_page_provider.dart';
+import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/misiklist_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_page_bottomsheet.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_state/default_misiklist.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_state/my_misiklist.dart';
@@ -32,7 +32,8 @@ class _MisiklistPageState extends State<MisiklistPage> {
                 ? const DefaultMisiklist()
                 : screen == 'my'
                     ? const MyMisiklist()
-                    : Container()
+                    :screen =='fav'? 
+                    Container():Container()
           ],
         ),
       ),
