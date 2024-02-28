@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
@@ -18,8 +20,46 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentLocation(context);
-    getUserToken();
+    apcheck();
+  }
+
+  apcheck() async {
+    final next = await appVersionCheck();
+    if (next == true) {
+      getCurrentLocation(context);
+      getUserToken();
+    }
+  }
+
+  Future<bool> appVersionCheck() async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      showDialog(context: context, builder: (context) => const PopDialog());
+      return false;
+    }
+    final uri = Uri.parse('$rootURL/v1/version/android/');
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
+      final nowVerStr = await PackageInfo.fromPlatform();
+      String minVerStr = responseData['min_version'];
+      List<int> nowVer =
+          nowVerStr.version.toString().split('.').map(int.parse).toList();
+      List<int> minVer = minVerStr.split('.').map(int.parse).toList();
+      for (int i = 0; i < nowVer.length; i++) {
+        if (nowVer[i] < minVer[i]) {
+          await showDialog(
+              context: context, builder: (context) => const PopDialog());
+          return false;
+        }
+      }
+      return true;
+    } else {
+      showDialog(context: context, builder: (context) => const PopDialog());
+    }
+    return false;
   }
 
   Future<void> getUserToken() async {
@@ -64,6 +104,35 @@ class _SplashScreenState extends State<SplashScreen> {
             image: DecorationImage(
                 image: AssetImage('assets/images/loading.gif'),
                 fit: BoxFit.contain)),
+      ),
+    );
+  }
+}
+
+class PopDialog extends StatelessWidget {
+  const PopDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: Container(
+          width: 300,
+          height: 200,
+          decoration: BoxDecoration(color: Colors.white),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('업데이트가 필요합니다'),
+              ElevatedButton(
+                  onPressed: () {
+                    SystemNavigator.pop();
+                  },
+                  child: const Text('확인'))
+            ],
+          ),
+        ),
       ),
     );
   }
