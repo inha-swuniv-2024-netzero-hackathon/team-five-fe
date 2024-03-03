@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/class/restaurant_review_class.dart';
 
 class MyPageProvider extends ChangeNotifier {
   List<dynamic> myPageReviews = [];
@@ -6,13 +8,13 @@ class MyPageProvider extends ChangeNotifier {
   bool getMyReview = false;
   bool getMyMisiklog = false;
 
-  changeMyReviewData(List<dynamic> reviews) {
+  setMyReivew(List<RestaurantReview> reviews) {
     myPageReviews = reviews;
     notifyListeners();
   }
 
-  changeMyMisiklogData(List misiklog) {
-    myPageMisikLog = misiklog;
+  setMisiklist(List<Misiklist> datas) {
+    myPageMisikLog = datas;
     notifyListeners();
   }
 }

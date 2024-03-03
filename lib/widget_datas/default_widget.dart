@@ -77,7 +77,7 @@ class _DefaultSearchMapState extends State<DefaultSearchMap> {
                     child: Container(),
                   )
                 ])),
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
         Container(
             width: 36,
             height: 36,

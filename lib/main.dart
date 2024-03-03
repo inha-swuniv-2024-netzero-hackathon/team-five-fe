@@ -6,6 +6,7 @@ import 'package:proto_just_design/providers/guide_provider/guide_page_provider.d
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/my_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
+import 'package:proto_just_design/providers/restaurant_provider/restaurant_page_provider.dart';
 import 'package:proto_just_design/providers/review_provider/review_page_provier.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/select_screen/Select_screen.dart';
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => MisiklistProvider()),
         ChangeNotifierProvider(create: (context) => MisiklistDetailProvider()),
         ChangeNotifierProvider(create: (context) => ReviewPageData()),
-        ChangeNotifierProvider(create: (context) => NetworkProvider())
+        ChangeNotifierProvider(create: (context) => NetworkProvider()),
+        ChangeNotifierProvider(create: (context) => RestaurantPageProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

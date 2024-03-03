@@ -33,9 +33,8 @@ class _GuidePageState extends State<GuidePage> {
   Future<void> getRestaurantList(
       String? token, String? next, LocationList area) async {
     bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-    if (!isNetwork) {
-      return;
-    }
+    if (!isNetwork) return;
+
     Set<Restaurant> restaurantList =
         context.read<GuidePageProvider>().guidePageRestaurants.toSet();
     final url = Uri.parse(next ??

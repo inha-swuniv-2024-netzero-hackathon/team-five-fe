@@ -23,15 +23,9 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  List myReview = [];
-  List myMisiklist = [];
-  String? token;
-
   logout() async {
     await storage.delete(key: 'token');
-    if (mounted) {
-      clearFavData();
-    }
+    clearFavData();
     if ((mounted
             ? await Navigator.push(
                 context,
@@ -54,33 +48,37 @@ class _MyPageState extends State<MyPage> {
   }
 
   getReviewData() async {
+    List<RestaurantReview> myReview = [];
+
     bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-    if (!isNetwork) {
-      return;
-    }
+    if (!isNetwork) return;
+
     final url = Uri.parse('${rootURL}v1/reviews/my/');
-    final response =
-        await http.get(url, headers: {"Authorization": "Bearer $token"});
+    if (!mounted) return;
+    final response = await http.get(url,
+        headers: {"Authorization": "Bearer ${context.read<UserData>().token}"});
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
-      final reviews = responseData['results'];
-      myReview.addAll(reviews);
+      for (final review in responseData['results']) {
+        myReview.add(RestaurantReview(review));
+      }
       if (mounted) {
-        context.read<MyPageProvider>().changeMyReviewData(myReview);
-        setState(() {});
+        context.read<MyPageProvider>().setMyReivew(myReview);
       }
     }
   }
 
   getMisiklists() async {
+    List<Misiklist> myMisiklist = [];
+
     bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-    if (!isNetwork) {
-      return;
-    }
+    if (!isNetwork) return;
+
     final url = Uri.parse('${rootURL}v1/misiklist/my/');
-    final response =
-        await http.get(url, headers: {"Authorization": "Bearer $token"});
+    if (!mounted) return;
+    final response = await http.get(url,
+        headers: {"Authorization": "Bearer ${context.read<UserData>().token}"});
     if (response.statusCode == 200) {
       List<dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
       final misiklists = responseData;
@@ -90,25 +88,12 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  void setToken() {
-    final getToken = context.read<UserData>().token;
-    if (getToken != null) {
-      token = getToken;
-    }
-  }
-
   @override
   void initState() {
-    setToken();
+    super.initState();
     if (context.read<MyPageProvider>().myPageReviews.isEmpty) {
       getReviewData();
-    } else {
-      if (mounted) {
-        myReview = context.read<MyPageProvider>().myPageReviews;
-        setState(() {});
-      }
     }
-    super.initState();
   }
 
   @override
@@ -300,9 +285,9 @@ class _MyPageState extends State<MyPage> {
                           color: const Color(0x33F2B544),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8))),
-                      child: Column(
+                      child: const Column(
                         children: [
-                          const Align(
+                          Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               '별점',
@@ -314,7 +299,7 @@ class _MyPageState extends State<MyPage> {
                               ),
                             ),
                           ),
-                          const Spacer(),
+                          Spacer(),
                           Row(
                             children: [
                               Icon(Icons.star, color: ColorStyles.yellow),
@@ -345,9 +330,9 @@ class _MyPageState extends State<MyPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Column(
+                      child: const Column(
                         children: [
-                          const Align(
+                          Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               '등급',
@@ -359,7 +344,7 @@ class _MyPageState extends State<MyPage> {
                               ),
                             ),
                           ),
-                          const Spacer(),
+                          Spacer(),
                           Row(
                             children: [
                               Icon(Icons.school, color: ColorStyles.red),
@@ -388,9 +373,8 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  Widget myPageBody(
-    BuildContext context,
-  ) {
+  Widget myPageBody(BuildContext context) {
+    MyPageProvider myPageProvider = context.watch<MyPageProvider>();
     return Container(
       padding: const EdgeInsets.only(left: 15, right: 15),
       child: Column(
@@ -417,13 +401,14 @@ class _MyPageState extends State<MyPage> {
             height: 220,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: myReview.length + 1,
+              itemCount: myPageProvider.myPageReviews.length + 1,
               itemBuilder: (context, index) {
-                if (index == myReview.length) {
+                if (index == myPageProvider.myPageReviews.length) {
                   return const SizedBox(width: 30);
                 }
-                final review = RestaurantReview(myReview[index]);
-                return myPageReviewWidget(context, review);
+                RestaurantReview(myPageProvider.myPageReviews[index]);
+                return myPageReviewWidget(
+                    context, myPageProvider.myPageReviews[index]);
               },
             ),
           ),
@@ -449,13 +434,15 @@ class _MyPageState extends State<MyPage> {
             height: 171,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: myReview.length + 1,
+              itemCount:
+                  context.watch<MyPageProvider>().myPageReviews.length + 1,
               itemBuilder: (context, index) {
-                if (index == myReview.length) {
+                if (index ==
+                    context.watch<MyPageProvider>().myPageReviews.length) {
                   return const SizedBox(width: 30);
                 }
-                final review = RestaurantReview(myReview[index]);
-                return myPageReviewWidget(context, review);
+                return myPageReviewWidget(
+                    context, myPageProvider.myPageReviews[index]);
               },
             ),
           ),
