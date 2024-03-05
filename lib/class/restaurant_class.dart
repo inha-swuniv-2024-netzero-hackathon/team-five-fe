@@ -18,8 +18,8 @@ class Restaurant {
     name = restaurantData['name'] ?? restaurantData['name_korean'];
     thumbnail = restaurantData['thumbnail'] ??
         "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
-    latitude = restaurantData['latitude'];
-    longitude = restaurantData['longitude'];
+    latitude = restaurantData['latitude'] ?? 0;
+    longitude = restaurantData['longitude'] ?? 0;
     isBookmarked = restaurantData['is_bookmarked'] ?? false;
     reviewCount = restaurantData['review_count'];
     Map restaurantInfo = restaurantData['restaurant_info'];

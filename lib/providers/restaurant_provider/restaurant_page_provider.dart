@@ -9,7 +9,7 @@ class RestaurantPageProvider extends ChangeNotifier {
   late RestaurantDetail restaurantData;
   Enum state = RestaurantPageDetailState.menu;
   Set<Marker> markers = <Marker>{};
-  List<RestaurantReview> restaurantreviews = [];
+  List<RestaurantReview> reviews = [];
   List<String> restaurantPhotos = [];
   String opening = '';
 
@@ -30,13 +30,14 @@ class RestaurantPageProvider extends ChangeNotifier {
 
   cleardata() {
     markers.clear();
-    restaurantreviews.clear;
+    reviews.clear;
     restaurantPhotos.clear();
+    state = RestaurantPageDetailState.menu;
     notifyListeners();
   }
 
   addReview(RestaurantReview data) {
-    restaurantreviews.add(data);
+    reviews.add(data);
     notifyListeners();
   }
 

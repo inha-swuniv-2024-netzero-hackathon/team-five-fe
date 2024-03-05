@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/my_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
@@ -33,14 +34,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => UserData()),
+        ChangeNotifierProvider(create: (context) => NetworkProvider()),
         ChangeNotifierProvider(create: (context) => GuidePageProvider()),
-        ChangeNotifierProvider(create: (context) => MyPageProvider()),
         ChangeNotifierProvider(create: (context) => MisiklistProvider()),
         ChangeNotifierProvider(create: (context) => MisiklistDetailProvider()),
+        ChangeNotifierProvider(create: (context) => MisiklistChangeProvider()),
+        ChangeNotifierProvider(create: (context) => RestaurantPageProvider()),
         ChangeNotifierProvider(create: (context) => ReviewPageData()),
-        ChangeNotifierProvider(create: (context) => NetworkProvider()),
-        ChangeNotifierProvider(create: (context) => RestaurantPageProvider())
+        ChangeNotifierProvider(create: (context) => MyPageProvider()),
+        ChangeNotifierProvider(create: (context) => UserData()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

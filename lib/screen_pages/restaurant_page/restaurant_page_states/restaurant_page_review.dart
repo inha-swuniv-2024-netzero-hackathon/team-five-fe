@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/restaurant_review_class.dart';
+import 'package:proto_just_design/main.dart';
+import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/restaurant_provider/restaurant_page_provider.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -7,17 +13,45 @@ import 'package:proto_just_design/widget_datas/default_widget.dart';
 import 'package:provider/provider.dart';
 
 class RestaurantPageReview extends StatefulWidget {
-  const RestaurantPageReview({super.key});
+  final String uuid;
+  const RestaurantPageReview({super.key, required this.uuid});
 
   @override
   State<RestaurantPageReview> createState() => _RestaurantPageReviewState();
 }
 
 class _RestaurantPageReviewState extends State<RestaurantPageReview> {
+  late String uuid = widget.uuid;
+  @override
+  void initState() {
+    super.initState();
+    getRestaurantReview();
+  }
+
+  getRestaurantReview() async {
+    if (context.read<RestaurantPageProvider>().reviews.isEmpty) {
+      bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+      if (!isNetwork) return;
+      String url = '${rootURL}v1/restaurants/$uuid/reviews/';
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        List<dynamic>? responseData =
+            json.decode(utf8.decode(response.bodyBytes));
+        if (responseData != null) {
+          for (dynamic data in responseData) {
+            context
+                .read<RestaurantPageProvider>()
+                .addReview(RestaurantReview(data));
+          }
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<RestaurantReview> reviews =
-        context.watch<RestaurantPageProvider>().restaurantreviews;
+        context.watch<RestaurantPageProvider>().reviews;
 
     return SizedBox(
       width: 400,

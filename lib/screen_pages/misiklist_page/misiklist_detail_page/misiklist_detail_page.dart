@@ -4,13 +4,16 @@ import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
+import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
-import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_bottomsheet.dart';
-import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page_restaurant_button.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_detail_page/misiklist_detail_page_bottomsheet.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_detail_page/misiklist_detail_page_restaurant_button.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_page.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -75,10 +78,6 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
   //   }
   // }
 
-  Future<int> setBookmark(String uuid) async {
-    return 1;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -95,24 +94,18 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
       child: Scaffold(
         body: context.watch<MisiklistDetailProvider>().misiklist == null
             ? Container()
-            : SingleChildScrollView(
-                child: Column(
-                  children: [
-                    pageHeader(context),
-                    const Gap(25),
-                    pageBody(context),
-                    // misiklogDetailPageLowerButtons(context)
-                  ],
-                ),
+            : Column(
+                children: [
+                  pageHeader(context),
+                  const Gap(25),
+                  pageBody(context),
+                ],
               ),
-        // bottomNavigationBar: const MisiklistDetailBottomNavbar(),
       ),
     );
   }
 
-  Widget pageHeader(
-    BuildContext context,
-  ) {
+  Widget pageHeader(BuildContext context) {
     MisikListDetail? misiklist =
         context.watch<MisiklistDetailProvider>().misiklist;
     return (misiklist != null)
@@ -122,6 +115,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                 alignment: Alignment.bottomCenter,
                 children: [
                   Container(
+                    height: 300,
                     padding: const EdgeInsets.only(
                         left: 14, right: 22, top: 11, bottom: 11),
                     decoration: BoxDecoration(
@@ -195,25 +189,76 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                 ),
                               ),
                               const Spacer(),
-                              Container(
-                                alignment: Alignment.center,
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(90),
-                                    color: Colors.black.withOpacity(0.5)),
-                                child: Icon(
-                                  Icons.bookmark,
-                                  color: context
-                                          .watch<MisiklistProvider>()
-                                          .favMisiklists
-                                          .contains(misiklist.uuid)
-                                      ? ColorStyles.red
-                                      : ColorStyles.white,
+                              if (true) ...[
+                                GestureDetector(
+                                  onTap: () {
+                                    MisikListDetail detailMisiklist = context
+                                        .read<MisiklistDetailProvider>()
+                                        .misiklist!;
+                                    context
+                                        .read<MisiklistChangeProvider>()
+                                        .copyList(detailMisiklist);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MisiklistChangePage()));
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(90),
+                                        color: Colors.black.withOpacity(0.5)),
+                                    child: const Text('수정',
+                                        style: TextStyle(
+                                            color: ColorStyles.white,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                                const Gap(10),
+                              ],
+                              GestureDetector(
+                                onTap: () async {
+                                  if (!await context
+                                      .read<NetworkProvider>()
+                                      .checkNetwork()) return;
+                                  await checkLogin(context).then((value) async {
+                                    if (value) {
+                                      if (mounted) {
+                                        await setMisiklistBookmark(
+                                                context, misiklist.uuid)
+                                            .then((v) {
+                                          if (v != 200) {
+                                            changeMisiklistBookmark(
+                                                context, misiklist.uuid);
+                                          }
+                                        });
+                                      }
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(90),
+                                      color: Colors.black.withOpacity(0.5)),
+                                  child: Icon(
+                                    Icons.bookmark,
+                                    color: context
+                                            .watch<MisiklistProvider>()
+                                            .favMisiklists
+                                            .contains(misiklist.uuid)
+                                        ? ColorStyles.red
+                                        : ColorStyles.white,
+                                  ),
                                 ),
                               ),
                             ]),
-                        const Gap(90),
+                        const Spacer(),
                         Align(
                           alignment: Alignment.bottomLeft,
                           child: SizedBox(
@@ -260,43 +305,41 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                     ),
                                   ],
                                 ),
-                                Text(
+                                const Text(
                                   'text',
-                                  maxLines: 1,
-                                  style: const TextStyle(
-                                    color: ColorStyles.white,
-                                    fontSize: 13,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  maxLines: 5,
+                                  style: TextStyle(
+                                      color: ColorStyles.white,
+                                      fontSize: 13,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        TextButton(
-                            onPressed: () {
-                              context
-                                  .read<MisiklistDetailProvider>()
-                                  .setDetailText();
-                              setState(() {});
-                            },
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
-                                  alignment: Alignment.topCenter,
-                                  width: 42,
-                                  height: 22,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(90),
-                                      color:
-                                          ColorStyles.black.withOpacity(0.5)),
-                                ),
-                                const Icon(Icons.keyboard_arrow_down_rounded,
-                                    color: ColorStyles.white, size: 30)
-                              ],
-                            ))
+                        // TextButton(
+                        //     onPressed: () {
+                        //       context
+                        //           .read<MisiklistDetailProvider>()
+                        //           .setDetailText();
+                        //     },
+                        //     child: Stack(
+                        //       alignment: Alignment.center,
+                        //       children: [
+                        //         Container(
+                        //           alignment: Alignment.topCenter,
+                        //           width: 42,
+                        //           height: 22,
+                        //           decoration: BoxDecoration(
+                        //               borderRadius: BorderRadius.circular(90),
+                        //               color:
+                        //                   ColorStyles.black.withOpacity(0.5)),
+                        //         ),
+                        //         const Icon(Icons.keyboard_arrow_down_rounded,
+                        //             color: ColorStyles.white, size: 30)
+                        //       ],
+                        //     ))
                       ],
                     ),
                   ),
@@ -342,21 +385,19 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
             ),
           ),
         ),
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 15),
-          child: SizedBox(
-            width: MediaQuery.sizeOf(context).width - 30,
-            height: 400,
-            child: ListView.builder(
-              itemCount:
-                  context.read<MisiklistDetailProvider>().restaurantList.length,
-              itemBuilder: (context, index) {
-                return DetailMisiklistRestaurantButton(
-                    restaurant: context
-                        .read<MisiklistDetailProvider>()
-                        .restaurantList[index]);
-              },
-            ),
+        const Gap(10),
+        SizedBox(
+          width: MediaQuery.sizeOf(context).width - 30,
+          height: MediaQuery.sizeOf(context).height - 370,
+          child: ListView.builder(
+            itemCount:
+                context.watch<MisiklistDetailProvider>().restaurantList.length,
+            itemBuilder: (context, index) {
+              return DetailMisiklistRestaurantButton(
+                  restaurant: context
+                      .watch<MisiklistDetailProvider>()
+                      .restaurantList[index]);
+            },
           ),
         )
       ],

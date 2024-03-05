@@ -3,7 +3,7 @@ import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
-import 'package:proto_just_design/screen_pages/misiklist_page/detail_misiklist_page/misiklist_detail_page.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_detail_page/misiklist_detail_page.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -96,12 +96,9 @@ class _MisiklistButtonState extends State<MisiklistButton> {
                       offset: const Offset(0, -6),
                       child: IconButton(
                           onPressed: () async {
-                            bool isNetwork = await context
+                            if (!await context
                                 .read<NetworkProvider>()
-                                .checkNetwork();
-                            if (!isNetwork) {
-                              return;
-                            }
+                                .checkNetwork()) return;
                             await checkLogin(context).then((value) async {
                               if (value) {
                                 if (mounted) {

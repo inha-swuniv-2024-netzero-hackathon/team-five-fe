@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:proto_just_design/providers/network_provider.dart';
@@ -109,7 +110,16 @@ class _LoginState extends State<Login> {
             ),
             child: Column(
               children: [
-                const SizedBox(height: 168),
+                const SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: const Icon(Icons.highlight_remove_outlined)),
+                ),
+                const SizedBox(height: 110),
                 Container(
                     alignment: Alignment.center,
                     child: const Text.rich(TextSpan(

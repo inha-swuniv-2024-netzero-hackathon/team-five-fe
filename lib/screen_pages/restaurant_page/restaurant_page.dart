@@ -4,11 +4,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/detail_restaurant_class.dart';
-import 'package:proto_just_design/class/restaurant_review_class.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/restaurant_provider/restaurant_page_provider.dart';
-import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page_hedart.dart';
 import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page_states/restaurant_page_map.dart';
 import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page_states/restaurant_page_menu.dart';
@@ -31,13 +29,11 @@ class RestaurantPage extends StatefulWidget {
 
 class _RestaurantPageState extends State<RestaurantPage> {
   late String uuid = widget.uuid;
-  int photoCount = 1;
   String lastOrder = '';
 
   @override
   void initState() {
     super.initState();
-    context.read<RestaurantPageProvider>().cleardata();
   }
 
   Future<void> getRestaurantData() async {
@@ -56,48 +52,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
     checkDay();
   }
 
-  getRestaurantReview() async {
-    if (context.read().isEmpty) {
-      bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-      if (!isNetwork) return;
-      String url = '${rootURL}v1/restaurants/$uuid/reviews/';
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        List<dynamic>? responseData =
-            json.decode(utf8.decode(response.bodyBytes));
-        if (responseData != null) {
-          for (dynamic data in responseData) {
-            context
-                .read<RestaurantPageProvider>()
-                .addReview(RestaurantReview(data));
-          }
-        }
-      }
-    }
-  }
-
-  getRestaurantPhoto() async {
-    if (context.watch<RestaurantPageProvider>().restaurantreviews.isEmpty) {
-      bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-      if (!isNetwork) return;
-      String url = '${rootURL}v1/restaurants/$uuid/image/';
-      final response = await http.get(Uri.parse(url)
-          .replace(queryParameters: <String, dynamic>{'page': '$photoCount'}));
-      if (response.statusCode == 200) {
-        Map<String, dynamic> responseData =
-            json.decode(utf8.decode(response.bodyBytes));
-        List<String> photolist = responseData['results']
-            .where((map) => map.containsKey('photo_file'))
-            .map((map) => map['photo_file'])
-            .cast<String>()
-            .toList();
-        for (String data in photolist) {
-          context.read<RestaurantPageProvider>().addPhoto(data);
-        }
-      }
-    }
-  }
-
   void setMarker() {
     RestaurantDetail restaurantData =
         context.read<RestaurantPageProvider>().restaurantData;
@@ -107,38 +61,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
         markerId: MarkerId(restaurantData.nameKorean),
         infoWindow: InfoWindow(title: restaurantData.nameKorean),
         position: LatLng(latitude, longitude)));
-  }
-
-  Future setBookmark(String uuid) async {
-    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-    if (!isNetwork) {
-      return;
-    }
-    if (await checkLogin(context)) {
-      changeBookmark(uuid);
-      final url = Uri.parse('${rootURL}v1/restaurants/$uuid/bookmark/');
-      final response = (context.watch<UserData>().token == null)
-          ? await http.post(url)
-          : await http.post(url, headers: {
-              "Authorization": 'Bearer ${context.watch<UserData>().token}'
-            });
-
-      if (response.statusCode != 200) {
-        changeBookmark(uuid);
-      } else {}
-    }
-  }
-
-  void changeBookmark(String uuid) {
-    if (context.read<UserData>().favRestaurantList.contains(uuid) == false) {
-      if (mounted) {
-        context.read<UserData>().addFavRestaurant(uuid);
-      }
-    } else {
-      if (mounted) {
-        context.read<UserData>().removeFavRestaurant(uuid);
-      }
-    }
   }
 
   void checkDay() {
@@ -156,64 +78,69 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getRestaurantData(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        RestaurantPageProvider restaurantPageProvider =
-            context.watch<RestaurantPageProvider>();
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container();
-        } else {
-          return Scaffold(
-            floatingActionButton:
-                restaurantPageProvider.state == RestaurantPageDetailState.review
-                    ? SizedBox(
-                        width: 70,
-                        height: 70,
-                        child: FloatingActionButton(
-                          onPressed: () async {
-                            await checkLogin(context).then((value) {
-                              if (value) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ReviewWritingPage(
-                                        restaurantName: restaurantPageProvider
-                                            .restaurantData.nameKorean,
-                                        uuid: uuid,
-                                      ),
-                                    ));
-                              }
-                            });
-                          },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(90)),
-                          backgroundColor: ColorStyles.red,
-                          child: const Icon(Icons.create_outlined,
-                              color: Colors.white, size: 40),
-                        ),
-                      )
-                    : Container(),
-            body: SingleChildScrollView(
-                child: Container(
-              margin: const EdgeInsets.only(left: 15, right: 15),
-              child: Column(children: [
-                const SizedBox(height: 30),
-                RestaurantPageHeader(uuid: uuid),
-                const SizedBox(height: 24),
-                restaurantPageStoreDetail(context),
-                restaurantPageStoreInfoList(context),
-                const SizedBox(height: 20),
-                restaurantPagestates(context)
-              ]),
-            )),
-          );
-        }
+    return PopScope(
+      onPopInvoked: (didPop) {
+        context.read<RestaurantPageProvider>().cleardata();
       },
+      child: FutureBuilder(
+        future: getRestaurantData(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          RestaurantPageProvider restaurantPageProvider =
+              context.watch<RestaurantPageProvider>();
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          } else {
+            return Scaffold(
+              floatingActionButton: restaurantPageProvider.state ==
+                      RestaurantPageDetailState.review
+                  ? SizedBox(
+                      width: 70,
+                      height: 70,
+                      child: FloatingActionButton(
+                        onPressed: () async {
+                          await checkLogin(context).then((value) {
+                            if (value) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReviewWritingPage(
+                                      restaurantName: restaurantPageProvider
+                                          .restaurantData.nameKorean,
+                                      uuid: uuid,
+                                    ),
+                                  ));
+                            }
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(90)),
+                        backgroundColor: ColorStyles.red,
+                        child: const Icon(Icons.create_outlined,
+                            color: Colors.white, size: 40),
+                      ),
+                    )
+                  : Container(),
+              body: SingleChildScrollView(
+                  child: Container(
+                margin: const EdgeInsets.only(left: 15, right: 15),
+                child: Column(children: [
+                  const SizedBox(height: 30),
+                  RestaurantPageHeader(uuid: uuid),
+                  const SizedBox(height: 24),
+                  infoDetail(context),
+                  restaurantPageStoreInfoList(context),
+                  const SizedBox(height: 20),
+                  restaurantPagestates(context)
+                ]),
+              )),
+            );
+          }
+        },
+      ),
     );
   }
 
-  Widget restaurantPageStoreDetail(BuildContext context) {
+  Widget infoDetail(BuildContext context) {
     RestaurantPageProvider restaurantPageProvider =
         context.watch<RestaurantPageProvider>();
     return Column(children: [
@@ -292,15 +219,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
       children: [
         listButton(context, '메뉴', RestaurantPageDetailState.menu),
         const SizedBox(width: 10),
-        listButton(context, '리뷰', RestaurantPageDetailState.review,
-            onPressed: () async {
-          await getRestaurantReview();
-        }),
+        listButton(context, '리뷰', RestaurantPageDetailState.review),
         const SizedBox(width: 10),
-        listButton(context, '사진', RestaurantPageDetailState.photo,
-            onPressed: () async {
-          await getRestaurantPhoto();
-        }),
+        listButton(context, '사진', RestaurantPageDetailState.photo),
         const SizedBox(width: 10),
         listButton(context, '지도', RestaurantPageDetailState.map)
       ],
@@ -314,9 +235,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
       case RestaurantPageDetailState.menu:
         return const RestaurantPageMenu();
       case RestaurantPageDetailState.review:
-        return const RestaurantPageReview();
+        return RestaurantPageReview(uuid: uuid);
       case RestaurantPageDetailState.photo:
-        return const RestaurantPagePhoto();
+        return RestaurantPagePhoto(uuid: uuid);
       case RestaurantPageDetailState.map:
         return const RestaurantPageMap();
       default:
@@ -325,8 +246,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   Widget listButton(
-      BuildContext context, String text, RestaurantPageDetailState state,
-      {VoidCallback? onPressed}) {
+      BuildContext context, String text, RestaurantPageDetailState state) {
     RestaurantPageProvider restaurantPageProvider =
         context.watch<RestaurantPageProvider>();
     return Container(
@@ -352,7 +272,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
           ElevatedButton(
               style: ButtonStyles.transparenBtuttonStyle,
               onPressed: () {
-                onPressed?.call();
                 restaurantPageProvider.changeState(state);
               },
               child: Container()),

@@ -1,5 +1,9 @@
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:proto_just_design/functions/default_function.dart';
+import 'package:proto_just_design/main.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/restaurant_provider/restaurant_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -17,6 +21,38 @@ class RestaurantPageHeader extends StatefulWidget {
 class _RestaurantPageHeaderState extends State<RestaurantPageHeader> {
   bool detailRating = false;
   late String uuid = widget.uuid;
+  Future setBookmark(String uuid) async {
+    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
+    if (!isNetwork) {
+      return;
+    }
+    if (await checkLogin(context)) {
+      changeBookmark(uuid);
+      final url = Uri.parse('${rootURL}v1/restaurants/$uuid/bookmark/');
+      final response = (context.watch<UserData>().token == null)
+          ? await http.post(url)
+          : await http.post(url, headers: {
+              "Authorization": 'Bearer ${context.watch<UserData>().token}'
+            });
+
+      if (response.statusCode != 200) {
+        changeBookmark(uuid);
+      }
+    }
+  }
+
+  void changeBookmark(String uuid) {
+    if (context.read<UserData>().favRestaurantList.contains(uuid) == false) {
+      if (mounted) {
+        context.read<UserData>().addFavRestaurant(uuid);
+      }
+    } else {
+      if (mounted) {
+        context.read<UserData>().removeFavRestaurant(uuid);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     RestaurantPageProvider restaurantPageProvider =
@@ -160,7 +196,9 @@ class _RestaurantPageHeaderState extends State<RestaurantPageHeader> {
                 size: 32,
               ),
       ),
-      onTap: () {},
+      onTap: () {
+        setBookmark(uuid);
+      },
     );
   }
 
