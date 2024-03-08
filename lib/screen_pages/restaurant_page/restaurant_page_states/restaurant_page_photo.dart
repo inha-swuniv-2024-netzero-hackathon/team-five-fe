@@ -25,7 +25,7 @@ class _RestaurantPagePhotoState extends State<RestaurantPagePhoto> {
   }
 
   getRestaurantPhoto() async {
-    if (context.read<RestaurantPageProvider>().reviews.isEmpty) {
+    if (context.read<RestaurantProvider>().reviews.isEmpty) {
       bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
       if (!isNetwork) return;
       String url = '${rootURL}v1/restaurants/$uuid/image/';
@@ -41,7 +41,7 @@ class _RestaurantPagePhotoState extends State<RestaurantPagePhoto> {
             .cast<String>()
             .toList();
         for (String data in photoList) {
-          context.read<RestaurantPageProvider>().addPhoto(data);
+          context.read<RestaurantProvider>().addPhoto(data);
         }
       }
     }
@@ -50,7 +50,7 @@ class _RestaurantPagePhotoState extends State<RestaurantPagePhoto> {
   @override
   Widget build(BuildContext context) {
     List<String> photos =
-        context.watch<RestaurantPageProvider>().restaurantPhotos;
+        context.watch<RestaurantProvider>().restaurantPhotos;
     int len = photos.length;
     return SizedBox(
       width: 500,

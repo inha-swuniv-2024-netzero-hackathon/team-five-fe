@@ -55,8 +55,8 @@ class _RestaurantPageHeaderState extends State<RestaurantPageHeader> {
 
   @override
   Widget build(BuildContext context) {
-    RestaurantPageProvider restaurantPageProvider =
-        context.watch<RestaurantPageProvider>();
+    RestaurantProvider restaurantPageProvider =
+        context.watch<RestaurantProvider>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

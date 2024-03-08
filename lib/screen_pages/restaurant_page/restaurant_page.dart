@@ -29,12 +29,6 @@ class RestaurantPage extends StatefulWidget {
 
 class _RestaurantPageState extends State<RestaurantPage> {
   late String uuid = widget.uuid;
-  String lastOrder = '';
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   Future<void> getRestaurantData() async {
     bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
@@ -46,7 +40,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
       RestaurantDetail restaurant = RestaurantDetail(responseData);
-      context.read<RestaurantPageProvider>().setRestaurant(restaurant);
+      context.read<RestaurantProvider>().setRestaurant(restaurant);
     }
     setMarker();
     checkDay();
@@ -54,41 +48,45 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   void setMarker() {
     RestaurantDetail restaurantData =
-        context.read<RestaurantPageProvider>().restaurantData;
+        context.read<RestaurantProvider>().restaurantData;
     final latitude = restaurantData.latitude!;
     final longitude = restaurantData.longitude!;
-    context.read<RestaurantPageProvider>().addMarker(Marker(
+    context.read<RestaurantProvider>().addMarker(Marker(
         markerId: MarkerId(restaurantData.nameKorean),
         infoWindow: InfoWindow(title: restaurantData.nameKorean),
         position: LatLng(latitude, longitude)));
   }
 
   void checkDay() {
-    String opening = '';
-
-    int now = DateTime.now().weekday - 1;
-    now = 1;
-    List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-    String day = weekdays[now];
-    opening = '';
-    //     '${restaurantData!.openingHour[day]['open']} ~ ${restaurantData!.openingHour[day]['close']}';
-    // lastOrder = '${restaurantData!.openingHour[day]['last_order']}';
-    context.read<RestaurantPageProvider>().setOpening(opening);
+    String opening = '미등록';
+    String lastOrder = '';
+    RestaurantDetail restaurantData =
+        context.read<RestaurantProvider>().restaurantData;
+    if (restaurantData.openingHour != null) {
+      int now = DateTime.now().weekday - 1;
+      now = 1;
+      List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+      String day = weekdays[now];
+      final today = restaurantData.openingHour![day];
+      opening = '${(today['open'] ?? '')} ~ ${today['close'] ?? ''}';
+      lastOrder = '${today['last_order']}';
+    }
+    context.read<RestaurantProvider>().setTime(opening, lastOrder);
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
-        context.read<RestaurantPageProvider>().cleardata();
+        context.read<RestaurantProvider>().cleardata();
       },
       child: FutureBuilder(
         future: getRestaurantData(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          RestaurantPageProvider restaurantPageProvider =
-              context.watch<RestaurantPageProvider>();
+          RestaurantProvider restaurantPageProvider =
+              context.watch<RestaurantProvider>();
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container();
+            return const Scaffold(backgroundColor: Colors.white);
           } else {
             return Scaffold(
               floatingActionButton: restaurantPageProvider.state ==
@@ -141,8 +139,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   Widget infoDetail(BuildContext context) {
-    RestaurantPageProvider restaurantPageProvider =
-        context.watch<RestaurantPageProvider>();
+    RestaurantProvider restaurantPageProvider =
+        context.watch<RestaurantProvider>();
     return Column(children: [
       Row(
         children: [
@@ -153,7 +151,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                   const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(width: 9),
           Text(
-            'L.O $lastOrder',
+            'L.O ${restaurantPageProvider.lastOrder}',
             style: const TextStyle(
                 color: ColorStyles.silver,
                 fontSize: 13,
@@ -229,8 +227,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   Widget restaurantPagestates(BuildContext context) {
-    RestaurantPageProvider restaurantPageProvider =
-        context.watch<RestaurantPageProvider>();
+    RestaurantProvider restaurantPageProvider =
+        context.watch<RestaurantProvider>();
     switch (restaurantPageProvider.state) {
       case RestaurantPageDetailState.menu:
         return const RestaurantPageMenu();
@@ -247,8 +245,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   Widget listButton(
       BuildContext context, String text, RestaurantPageDetailState state) {
-    RestaurantPageProvider restaurantPageProvider =
-        context.watch<RestaurantPageProvider>();
+    RestaurantProvider restaurantPageProvider =
+        context.watch<RestaurantProvider>();
     return Container(
       clipBehavior: Clip.antiAlias,
       width: 44,

@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:proto_just_design/class/detail_misiklist_class.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
 
 class MisiklistChangeProvider extends ChangeNotifier {
   late MisikListDetail copiedList;
-  List<MisiklistRestaurant> selectedList = [];
+  List<String> selectedList = [];
 
   copyList(MisikListDetail data) {
-    copiedList = data;
-    notifyListeners();
-  }
-
-  addAll(List<MisiklistRestaurant> list) {
-    selectedList = list;
+    copiedList = MisikListDetail.copy(data);
     notifyListeners();
   }
 
@@ -23,11 +17,29 @@ class MisiklistChangeProvider extends ChangeNotifier {
   }
 
   selectRestaurant(MisiklistRestaurant data) {
-    if (selectedList.contains(data)) {
-      selectedList.remove(data);
+    if (selectedList.contains(data.uuid)) {
+      selectedList.remove(data.uuid);
     } else {
-      selectedList.add(data);
+      selectedList.add(data.uuid);
     }
+    notifyListeners();
+  }
+
+  changePrivate() {
+    copiedList.isPrivate = !copiedList.isPrivate;
+    notifyListeners();
+  }
+
+  reorder(int oldIndex, int newIndex) {
+    final item = copiedList.restaurantList.removeAt(oldIndex);
+
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    } else if (newIndex < 0) {
+      newIndex = 0;
+    }
+
+    copiedList.restaurantList.insert(newIndex, item);
     notifyListeners();
   }
 }

@@ -29,7 +29,7 @@ class _RestaurantPageReviewState extends State<RestaurantPageReview> {
   }
 
   getRestaurantReview() async {
-    if (context.read<RestaurantPageProvider>().reviews.isEmpty) {
+    if (context.read<RestaurantProvider>().reviews.isEmpty) {
       bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
       if (!isNetwork) return;
       String url = '${rootURL}v1/restaurants/$uuid/reviews/';
@@ -40,7 +40,7 @@ class _RestaurantPageReviewState extends State<RestaurantPageReview> {
         if (responseData != null) {
           for (dynamic data in responseData) {
             context
-                .read<RestaurantPageProvider>()
+                .read<RestaurantProvider>()
                 .addReview(RestaurantReview(data));
           }
         }
@@ -51,7 +51,7 @@ class _RestaurantPageReviewState extends State<RestaurantPageReview> {
   @override
   Widget build(BuildContext context) {
     List<RestaurantReview> reviews =
-        context.watch<RestaurantPageProvider>().reviews;
+        context.watch<RestaurantProvider>().reviews;
 
     return SizedBox(
       width: 400,

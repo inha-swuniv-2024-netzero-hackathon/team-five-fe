@@ -35,10 +35,7 @@ class _MisiklistChangeRestaurantButtonState
         isLong
             ? Container(
                 height: 210,
-                width: MediaQuery.sizeOf(context).width - 50,
-                margin: const EdgeInsets.only(bottom: 20),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                width: MediaQuery.sizeOf(context).width - 30,
                 decoration: ShapeDecoration(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -63,8 +60,7 @@ class _MisiklistChangeRestaurantButtonState
             : Container(),
         Container(
           height: 105,
-          width: MediaQuery.sizeOf(context).width - 50,
-          margin: const EdgeInsets.only(bottom: 20),
+          width: MediaQuery.sizeOf(context).width - 30,
           padding: const EdgeInsets.only(
             top: 10,
             bottom: 10,
@@ -102,12 +98,12 @@ class _MisiklistChangeRestaurantButtonState
                   padding: const EdgeInsets.all(3.5),
                   decoration: BoxDecoration(
                       border: Border.all(
-                          color:
-                              changeProvider.selectedList.contains(restaurant)
-                                  ? ColorStyles.red
-                                  : ColorStyles.gray),
+                          color: changeProvider.selectedList
+                                  .contains(restaurant.uuid)
+                              ? ColorStyles.red
+                              : ColorStyles.gray),
                       borderRadius: BorderRadius.circular(90)),
-                  child: changeProvider.selectedList.contains(restaurant)
+                  child: changeProvider.selectedList.contains(restaurant.uuid)
                       ? Container(
                           decoration: BoxDecoration(
                               color: ColorStyles.red,
@@ -182,8 +178,8 @@ class _MisiklistChangeRestaurantButtonState
                               const Icon(Icons.star_rounded,
                                   color: ColorStyles.yellow),
                               const Gap(3),
-                              Text(
-                                  (restaurant.rating ~/ 100).toStringAsFixed(2))
+                              Text((restaurant.rating.toDouble() / 100)
+                                  .toStringAsFixed(2))
                             ],
                           ),
                         ),
@@ -218,7 +214,7 @@ class _MisiklistChangeRestaurantButtonState
                                       SortState.sortThumb.icon,
                                       const Gap(3),
                                       Text(
-                                          '${(widget.restaurant.rating / 100).toDouble()}')
+                                          '${(restaurant.rating / 100).toDouble()}')
                                     ]),
                         ),
                       ],

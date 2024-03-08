@@ -16,13 +16,13 @@ class RestaurantPageMap extends StatefulWidget {
 class _RestaurantPageMapState extends State<RestaurantPageMap> {
   @override
   Widget build(BuildContext context) {
-    RestaurantPageProvider restaurantPageProvider =
-        context.watch<RestaurantPageProvider>();
+    RestaurantProvider restaurantPageProvider =
+        context.watch<RestaurantProvider>();
     final latitude = restaurantPageProvider.restaurantData.latitude ??
         context.read<GuidePageProvider>().selectArea.latitude;
     final longitude = restaurantPageProvider.restaurantData.longitude ??
         context.read<GuidePageProvider>().selectArea.longitude;
-    final marker = context.watch<RestaurantPageProvider>().markers;
+    final marker = context.watch<RestaurantProvider>().markers;
     return Column(
       children: [
         SizedBox(

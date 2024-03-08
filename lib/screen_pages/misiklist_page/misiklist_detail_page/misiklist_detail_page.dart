@@ -192,9 +192,10 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                               if (true) ...[
                                 GestureDetector(
                                   onTap: () {
-                                    MisikListDetail detailMisiklist = context
-                                        .read<MisiklistDetailProvider>()
-                                        .misiklist!;
+                                    MisikListDetail detailMisiklist =
+                                        MisikListDetail.copy(context
+                                            .read<MisiklistDetailProvider>()
+                                            .misiklist!);
                                     context
                                         .read<MisiklistChangeProvider>()
                                         .copyList(detailMisiklist);

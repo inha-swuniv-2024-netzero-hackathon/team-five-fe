@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => MisiklistProvider()),
         ChangeNotifierProvider(create: (context) => MisiklistDetailProvider()),
         ChangeNotifierProvider(create: (context) => MisiklistChangeProvider()),
-        ChangeNotifierProvider(create: (context) => RestaurantPageProvider()),
+        ChangeNotifierProvider(create: (context) => RestaurantProvider()),
         ChangeNotifierProvider(create: (context) => ReviewPageData()),
         ChangeNotifierProvider(create: (context) => MyPageProvider()),
         ChangeNotifierProvider(create: (context) => UserData()),

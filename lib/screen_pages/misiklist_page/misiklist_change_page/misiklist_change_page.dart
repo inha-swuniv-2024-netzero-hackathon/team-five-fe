@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/detail_misiklist_class.dart';
+import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_page_restaurant_button.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_remove_dialog.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
@@ -233,17 +235,22 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
                           .read<MisiklistDetailProvider>()
                           .restaurantList
                           .length) {
-                    context.read<MisiklistChangeProvider>().addAll(context
+                    for (MisiklistRestaurant restaurant in context
                         .read<MisiklistChangeProvider>()
                         .copiedList
-                        .restaurantList);
+                        .restaurantList) {
+                      if (!context
+                          .read<MisiklistChangeProvider>()
+                          .selectedList
+                          .contains(restaurant.uuid)) {
+                        context
+                            .read<MisiklistChangeProvider>()
+                            .selectRestaurant(restaurant);
+                      }
+                    }
                   } else {
                     context.read<MisiklistChangeProvider>().removeall();
                   }
-                  print(context
-                      .read<MisiklistChangeProvider>()
-                      .copiedList
-                      .restaurantList);
                 },
                 child: Container(
                   padding:
@@ -311,7 +318,16 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
               ),
               const Gap(10),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  if (context
+                      .read<MisiklistChangeProvider>()
+                      .selectedList
+                      .isNotEmpty) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => const MisiklistRemoveDialog());
+                  }
+                },
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
@@ -336,39 +352,76 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  context.read<MisiklistChangeProvider>().changePrivate();
+                },
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
                   decoration: BoxDecoration(
-                      color: ColorStyles.red.withOpacity(0.6),
+                      color: context
+                              .watch<MisiklistChangeProvider>()
+                              .copiedList
+                              .isPrivate
+                          ? ColorStyles.red.withOpacity(0.6)
+                          : ColorStyles.gray,
                       borderRadius: BorderRadius.circular(90)),
-                  child: Row(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: 16,
-                        height: 16,
-                        decoration: const ShapeDecoration(
-                          color: Colors.white,
-                          shape: OvalBorder(),
-                          shadows: Boxshadows.defaultShadow,
+                  child: context
+                          .watch<MisiklistChangeProvider>()
+                          .copiedList
+                          .isPrivate
+                      ? Row(
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              width: 16,
+                              height: 16,
+                              decoration: const ShapeDecoration(
+                                color: Colors.white,
+                                shape: OvalBorder(),
+                                shadows: Boxshadows.defaultShadow,
+                              ),
+                              child: const Icon(Icons.lock_person,
+                                  color: ColorStyles.red, size: 12),
+                            ),
+                            const Gap(3),
+                            const Text(
+                              '비공개',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            const Text(
+                              '공개',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Gap(3),
+                            Container(
+                              alignment: Alignment.center,
+                              width: 16,
+                              height: 16,
+                              decoration: const ShapeDecoration(
+                                color: Colors.white,
+                                shape: OvalBorder(),
+                                shadows: Boxshadows.defaultShadow,
+                              ),
+                              child: const Icon(Icons.lock_open,
+                                  color: ColorStyles.gray, size: 12),
+                            )
+                          ],
                         ),
-                        child: const Icon(Icons.lock_person,
-                            color: ColorStyles.red, size: 12),
-                      ),
-                      const Gap(3),
-                      const Text(
-                        '비공개',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ],
-                  ),
                 ),
               )
             ],
@@ -377,18 +430,24 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
           SizedBox(
             width: MediaQuery.sizeOf(context).width - 30,
             height: MediaQuery.sizeOf(context).height - 362,
-            child: ListView.builder(
+            child: ReorderableListView.builder(
               itemCount: context
-                  .read<MisiklistChangeProvider>()
+                  .watch<MisiklistChangeProvider>()
                   .copiedList
                   .restaurantList
                   .length,
               itemBuilder: (context, index) {
                 return MisiklistChangeRestaurantButton(
+                    key: Key('misiklistrestaurant$index'),
                     restaurant: context
-                        .read<MisiklistChangeProvider>()
+                        .watch<MisiklistChangeProvider>()
                         .copiedList
                         .restaurantList[index]);
+              },
+              onReorder: (oldIndex, newIndex) {
+                context
+                    .read<MisiklistChangeProvider>()
+                    .reorder(oldIndex, newIndex);
               },
             ),
           ),

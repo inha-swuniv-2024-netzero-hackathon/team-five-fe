@@ -7,7 +7,7 @@ class MisikListDetail {
   String? profileImage;
   late String thumbnail;
   late bool isPrivate;
-  late String updated;
+  // late String updated;
   late bool isBookmarked;
   late List<MisiklistRestaurant> restaurantList;
   int? rating;
@@ -27,9 +27,7 @@ class MisikListDetail {
         "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
     isBookmarked = detailData['is_bookmarked'];
     List dataList = detailData['restaurant_list'];
-    restaurantList = dataList
-        .map((data) => MisiklistRestaurant(data))
-        .toList();
+    restaurantList = dataList.map((data) => MisiklistRestaurant(data)).toList();
     if (restaurantList.isNotEmpty) {
       rating = restaurantList
           .map((data) => data.rating)
@@ -38,5 +36,18 @@ class MisikListDetail {
     } else {
       rating = 0;
     }
+  }
+
+  MisikListDetail.copy(MisikListDetail source) {
+    uuid = source.uuid;
+    title = source.title;
+    username = source.username;
+    profileImage = source.profileImage;
+    thumbnail = source.thumbnail;
+    isPrivate = source.isPrivate;
+    isBookmarked = source.isBookmarked;
+    restaurantList = List<MisiklistRestaurant>.from(
+        source.restaurantList.map((item) => MisiklistRestaurant.copy(item)));
+    rating = source.rating;
   }
 }

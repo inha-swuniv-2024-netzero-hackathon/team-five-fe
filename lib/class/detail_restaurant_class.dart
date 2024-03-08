@@ -10,7 +10,7 @@ class RestaurantDetail {
   late String addressEnglish;
   late String addressKorean;
   late String area;
-  // late Map<String, dynamic> openingHour;
+  Map<String, dynamic>? openingHour;
   double? latitude;
   double? longitude;
 
@@ -38,7 +38,7 @@ class RestaurantDetail {
     addressKorean = restaurantDetail['address_korean'] ?? '';
 
     Map restaurantInfo = restaurantDetail['restaurant_info'];
-    // openingHour = restaurantInfo['opening_hours'];
+    openingHour = restaurantInfo['opening_hours'];
     rating = restaurantInfo['rating'];
     ratingTaste = restaurantInfo['rating_taste'];
     ratingPrice = restaurantInfo['rating_price'];

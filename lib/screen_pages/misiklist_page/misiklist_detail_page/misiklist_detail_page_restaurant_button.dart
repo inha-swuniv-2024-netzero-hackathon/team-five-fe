@@ -11,8 +11,8 @@ import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
 
 class DetailMisiklistRestaurantButton extends StatefulWidget {
-    final MisiklistRestaurant restaurant;
-    const DetailMisiklistRestaurantButton({super.key, required this.restaurant});
+  final MisiklistRestaurant restaurant;
+  const DetailMisiklistRestaurantButton({super.key, required this.restaurant});
 
   @override
   State<DetailMisiklistRestaurantButton> createState() =>
@@ -201,8 +201,8 @@ class _DetailMisiklistRestaurantButtonState
                               const Icon(Icons.star_rounded,
                                   color: ColorStyles.yellow),
                               const Gap(3),
-                              Text(
-                                  (restaurant.rating ~/ 100).toStringAsFixed(2))
+                              Text((restaurant.rating.toDouble() / 100)
+                                  .toStringAsFixed(2))
                             ],
                           ),
                         ),

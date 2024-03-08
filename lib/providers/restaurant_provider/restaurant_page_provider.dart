@@ -5,13 +5,14 @@ import 'package:proto_just_design/class/restaurant_review_class.dart';
 
 enum RestaurantPageDetailState { menu, review, photo, map }
 
-class RestaurantPageProvider extends ChangeNotifier {
+class RestaurantProvider extends ChangeNotifier {
   late RestaurantDetail restaurantData;
   Enum state = RestaurantPageDetailState.menu;
   Set<Marker> markers = <Marker>{};
   List<RestaurantReview> reviews = [];
   List<String> restaurantPhotos = [];
   String opening = '';
+  String lastOrder = '';
 
   setRestaurant(RestaurantDetail data) {
     restaurantData = data;
@@ -46,8 +47,9 @@ class RestaurantPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setOpening(String data) {
+  setTime(String data, String data2) {
     opening = data;
+    lastOrder = data2;
     notifyListeners();
   }
 }

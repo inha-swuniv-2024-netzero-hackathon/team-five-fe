@@ -33,4 +33,19 @@ class MisiklistRestaurant {
     eveningPrice = restaurantInfo['evening_price'];
     serviceList = [];
   }
+
+  MisiklistRestaurant.copy(MisiklistRestaurant data) {
+    uuid = data.uuid;
+    name = data.name;
+    thumbnail = data.thumbnail;
+    latitude = data.latitude;
+    longitude = data.longitude;
+    memo = data.memo;
+    rating = data.rating;
+    ratingTaste = data.ratingTaste;
+    ratingPrice = data.ratingPrice;
+    ratingService = data.ratingService;
+    daytimePrice = data.daytimePrice;
+    eveningPrice = data.eveningPrice;
+  }
 }
