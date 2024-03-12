@@ -199,6 +199,13 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                     context
                                         .read<MisiklistChangeProvider>()
                                         .copyList(detailMisiklist);
+                                    context
+                                        .read<MisiklistDetailProvider>()
+                                        .setSort(SortState.sortRating);
+
+                                    context
+                                        .read<MisiklistDetailProvider>()
+                                        .sortByRating();
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(

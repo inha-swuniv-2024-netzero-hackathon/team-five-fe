@@ -26,21 +26,21 @@ class MisiklistDetailProvider with ChangeNotifier {
   }
 
   sortByRating() {
-    restaurantList.sort((pre, post) => pre.rating.compareTo(post.rating));
+    restaurantList.sort((pre, post) => post.rating.compareTo(pre.rating));
     notifyListeners();
   }
 
   sortByDistance(num lat, num lon) {
     restaurantList.sort(
-      (pre, post) => (pow((pre.latitude! - lat), 2) +
-              pow(pre.longitude! - lon, 2))
-          .compareTo(
-              pow((post.latitude! - lat), 2) + pow(post.longitude! - lon, 2)),
+      (pre, post) =>
+          (pow((post.latitude! - lat), 2) + pow(post.longitude! - lon, 2))
+              .compareTo(
+                  pow((pre.latitude! - lat), 2) + pow(pre.longitude! - lon, 2)),
     );
   }
 
   sortByThumb() {
-    restaurantList.sort((a, b) => a.rating.compareTo(b.rating));
+    restaurantList.sort((a, b) => b.rating.compareTo(a.rating));
   }
   // setLike() {
   //   if (isGood == true) {

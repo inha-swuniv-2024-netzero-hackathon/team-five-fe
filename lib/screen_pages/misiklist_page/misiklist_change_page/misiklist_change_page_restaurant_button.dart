@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';

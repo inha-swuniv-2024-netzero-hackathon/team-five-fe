@@ -30,12 +30,13 @@ class _MisiklistRemoveDialogState extends State<MisiklistRemoveDialog> {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Icon(Icons.clear)),
+                        child: const Icon(Icons.clear)),
                   ),
                 ),
-                Icon(Icons.error_outline, color: ColorStyles.red, size: 30),
-                Gap(10),
-                Text.rich(
+                const Icon(Icons.error_outline,
+                    color: ColorStyles.red, size: 30),
+                const Gap(10),
+                const Text.rich(
                   TextSpan(
                     children: [
                       TextSpan(

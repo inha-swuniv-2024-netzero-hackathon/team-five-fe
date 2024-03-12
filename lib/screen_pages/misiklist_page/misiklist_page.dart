@@ -32,8 +32,9 @@ class _MisiklistPageState extends State<MisiklistPage> {
                 ? const DefaultMisiklist()
                 : screen == 'my'
                     ? const MyMisiklist()
-                    :screen =='fav'? 
-                    Container():Container()
+                    : screen == 'fav'
+                        ? Container()
+                        : Container()
           ],
         ),
       ),
@@ -98,11 +99,7 @@ class _MisiklistPageState extends State<MisiklistPage> {
                       : null,
                   child: const Row(
                     children: [
-                      Icon(
-                        Icons.lock,
-                        color: ColorStyles.red,
-                        size: 20,
-                      ),
+                      Icon(Icons.lock, color: ColorStyles.red, size: 20),
                       Text('나의 리스트')
                     ],
                   ),
