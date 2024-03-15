@@ -7,6 +7,8 @@ import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_dialog.dart';
+import 'package:proto_just_design/widget_datas/add_misiklist.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
 
@@ -112,7 +114,7 @@ class _DetailMisiklistRestaurantButtonState
                       children: [
                         Text(
                           (restaurant.name)
-                              .substring(0, min(restaurant.name.length, 12)),
+                              .substring(0, min(restaurant.name.length, 10)),
                           style: const TextStyle(
                             color: ColorStyles.black,
                             fontSize: 17,
@@ -174,6 +176,41 @@ class _DetailMisiklistRestaurantButtonState
                                     size: 22, color: ColorStyles.red)
                                 : const Icon(Icons.bookmark,
                                     size: 22, color: ColorStyles.ash),
+                          ),
+                        ),
+                        const Gap(10),
+                        Container(
+                          padding: const EdgeInsets.all(1),
+                          decoration: const ShapeDecoration(
+                            color: Colors.white,
+                            shape: OvalBorder(),
+                            shadows: [
+                              BoxShadow(
+                                color: Color(0x29000000),
+                                blurRadius: 2,
+                                offset: Offset(0, 0.40),
+                                spreadRadius: 0,
+                              )
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: () async {
+                              print('연결필요');
+                              bool isNetwork = await context
+                                  .read<NetworkProvider>()
+                                  .checkNetwork();
+                              if (!isNetwork) return;
+                              if (await checkLogin(context)) {
+                                if (mounted) {
+                                  showBottomSheet(
+                                      context: context,
+                                      builder: (context) =>
+                                          const AddMisiklistBottom());
+                                }
+                              }
+                            },
+                            child: const Icon(Icons.add,
+                                size: 22, color: ColorStyles.ash),
                           ),
                         )
                       ],
