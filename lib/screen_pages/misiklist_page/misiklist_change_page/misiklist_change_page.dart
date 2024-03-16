@@ -4,7 +4,7 @@ import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
-import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_page_restaurant_button.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_restaurant_button.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_remove_dialog.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
@@ -429,7 +429,7 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
           const Gap(10),
           SizedBox(
             width: MediaQuery.sizeOf(context).width - 30,
-            height: MediaQuery.sizeOf(context).height - 362,
+            height: MediaQuery.sizeOf(context).height - 364,
             child: ReorderableListView.builder(
               itemCount: context
                   .watch<MisiklistChangeProvider>()

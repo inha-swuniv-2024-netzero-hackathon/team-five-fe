@@ -30,9 +30,7 @@ class MisiklistDetailPage extends StatefulWidget {
 class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
   Future<void> getMisiklistPageData(String? token, String uuid) async {
     bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-    if (!isNetwork) {
-      return;
-    }
+    if (!isNetwork) return;
     final url = Uri.parse('${rootURL}v1/misiklist/$uuid');
     final response = (token == null)
         ? await http.get(url)
@@ -189,82 +187,152 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                 ),
                               ),
                               const Spacer(),
-                              if (true) ...[
-                                GestureDetector(
-                                  onTap: () {
-                                    MisikListDetail detailMisiklist =
-                                        MisikListDetail.copy(context
-                                            .read<MisiklistDetailProvider>()
-                                            .misiklist!);
-                                    context
-                                        .read<MisiklistChangeProvider>()
-                                        .copyList(detailMisiklist);
-                                    context
-                                        .read<MisiklistDetailProvider>()
-                                        .setSort(SortState.sortRating);
+                              true
+                                  ? Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                MisikListDetail
+                                                    detailMisiklist =
+                                                    MisikListDetail.copy(context
+                                                        .read<
+                                                            MisiklistDetailProvider>()
+                                                        .misiklist!);
+                                                context
+                                                    .read<
+                                                        MisiklistChangeProvider>()
+                                                    .copyList(detailMisiklist);
+                                                context
+                                                    .read<
+                                                        MisiklistDetailProvider>()
+                                                    .setSort(
+                                                        SortState.sortRating);
 
-                                    context
-                                        .read<MisiklistDetailProvider>()
-                                        .sortByRating();
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const MisiklistChangePage()));
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(90),
-                                        color: Colors.black.withOpacity(0.5)),
-                                    child: const Text('수정',
-                                        style: TextStyle(
-                                            color: ColorStyles.white,
-                                            fontWeight: FontWeight.bold)),
-                                  ),
-                                ),
-                                const Gap(10),
-                              ],
-                              GestureDetector(
-                                onTap: () async {
-                                  if (!await context
-                                      .read<NetworkProvider>()
-                                      .checkNetwork()) return;
-                                  await checkLogin(context).then((value) async {
-                                    if (value) {
-                                      if (mounted) {
-                                        await setMisiklistBookmark(
-                                                context, misiklist.uuid)
-                                            .then((v) {
-                                          if (v != 200) {
-                                            changeMisiklistBookmark(
-                                                context, misiklist.uuid);
-                                          }
-                                        });
-                                      }
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  width: 36,
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(90),
-                                      color: Colors.black.withOpacity(0.5)),
-                                  child: Icon(
-                                    Icons.bookmark,
-                                    color: context
-                                            .watch<MisiklistProvider>()
-                                            .favMisiklists
-                                            .contains(misiklist.uuid)
-                                        ? ColorStyles.red
-                                        : ColorStyles.white,
-                                  ),
-                                ),
-                              ),
+                                                context
+                                                    .read<
+                                                        MisiklistDetailProvider>()
+                                                    .sortByRating();
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const MisiklistChangePage()));
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 5),
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            90),
+                                                    color: Colors.black
+                                                        .withOpacity(0.5)),
+                                                child: const Text('수정',
+                                                    style: TextStyle(
+                                                        color:
+                                                            ColorStyles.white,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ),
+                                            ),
+                                            const Gap(10),
+                                          ],
+                                        ),
+                                        const Gap(10),
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () async {
+                                            if (!await context
+                                                .read<NetworkProvider>()
+                                                .checkNetwork()) return;
+                                            await checkLogin(context)
+                                                .then((value) async {
+                                              if (value) {
+                                                if (mounted) {
+                                                  await setMisiklistBookmark(
+                                                          context,
+                                                          misiklist.uuid)
+                                                      .then((v) {
+                                                    if (v != 200) {
+                                                      changeMisiklistBookmark(
+                                                          context,
+                                                          misiklist.uuid);
+                                                    }
+                                                  });
+                                                }
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            width: 36,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(90),
+                                              color: ColorStyles.white,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Color(0x29000000),
+                                                  blurRadius: 2,
+                                                  offset: Offset(0, 0.40),
+                                                  spreadRadius: 0,
+                                                )
+                                              ],
+                                            ),
+                                            child: Icon(
+                                              Icons.bookmark,
+                                              color: context
+                                                      .watch<
+                                                          MisiklistProvider>()
+                                                      .favMisiklists
+                                                      .contains(misiklist.uuid)
+                                                  ? ColorStyles.red
+                                                  : ColorStyles.silver,
+                                            ),
+                                          ),
+                                        ),
+                                        Gap(5),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            bool isNetwork = await context
+                                                .read<NetworkProvider>()
+                                                .checkNetwork();
+                                            if (!isNetwork) return;
+                                            print('add');
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            width: 36,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(90),
+                                              color: ColorStyles.white,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                    color: Color(0x29000000),
+                                                    blurRadius: 2,
+                                                    offset: Offset(0, 0.40),
+                                                    spreadRadius: 0)
+                                              ],
+                                            ),
+                                            child: const Icon(
+                                              Icons.add,
+                                              color: ColorStyles.silver,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                             ]),
                         const Spacer(),
                         Align(
@@ -280,11 +348,10 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                       misiklist.title,
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
-                                        color: ColorStyles.white,
-                                        fontSize: 20,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                          color: ColorStyles.white,
+                                          fontSize: 20,
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.w600),
                                     ),
                                     const Gap(10),
                                     Container(

@@ -7,7 +7,6 @@ import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
-import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_dialog.dart';
 import 'package:proto_just_design/widget_datas/add_misiklist.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
@@ -152,9 +151,7 @@ class _DetailMisiklistRestaurantButtonState
                               bool isNetwork = await context
                                   .read<NetworkProvider>()
                                   .checkNetwork();
-                              if (!isNetwork) {
-                                return;
-                              }
+                              if (!isNetwork) return;
                               if (await checkLogin(context)) {
                                 if (mounted) {
                                   if (await setRestaurantBookmark(

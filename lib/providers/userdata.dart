@@ -47,6 +47,7 @@ class UserData extends ChangeNotifier {
 
   removeFavRestaurant(String uuid) {
     favRestaurantList.remove(uuid);
+    notifyListeners();
   }
 
   clearFavRestaurant() {

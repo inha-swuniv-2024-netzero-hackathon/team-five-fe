@@ -1,11 +1,13 @@
+import 'dart:io';
+
 class MisiklistRestaurant {
   late String uuid;
   late String name;
   late String thumbnail;
+  File? changedThumbnail;
   double? latitude;
   double? longitude;
   late String memo;
-  // late int ratingCount;
   late int rating;
   late int ratingTaste;
   late int ratingPrice;
@@ -23,7 +25,6 @@ class MisiklistRestaurant {
     latitude = restaurantDetail['latitude'];
     longitude = restaurantDetail['longitude'];
     memo = data['memo'] ?? '';
-    // ratingCount = restaurantDetail['rating_count'];
     Map restaurantInfo = restaurantDetail['restaurant_info'];
     rating = restaurantInfo['rating'];
     ratingTaste = restaurantInfo['rating_taste'];

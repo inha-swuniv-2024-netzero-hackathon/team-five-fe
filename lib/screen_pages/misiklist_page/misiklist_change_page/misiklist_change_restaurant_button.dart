@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -6,7 +7,9 @@ import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
+import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_restaurant_info.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
 
@@ -120,10 +123,15 @@ class _MisiklistChangeRestaurantButtonState
                       color: ColorStyles.white,
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(8))),
-                      image: DecorationImage(
-                        image: NetworkImage(restaurant.thumbnail),
-                        fit: BoxFit.cover,
-                      ))),
+                      image: (restaurant.changedThumbnail == null)
+                          ? DecorationImage(
+                              image: NetworkImage(restaurant.thumbnail),
+                              fit: BoxFit.cover)
+                          : DecorationImage(
+                              image: FileImage(
+                                  restaurant.changedThumbnail as File),
+                              fit: BoxFit.cover,
+                            ))),
               const Gap(10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,6 +151,36 @@ class _MisiklistChangeRestaurantButtonState
                           maxLines: 1,
                         ),
                         const Gap(8),
+                        GestureDetector(
+                          onTap: () async {
+                            bool isNetwork = await context
+                                .read<NetworkProvider>()
+                                .checkNetwork();
+                            if (!isNetwork) return;
+                            showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const MisiklistChangeRestaurantInfo());
+                          },
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: ColorStyles.white,
+                              borderRadius: BorderRadius.circular(90),
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: Color(0x29000000),
+                                    blurRadius: 2,
+                                    offset: Offset(0, 0.40),
+                                    spreadRadius: 0)
+                              ],
+                            ),
+                            child: const Icon(
+                                Icons.drive_file_rename_outline_outlined,
+                                size: 18),
+                          ),
+                        ),
                         Text(
                           (restaurant.name)
                               .substring(0, min(restaurant.name.length, 0)),

@@ -406,7 +406,7 @@ class _MyPageState extends State<MyPage> {
                 if (index == myPageProvider.myPageReviews.length) {
                   return const SizedBox(width: 30);
                 }
-                RestaurantReview(myPageProvider.myPageReviews[index]);
+                myPageProvider.myPageReviews[index];
                 return myPageReviewWidget(
                     context, myPageProvider.myPageReviews[index]);
               },
