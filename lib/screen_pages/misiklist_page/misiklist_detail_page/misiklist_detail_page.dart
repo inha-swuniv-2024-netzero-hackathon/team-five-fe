@@ -79,7 +79,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
   @override
   void initState() {
     super.initState();
-    getMisiklistPageData(context.read<UserData>().token, widget.misiklist.uuid);
+    getMisiklistPageData(context.read<UserDataProvider>().token, widget.misiklist.uuid);
   }
 
   @override
@@ -92,12 +92,14 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
       child: Scaffold(
         body: context.watch<MisiklistDetailProvider>().misiklist == null
             ? Container()
-            : Column(
-                children: [
-                  pageHeader(context),
-                  const Gap(25),
-                  pageBody(context),
-                ],
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    pageHeader(context),
+                    const Gap(25),
+                    pageBody(context),
+                  ],
+                ),
               ),
       ),
     );
@@ -463,8 +465,9 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
         const Gap(10),
         SizedBox(
           width: MediaQuery.sizeOf(context).width - 30,
-          height: MediaQuery.sizeOf(context).height - 370,
           child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
             itemCount:
                 context.watch<MisiklistDetailProvider>().restaurantList.length,
             itemBuilder: (context, index) {

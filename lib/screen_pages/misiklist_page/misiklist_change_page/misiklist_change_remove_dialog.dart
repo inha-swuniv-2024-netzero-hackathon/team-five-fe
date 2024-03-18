@@ -16,7 +16,7 @@ class _MisiklistRemoveDialogState extends State<MisiklistRemoveDialog> {
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Container(
+          SizedBox(
             width: 310,
             height: 171,
             child: Column(

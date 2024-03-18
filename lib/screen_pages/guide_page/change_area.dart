@@ -85,8 +85,8 @@ class _ChangeAreaState extends State<ChangeArea> {
             TextButton(
                 onPressed: () {
                   getCurrentLocation(context);
-                  final nowLat = context.read<UserData>().latitude;
-                  final nowLon = context.read<UserData>().longitude;
+                  final nowLat = context.read<UserDataProvider>().latitude;
+                  final nowLon = context.read<UserDataProvider>().longitude;
                   double min = 10000;
                   LocationList area = LocationList.area1;
                   for (LocationList location in LocationList.values) {

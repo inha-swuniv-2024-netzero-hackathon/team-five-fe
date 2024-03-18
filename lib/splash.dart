@@ -88,9 +88,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void provideUserData(String? name, String? profile, String token) {
     if (mounted) {
-      context.read<UserData>().inputUserData(name ?? 'name', 'profile');
-      context.read<UserData>().logIn();
-      context.read<UserData>().setToken(token);
+      context.read<UserDataProvider>().inputUserData(name ?? 'name', 'profile');
+      context.read<UserDataProvider>().logIn();
+      context.read<UserDataProvider>().setToken(token);
     }
   }
 

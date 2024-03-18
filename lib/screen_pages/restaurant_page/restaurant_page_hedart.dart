@@ -29,10 +29,10 @@ class _RestaurantPageHeaderState extends State<RestaurantPageHeader> {
     if (await checkLogin(context)) {
       changeBookmark(uuid);
       final url = Uri.parse('${rootURL}v1/restaurants/$uuid/bookmark/');
-      final response = (context.watch<UserData>().token == null)
+      final response = (context.watch<UserDataProvider>().token == null)
           ? await http.post(url)
           : await http.post(url, headers: {
-              "Authorization": 'Bearer ${context.watch<UserData>().token}'
+              "Authorization": 'Bearer ${context.watch<UserDataProvider>().token}'
             });
 
       if (response.statusCode != 200) {
@@ -42,13 +42,13 @@ class _RestaurantPageHeaderState extends State<RestaurantPageHeader> {
   }
 
   void changeBookmark(String uuid) {
-    if (context.read<UserData>().favRestaurantList.contains(uuid) == false) {
+    if (context.read<UserDataProvider>().favRestaurantList.contains(uuid) == false) {
       if (mounted) {
-        context.read<UserData>().addFavRestaurant(uuid);
+        context.read<UserDataProvider>().addFavRestaurant(uuid);
       }
     } else {
       if (mounted) {
-        context.read<UserData>().removeFavRestaurant(uuid);
+        context.read<UserDataProvider>().removeFavRestaurant(uuid);
       }
     }
   }
@@ -184,7 +184,7 @@ class _RestaurantPageHeaderState extends State<RestaurantPageHeader> {
             )
           ],
         ),
-        child: context.read<UserData>().favRestaurantList.contains(uuid)
+        child: context.read<UserDataProvider>().favRestaurantList.contains(uuid)
             ? const Icon(
                 Icons.bookmark,
                 color: ColorStyles.red,

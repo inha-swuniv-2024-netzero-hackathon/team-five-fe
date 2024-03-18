@@ -31,7 +31,7 @@ class _DetailMisiklistRestaurantButtonState
   @override
   Widget build(BuildContext context) {
     MisiklistRestaurant restaurant = widget.restaurant;
-    String? token = context.read<UserData>().token;
+    String? token = context.read<UserDataProvider>().token;
     return Stack(
       alignment: Alignment.topCenter,
       children: [
@@ -166,7 +166,7 @@ class _DetailMisiklistRestaurantButtonState
                               }
                             },
                             child: (context
-                                    .watch<UserData>()
+                                    .watch<UserDataProvider>()
                                     .favRestaurantList
                                     .contains(restaurant.uuid))
                                 ? const Icon(Icons.bookmark,
@@ -199,7 +199,8 @@ class _DetailMisiklistRestaurantButtonState
                               if (!isNetwork) return;
                               if (await checkLogin(context)) {
                                 if (mounted) {
-                                  showBottomSheet(
+                                  showModalBottomSheet(
+                                      showDragHandle: true,
                                       context: context,
                                       builder: (context) =>
                                           const AddMisiklistBottom());
@@ -264,7 +265,7 @@ class _DetailMisiklistRestaurantButtonState
                                         SortState.sortDistance.icon,
                                         const Gap(3),
                                         Text(
-                                            '${(checkDistance(context.read<UserData>().latitude, context.read<UserData>().longitude, restaurant.latitude!, restaurant.longitude!)).toStringAsFixed(2)}km')
+                                            '${(checkDistance(context.read<UserDataProvider>().latitude, context.read<UserDataProvider>().longitude, restaurant.latitude!, restaurant.longitude!)).toStringAsFixed(2)}km')
                                       ],
                                     )
                                   : Row(children: [

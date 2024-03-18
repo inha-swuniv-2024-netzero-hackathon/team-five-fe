@@ -17,7 +17,7 @@ Future<void> getCurrentLocation(BuildContext context) async {
   try {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((position) => context
-            .read<UserData>()
+            .read<UserDataProvider>()
             .setLocation(position.latitude, position.longitude));
     // context.read<UserData>().setLocation(position.latitude, position.longitude);
   } catch (e) {
@@ -27,7 +27,7 @@ Future<void> getCurrentLocation(BuildContext context) async {
 }
 
 Future<bool> checkLogin(BuildContext context) async {
-  if (context.read<UserData>().isLogin == false) {
+  if (context.read<UserDataProvider>().isLogin == false) {
     bool result = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const Login()));
     return result;
@@ -45,10 +45,10 @@ Future<int> setRestaurantBookmark(
 }
 
 void changeRestaurantBookmark(BuildContext context, String uuid) {
-  if (context.read<UserData>().favRestaurantList.contains(uuid) == false) {
-    context.read<UserData>().addFavRestaurant(uuid);
+  if (context.read<UserDataProvider>().favRestaurantList.contains(uuid) == false) {
+    context.read<UserDataProvider>().addFavRestaurant(uuid);
   } else {
-    context.read<UserData>().removeFavRestaurant(uuid);
+    context.read<UserDataProvider>().removeFavRestaurant(uuid);
   }
 }
 
@@ -56,7 +56,7 @@ Future<int> setMisiklistBookmark(BuildContext context, String uuid) async {
   changeMisiklistBookmark(context, uuid);
   final url = Uri.parse('${rootURL}v1/misiklist/$uuid/bookmark/');
   final response = await http.post(url,
-      headers: {"Authorization": "Bearer ${context.read<UserData>().token}"});
+      headers: {"Authorization": "Bearer ${context.read<UserDataProvider>().token}"});
   return response.statusCode;
 }
 

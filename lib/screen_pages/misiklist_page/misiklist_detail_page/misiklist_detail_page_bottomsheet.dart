@@ -45,8 +45,8 @@ class _MisikListDetailBottomSheetState
           }),
           sortingButton(context, SortState.sortDistance, onPressed: () {
             context.read<MisiklistDetailProvider>().sortByDistance(
-                context.read<UserData>().latitude,
-                context.read<UserData>().longitude);
+                context.read<UserDataProvider>().latitude,
+                context.read<UserDataProvider>().longitude);
           })
         ],
       ),

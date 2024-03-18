@@ -43,8 +43,8 @@ class _GuidePageBottomSheetState extends State<GuidePageBottomSheet> {
             guidePageProvider.sortByRating();
           }),
           sortingButton(context, SortState.sortDistance, onPressed: () {
-            guidePageProvider.sortByDistance(context.read<UserData>().latitude,
-                context.read<UserData>().longitude);
+            guidePageProvider.sortByDistance(context.read<UserDataProvider>().latitude,
+                context.read<UserDataProvider>().longitude);
           })
         ],
       ),

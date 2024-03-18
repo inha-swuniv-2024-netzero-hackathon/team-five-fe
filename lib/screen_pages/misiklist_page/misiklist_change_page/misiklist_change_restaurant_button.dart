@@ -244,7 +244,7 @@ class _MisiklistChangeRestaurantButtonState
                                         SortState.sortDistance.icon,
                                         const Gap(3),
                                         Text(
-                                            '${(checkDistance(context.read<UserData>().latitude, context.read<UserData>().longitude, restaurant.latitude!, restaurant.longitude!)).toStringAsFixed(2)}km')
+                                            '${(checkDistance(context.read<UserDataProvider>().latitude, context.read<UserDataProvider>().longitude, restaurant.latitude!, restaurant.longitude!)).toStringAsFixed(2)}km')
                                       ],
                                     )
                                   : Row(children: [

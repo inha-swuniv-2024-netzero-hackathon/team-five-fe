@@ -44,7 +44,7 @@ class _MyPageState extends State<MyPage> {
 
   clearFavData() {
     context.read<MisiklistProvider>().clearFavMisiklist();
-    context.read<UserData>().clearFavRestaurant();
+    context.read<UserDataProvider>().clearFavRestaurant();
   }
 
   getReviewData() async {
@@ -56,7 +56,7 @@ class _MyPageState extends State<MyPage> {
     final url = Uri.parse('${rootURL}v1/reviews/my/');
     if (!mounted) return;
     final response = await http.get(url,
-        headers: {"Authorization": "Bearer ${context.read<UserData>().token}"});
+        headers: {"Authorization": "Bearer ${context.read<UserDataProvider>().token}"});
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData =
           json.decode(utf8.decode(response.bodyBytes));
@@ -78,7 +78,7 @@ class _MyPageState extends State<MyPage> {
     final url = Uri.parse('${rootURL}v1/misiklist/my/');
     if (!mounted) return;
     final response = await http.get(url,
-        headers: {"Authorization": "Bearer ${context.read<UserData>().token}"});
+        headers: {"Authorization": "Bearer ${context.read<UserDataProvider>().token}"});
     if (response.statusCode == 200) {
       List<dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
       final misiklists = responseData;
@@ -123,7 +123,7 @@ class _MyPageState extends State<MyPage> {
                 TextButton(
                     style: ButtonStyles.transparenBtuttonStyle,
                     onPressed: () {
-                      context.read<UserData>().logOut();
+                      context.read<UserDataProvider>().logOut();
                       logout();
                     },
                     child: const Row(
@@ -164,7 +164,7 @@ class _MyPageState extends State<MyPage> {
             child: Column(
               children: [
                 Row(children: [
-                  context.watch<UserData>().userProfile != null
+                  context.watch<UserDataProvider>().userProfile != null
                       ? Container(
                           width: 65,
                           height: 65,
@@ -182,7 +182,7 @@ class _MyPageState extends State<MyPage> {
                           decoration: ShapeDecoration(
                             image: DecorationImage(
                               image: NetworkImage(
-                                  '${context.watch<UserData>().userProfile}'),
+                                  '${context.watch<UserDataProvider>().userProfile}'),
                               fit: BoxFit.cover,
                             ),
                             shape: const OvalBorder(),
@@ -194,7 +194,7 @@ class _MyPageState extends State<MyPage> {
                     children: [
                       Row(
                         children: [
-                          Text('${context.read<UserData>().userName}',
+                          Text('${context.read<UserDataProvider>().userName}',
                               style: const TextStyle(
                                 color: ColorStyles.black,
                                 fontSize: 20,

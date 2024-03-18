@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
         ChangeNotifierProvider(create: (context) => ReviewPageData()),
         ChangeNotifierProvider(create: (context) => MyPageProvider()),
-        ChangeNotifierProvider(create: (context) => UserData()),
+        ChangeNotifierProvider(create: (context) => UserDataProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

@@ -105,7 +105,7 @@ class _RestaurantButtonState extends State<RestaurantButton> {
                         {
                           if (await setRestaurantBookmark(
                                   context,
-                                  context.read<UserData>().token!,
+                                  context.read<UserDataProvider>().token!,
                                   restaurant.uuid) !=
                               200) {
                             if (mounted) {
@@ -120,7 +120,7 @@ class _RestaurantButtonState extends State<RestaurantButton> {
                   child: Icon(
                     Icons.bookmark,
                     color: (context
-                                .watch<UserData>()
+                                .watch<UserDataProvider>()
                                 .favRestaurantList
                                 .contains(restaurant.uuid) ==
                             false)
@@ -238,7 +238,7 @@ class _RestaurantButtonState extends State<RestaurantButton> {
                               const Icon(Icons.location_on,
                                   color: ColorStyles.green, size: 15),
                               Text(
-                                '${(checkDistance(context.watch<UserData>().latitude, context.watch<UserData>().longitude, restaurant.latitude, restaurant.longitude)).toStringAsFixed(2)}km',
+                                '${(checkDistance(context.watch<UserDataProvider>().latitude, context.watch<UserDataProvider>().longitude, restaurant.latitude, restaurant.longitude)).toStringAsFixed(2)}km',
                                 style: const TextStyle(
                                     color: ColorStyles.black,
                                     fontSize: 11,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:proto_just_design/class/misiklist_class.dart';
 
-class UserData extends ChangeNotifier {
+class UserDataProvider extends ChangeNotifier {
   String? token;
   String? userName;
   String? userProfile;
@@ -10,6 +11,7 @@ class UserData extends ChangeNotifier {
   double longitude = 0;
 
   List<String> favRestaurantList = [];
+  Set<Misiklist> myMisiklist = {};
 
   inputUserData(String name, String profile) {
     userName = name;
@@ -52,6 +54,16 @@ class UserData extends ChangeNotifier {
 
   clearFavRestaurant() {
     favRestaurantList.clear();
+    notifyListeners();
+  }
+
+  addMyMisiklist(Misiklist misiklist) {
+    myMisiklist.add(misiklist);
+    notifyListeners();
+  }
+
+  removeMyMisiklist(Misiklist misiklist) {
+    myMisiklist.remove(misiklist);
     notifyListeners();
   }
 }

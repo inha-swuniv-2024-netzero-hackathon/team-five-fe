@@ -55,7 +55,7 @@ class _GuidePageState extends State<GuidePage> {
         restaurantList.add(restaurant);
         if (restaurant.isBookmarked) {
           if (mounted) {
-            context.read<UserData>().addFavRestaurant(restaurant.uuid);
+            context.read<UserDataProvider>().addFavRestaurant(restaurant.uuid);
           }
         }
       }
@@ -88,7 +88,7 @@ class _GuidePageState extends State<GuidePage> {
         (context.read<GuidePageProvider>().nextUrl != null) &&
         context.read<GuidePageProvider>().guidePageRestaurants.isNotEmpty) {
       await getRestaurantList(
-          context.read<UserData>().token,
+          context.read<UserDataProvider>().token,
           context.read<GuidePageProvider>().nextUrl,
           context.read<GuidePageProvider>().selectArea);
     }
@@ -129,7 +129,7 @@ class _GuidePageState extends State<GuidePage> {
       isFirst = false;
       if (context.read<GuidePageProvider>().guidePageRestaurants.isEmpty) {
         getRestaurantList(
-          context.read<UserData>().token,
+          context.read<UserDataProvider>().token,
           context.read<GuidePageProvider>().nextUrl,
           context.read<GuidePageProvider>().selectArea,
         ).then((value) {
@@ -346,7 +346,7 @@ class _GuidePageState extends State<GuidePage> {
                   if (check == true) {
                     if (mounted) {
                       getRestaurantList(
-                          context.read<UserData>().token,
+                          context.read<UserDataProvider>().token,
                           guidePageProvider.nextUrl,
                           guidePageProvider.selectArea);
                     }

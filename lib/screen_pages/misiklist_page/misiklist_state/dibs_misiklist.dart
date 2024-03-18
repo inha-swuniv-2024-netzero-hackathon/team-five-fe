@@ -24,7 +24,7 @@ class _DibsMisiklistState extends State<DibsMisiklist> {
     if (!isNetwork) {
       return;
     }
-    String? token = context.read<UserData>().token;
+    String? token = context.read<UserDataProvider>().token;
     final url = Uri.parse('${rootURL}v1/misiklist/');
 
     final response = (token == null)
