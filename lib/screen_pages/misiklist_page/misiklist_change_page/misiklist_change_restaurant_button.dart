@@ -66,7 +66,6 @@ class _MisiklistChangeRestaurantButtonState
           padding: const EdgeInsets.only(
             top: 10,
             bottom: 10,
-            left: 7,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -88,7 +87,7 @@ class _MisiklistChangeRestaurantButtonState
           ),
           child: Row(
             children: [
-              GestureDetector(
+              InkWell(
                 onTap: () {
                   context
                       .read<MisiklistChangeProvider>()
@@ -97,6 +96,8 @@ class _MisiklistChangeRestaurantButtonState
                 child: Container(
                   width: 20,
                   height: 20,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 20),
                   padding: const EdgeInsets.all(3.5),
                   decoration: BoxDecoration(
                       border: Border.all(
@@ -115,7 +116,6 @@ class _MisiklistChangeRestaurantButtonState
                       : null,
                 ),
               ),
-              const Gap(10),
               Container(
                   width: 85,
                   height: 85,

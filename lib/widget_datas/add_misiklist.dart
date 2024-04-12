@@ -1,8 +1,12 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_dialog.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_page/misiklist_add_button.dart';
+import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
 
 class AddMisiklistBottom extends StatefulWidget {
@@ -39,28 +43,69 @@ class _AddMisiklistBottomState extends State<AddMisiklistBottom> {
               child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: context.watch<UserDataProvider>().myMisiklist.length,
+                // itemCount:
+                // context.watch<MisiklistProvider>().misiklists.length + 1,
+                itemCount:
+                    context.watch<UserDataProvider>().myMisiklist.length + 1,
                 itemBuilder: (context, index) {
                   List<Misiklist> misiklists =
                       context.watch<UserDataProvider>().myMisiklist.toList();
-                  if ((misiklists.length ~/ 3 == index ~/ 3) && true) {
-                    if ((misiklists.length % 3 == 0)) {
-                      return Row(
-                        children: [
-                          const Spacer(),
-                          MisiklistAddButton(misiklist: misiklists[index + 1]),
-                          const Spacer(),
-                          MisiklistAddButton(misiklist: misiklists[index + 2]),
-                          const Spacer(),
-                          MisiklistAddButton(misiklist: misiklists[index + 3]),
-                          const Spacer(),
-                        ],
-                      );
-                    } else if (index % 3 == 1) {
-                      return Container();
-                    } else {
-                      return Container(height: 10);
+                  // context.watch<MisiklistProvider>().misiklists;
+                  if (index % 3 == 0) {
+                    if (index > misiklists.length - 3) {
+                      if (misiklists.length % 3 == 0) {
+                        return const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Gap(30),
+                            NewMisiklistButton(),
+                            Spacer(),
+                            SizedBox(width: 82),
+                            Spacer(),
+                            SizedBox(width: 82),
+                            Gap(30)
+                          ],
+                        );
+                      } else if (misiklists.length % 3 == 1) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Gap(30),
+                            MisiklistAddButton(misiklist: misiklists[index]),
+                            const Spacer(),
+                            const NewMisiklistButton(),
+                            const Spacer(),
+                            const SizedBox(width: 82),
+                            const Gap(30)
+                          ],
+                        );
+                      } else if (misiklists.length % 3 == 2) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Gap(30),
+                            MisiklistAddButton(misiklist: misiklists[index]),
+                            const Spacer(),
+                            MisiklistAddButton(
+                                misiklist: misiklists[index + 1]),
+                            const Spacer(),
+                            const NewMisiklistButton(),
+                            const Gap(30)
+                          ],
+                        );
+                      }
                     }
+                    return Row(
+                      children: [
+                        const Gap(30),
+                        MisiklistAddButton(misiklist: misiklists[index]),
+                        const Spacer(),
+                        MisiklistAddButton(misiklist: misiklists[index + 1]),
+                        const Spacer(),
+                        MisiklistAddButton(misiklist: misiklists[index + 2]),
+                        const Gap(30)
+                      ],
+                    );
                   } else {
                     return Container();
                   }
@@ -68,6 +113,35 @@ class _AddMisiklistBottomState extends State<AddMisiklistBottom> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class NewMisiklistButton extends StatefulWidget {
+  const NewMisiklistButton({super.key});
+
+  @override
+  State<NewMisiklistButton> createState() => NewMisiklistButtonState();
+}
+
+class NewMisiklistButtonState extends State<NewMisiklistButton> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+            context: context, builder: (context) => const AddMisikList());
+      },
+      child: DottedBorder(
+        radius: const Radius.circular(15),
+        color: ColorStyles.red,
+        borderType: BorderType.RRect,
+        child: const SizedBox(
+          height: 82,
+          width: 82,
+          child: Icon(Icons.playlist_add, color: ColorStyles.red, size: 30),
         ),
       ),
     );

@@ -51,7 +51,7 @@ class _MyMisiklistState extends State<MyMisiklist> {
   @override
   void initState() {
     super.initState();
-    if (context.read<MisiklistProvider>().myMisiklists.isEmpty) {
+    if (context.read<UserDataProvider>().myMisiklist.isEmpty) {
       getMyMisiklists();
     }
   }
@@ -59,13 +59,14 @@ class _MyMisiklistState extends State<MyMisiklist> {
   @override
   Widget build(BuildContext context) {
     List<Misiklist> misiklists =
-        context.watch<MisiklistProvider>().myMisiklists;
+        context.watch<UserDataProvider>().myMisiklist.toList();
     int len = misiklists.length;
     return Container(
       alignment: Alignment.topCenter,
       padding: const EdgeInsets.only(left: 15, right: 15),
-      height: 600,
+      height: MediaQuery.sizeOf(context).height - 100,
       child: ListView.builder(
+        shrinkWrap: true,
         itemCount: len + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == len) {

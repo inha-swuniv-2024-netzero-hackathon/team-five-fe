@@ -67,8 +67,9 @@ class _DefaultMisiklistState extends State<DefaultMisiklist> {
     return Container(
       alignment: Alignment.topCenter,
       padding: const EdgeInsets.only(left: 15, right: 15),
-      height: 600,
+      height: MediaQuery.sizeOf(context).height - 100,
       child: ListView.builder(
+        shrinkWrap: true,
         itemCount: len + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == len) {

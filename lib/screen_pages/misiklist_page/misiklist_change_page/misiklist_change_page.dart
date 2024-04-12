@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proto_just_design/class/detail_misiklist_class.dart';
 import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
+import 'package:proto_just_design/functions/get_image.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_page/misiklist_change_restaurant_button.dart';
@@ -9,7 +12,6 @@ import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_change_p
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 class MisiklistChangePage extends StatefulWidget {
   const MisiklistChangePage({super.key});
@@ -30,14 +32,12 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
       child: Scaffold(
         body: context.watch<MisiklistDetailProvider>().misiklist == null
             ? Container()
-            : SizedBox(
-                width: MediaQuery.sizeOf(context).width,
-                height: MediaQuery.sizeOf(context).height,
+            : SingleChildScrollView(
                 child: Column(
                   children: [
-                    pageHeader(context),
+                    _pageHeader(context),
                     const Gap(25),
-                    pageBody(context, changeProvider),
+                    _pageBody(context, changeProvider),
                   ],
                 ),
               ),
@@ -45,7 +45,7 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
     );
   }
 
-  Widget pageHeader(BuildContext context) {
+  Widget _pageHeader(BuildContext context) {
     MisikListDetail? misiklist =
         context.watch<MisiklistDetailProvider>().misiklist;
     return (misiklist != null)
@@ -130,8 +130,12 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
                               ),
                               const Spacer(),
                               GestureDetector(
-                                onTap: () {
-                                  print('photo');
+                                onTap: () async {
+                                  File? image = await getImage();
+                                  if (image != null) {
+                                    image;
+                                  }
+                                  setState(() {});
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(5),
@@ -216,10 +220,9 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
         : Container();
   }
 
-  Widget pageBody(
+  Widget _pageBody(
       BuildContext context, MisiklistChangeProvider changeProvider) {
     return Container(
-      height: MediaQuery.sizeOf(context).height - 325,
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         children: [
@@ -429,8 +432,9 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
           const Gap(10),
           SizedBox(
             width: MediaQuery.sizeOf(context).width - 30,
-            height: MediaQuery.sizeOf(context).height - 364,
             child: ReorderableListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
               itemCount: context
                   .watch<MisiklistChangeProvider>()
                   .copiedList

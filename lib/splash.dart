@@ -26,8 +26,8 @@ class _SplashScreenState extends State<SplashScreen> {
   apcheck() async {
     final next = await appVersionCheck();
     if (next == true) {
-      getCurrentLocation(context);
       getUserToken();
+      getCurrentLocation(context);
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 
 class ReviewWriteRestaurantButton extends StatefulWidget {
@@ -18,7 +19,7 @@ class _ReviewWriteRestaurantButtonState
       height: 125,
       child: Row(
         children: [
-          Container(
+          SizedBox(
             width: 108,
             child: Row(
               children: [
@@ -34,7 +35,7 @@ class _ReviewWriteRestaurantButtonState
                     ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const Gap(16),
                 Container(
                   height: 77,
                   width: 77,

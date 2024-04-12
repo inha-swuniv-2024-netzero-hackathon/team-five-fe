@@ -111,19 +111,6 @@ class _GuidePageState extends State<GuidePage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    listViewController.addListener(() {
-      _scrollListener();
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   Future<void> getinitdata() async {
     if (isFirst) {
       isFirst = false;
@@ -139,6 +126,14 @@ class _GuidePageState extends State<GuidePage> {
       }
     }
     await Future.delayed(const Duration(seconds: 2));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    listViewController.addListener(() {
+      _scrollListener();
+    });
   }
 
   @override

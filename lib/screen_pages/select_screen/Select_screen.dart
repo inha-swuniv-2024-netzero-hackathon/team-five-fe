@@ -97,9 +97,8 @@ class _SelectScreenState extends State<SelectScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const ReviewRestaurantSelectPage(),
-                              ));
+                                  builder: (context) =>
+                                      const ReviewRestaurantSelectPage()));
                         }
                       }
                     }
@@ -116,10 +115,9 @@ class _SelectScreenState extends State<SelectScreen> {
                             Text(
                               '리스트+',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w400,
-                              ),
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w400),
                             )
                           ],
                         )

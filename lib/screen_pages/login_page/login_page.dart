@@ -70,6 +70,7 @@ class _LoginState extends State<Login> {
 
       await storage.write(key: "token", value: kakaoToken);
       provideUserData(userName, null, token);
+      print(token);
     }
   }
 

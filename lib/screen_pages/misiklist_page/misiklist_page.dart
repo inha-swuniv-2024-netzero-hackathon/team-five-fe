@@ -22,21 +22,19 @@ class _MisiklistPageState extends State<MisiklistPage> {
   @override
   Widget build(BuildContext context) {
     MisiklistProvider misiklistProvider = context.watch<MisiklistProvider>();
-    return SizedBox(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            header(context, misiklistProvider),
-            screen == 'default'
-                ? const DefaultMisiklist()
-                : screen == 'my'
-                    ? const MyMisiklist()
-                    : screen == 'fav'
-                        ? Container()
-                        : Container()
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 30),
+          header(context, misiklistProvider),
+          screen == 'default'
+              ? const DefaultMisiklist()
+              : screen == 'my'
+                  ? const MyMisiklist()
+                  : screen == 'fav'
+                      ? Container()
+                      : Container()
+        ],
       ),
     );
   }

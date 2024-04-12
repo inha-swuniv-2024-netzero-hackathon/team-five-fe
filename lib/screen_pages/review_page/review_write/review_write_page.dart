@@ -1,8 +1,10 @@
+import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:proto_just_design/functions/get_image.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
@@ -44,25 +46,9 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
 
   bool isAnonymous = false;
 
-  Future getImages() async {
-    final pickedFile = await picker.pickMultiImage(
-        imageQuality: 100, maxHeight: 1000, maxWidth: 1000);
-    List<XFile> xfilePick = pickedFile;
-
-    setState(
-      () {
-        if (xfilePick.isNotEmpty) {
-          for (var i = 0; i < xfilePick.length; i++) {
-            selectedImages.add(File(xfilePick[i].path));
-          }
-        }
-      },
-    );
-  }
-
   void backButton() {
     if (reviewPageController.page == 0) {
-      popPossible = true;
+      // popPossible = true;
       Navigator.pop(context);
     } else {
       popPossible = false;
@@ -239,12 +225,10 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
                                     BorderSide(color: ColorStyles.gray))),
                       )),
                   const SizedBox(height: 105),
-                  Container(
-                    child: TextButton(
-                      style: ButtonStyles.transparenBtuttonStyle,
-                      onPressed: () {},
-                      child: Container(),
-                    ),
+                  TextButton(
+                    style: ButtonStyles.transparenBtuttonStyle,
+                    onPressed: () {},
+                    child: Container(),
                   )
                 ],
               ),
@@ -258,229 +242,228 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
 
   Widget secondOnboardingPage(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Column(
-          children: [
-            reviewWritePageAppbar(context, '별점'),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      '3가지 항목에 대해 별점을 부여해주세요!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: ColorStyles.black,
-                        fontSize: 15,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
+      body: Column(
+        children: [
+          reviewWritePageAppbar(context, '별점'),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  const Text(
+                    '3가지 항목에 대해 별점을 부여해주세요!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: ColorStyles.black,
+                      fontSize: 15,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Gap(50),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          '음식의 맛에 대해 평가해주세요',
+                          style: TextStyle(
+                            color: ColorStyles.black,
+                            fontSize: 13,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 65),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            '음식의 맛에 대해 평가해주세요',
-                            style: TextStyle(
-                              color: ColorStyles.black,
-                              fontSize: 13,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            sliderHelper(context, tasteController),
-                            SizedBox(
-                              width: 350,
-                              child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                      valueIndicatorColor: ColorStyles.yellow,
-                                      overlayColor: ColorStyles.yellow),
-                                  child: Slider(
-                                      activeColor: ColorStyles.yellow,
-                                      inactiveColor: ColorStyles.ash,
-                                      thumbColor: Colors.white,
-                                      value: tasteController,
-                                      min: 1,
-                                      max: 5,
-                                      divisions: 4,
-                                      label:
-                                          '${tasteController.round().toString()}점',
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          tasteController = value;
-                                        });
-                                      })),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            '받으신 서비스를 평가해주세요',
-                            style: TextStyle(
-                              color: ColorStyles.black,
-                              fontSize: 13,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            sliderHelper(context, serviceController),
-                            SizedBox(
-                              width: 350,
-                              child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                      valueIndicatorColor: ColorStyles.yellow,
-                                      overlayColor: ColorStyles.yellow),
-                                  child: Slider(
-                                      activeColor: ColorStyles.yellow,
-                                      inactiveColor: ColorStyles.ash,
-                                      thumbColor: Colors.white,
-                                      value: serviceController,
-                                      min: 1,
-                                      max: 5,
-                                      divisions: 4,
-                                      label:
-                                          '${serviceController.round().toString()}점',
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          serviceController = value;
-                                        });
-                                      })),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            '체감 가격대에 대해 알려주세요',
-                            style: TextStyle(
-                              color: ColorStyles.black,
-                              fontSize: 13,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            sliderHelper(context, priceController),
-                            SizedBox(
-                              width: 350,
-                              child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                      valueIndicatorColor: ColorStyles.yellow,
-                                      overlayColor: ColorStyles.yellow),
-                                  child: Slider(
-                                      activeColor: ColorStyles.yellow,
-                                      inactiveColor: ColorStyles.ash,
-                                      thumbColor: Colors.white,
-                                      value: priceController,
-                                      min: 1,
-                                      max: 5,
-                                      divisions: 4,
-                                      label:
-                                          '${priceController.round().toString()}점',
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          priceController = value;
-                                        });
-                                      })),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 80),
-                    Container(
-                      padding: const EdgeInsets.only(
-                          left: 15, top: 15, bottom: 15, right: 20),
-                      width: 350,
-                      decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          shadows: Boxshadows.defaultShadow),
-                      child: Row(
+                      const Gap(10),
+                      Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Container(
-                              width: 36,
-                              height: 36,
-                              decoration: ShapeDecoration(
-                                  image: DecorationImage(
-                                      image: NetworkImage(context
-                                              .read<UserDataProvider>()
-                                              .userProfile ??
-                                          ''),
-                                      fit: BoxFit.fill),
-                                  shape: const OvalBorder(),
-                                  shadows: Boxshadows.defaultShadow)),
-                          const SizedBox(width: 13),
-                          const Text(
-                            '사용자',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: ColorStyles.black,
-                              fontSize: 17,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            '님의 최종 별점',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: ColorStyles.black,
-                              fontSize: 13,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          const Spacer(),
-                          const Icon(Icons.star, color: ColorStyles.yellow),
-                          const SizedBox(width: 2),
-                          Text(
-                            ((tasteController +
-                                        serviceController +
-                                        priceController) /
-                                    3)
-                                .toStringAsFixed(2),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 17,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w600,
-                            ),
+                          sliderHelper(context, tasteController),
+                          SizedBox(
+                            width: 350,
+                            child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                    valueIndicatorColor: ColorStyles.yellow,
+                                    overlayColor: ColorStyles.yellow),
+                                child: Slider(
+                                    activeColor: ColorStyles.yellow,
+                                    inactiveColor: ColorStyles.ash,
+                                    thumbColor: Colors.white,
+                                    value: tasteController,
+                                    min: 1,
+                                    max: 5,
+                                    divisions: 4,
+                                    label:
+                                        '${tasteController.round().toString()}점',
+                                    onChanged: (double value) {
+                                      setState(() {
+                                        tasteController = value;
+                                      });
+                                    })),
                           )
                         ],
                       ),
-                    )
-                  ],
-                ),
+                      const Gap(30),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          '받으신 서비스를 평가해주세요',
+                          style: TextStyle(
+                            color: ColorStyles.black,
+                            fontSize: 13,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      const Gap(10),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          sliderHelper(context, serviceController),
+                          SizedBox(
+                            width: 350,
+                            child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                    valueIndicatorColor: ColorStyles.yellow,
+                                    overlayColor: ColorStyles.yellow),
+                                child: Slider(
+                                    activeColor: ColorStyles.yellow,
+                                    inactiveColor: ColorStyles.ash,
+                                    thumbColor: Colors.white,
+                                    value: serviceController,
+                                    min: 1,
+                                    max: 5,
+                                    divisions: 4,
+                                    label:
+                                        '${serviceController.round().toString()}점',
+                                    onChanged: (double value) {
+                                      setState(() {
+                                        serviceController = value;
+                                      });
+                                    })),
+                          )
+                        ],
+                      ),
+                      const Gap(30),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          '체감 가격대에 대해 알려주세요',
+                          style: TextStyle(
+                            color: ColorStyles.black,
+                            fontSize: 13,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      const Gap(10),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          sliderHelper(context, priceController),
+                          SizedBox(
+                            width: 350,
+                            child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                    valueIndicatorColor: ColorStyles.yellow,
+                                    overlayColor: ColorStyles.yellow),
+                                child: Slider(
+                                    activeColor: ColorStyles.yellow,
+                                    inactiveColor: ColorStyles.ash,
+                                    thumbColor: Colors.white,
+                                    value: priceController,
+                                    min: 1,
+                                    max: 5,
+                                    divisions: 4,
+                                    label:
+                                        '${priceController.round().toString()}점',
+                                    onChanged: (double value) {
+                                      setState(() {
+                                        priceController = value;
+                                      });
+                                    })),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Gap(30),
+                  Container(
+                    padding: const EdgeInsets.only(
+                        left: 15, top: 15, bottom: 15, right: 20),
+                    width: 350,
+                    decoration: ShapeDecoration(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        shadows: Boxshadows.defaultShadow),
+                    child: Row(
+                      children: [
+                        Container(
+                            width: 36,
+                            height: 36,
+                            decoration: ShapeDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(context
+                                            .read<UserDataProvider>()
+                                            .userProfile ??
+                                        ''),
+                                    fit: BoxFit.fill),
+                                shape: const OvalBorder(),
+                                shadows: Boxshadows.defaultShadow)),
+                        const SizedBox(width: 13),
+                        const Text(
+                          '사용자',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: ColorStyles.black,
+                            fontSize: 17,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Text(
+                          '님의 최종 별점',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: ColorStyles.black,
+                            fontSize: 13,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const Spacer(),
+                        const Icon(Icons.star, color: ColorStyles.yellow),
+                        const SizedBox(width: 2),
+                        Text(
+                          ((tasteController +
+                                      serviceController +
+                                      priceController) /
+                                  3)
+                              .toStringAsFixed(2),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 17,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const Gap(10)
+                ],
               ),
             ),
-            nextPageButton(context, '기록하기')
-          ],
-        ),
+          ),
+          nextPageButton(context, '기록하기')
+        ],
       ),
     );
   }
@@ -607,7 +590,7 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
               fontWeight: FontWeight.w400,
             ),
           ),
-          const SizedBox(height: 80),
+          const SizedBox(height: 30),
           Container(
             width: 360,
             height: 340,
@@ -617,7 +600,7 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
               itemCount: selectedImages.length + 1,
               itemBuilder: (context, index) {
                 if (selectedImages.length == index) {
-                  return photoAddContainer(context);
+                  return _photoAddContainer(context);
                 }
                 return Column(
                   children: [
@@ -653,36 +636,34 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
               },
             ),
           ),
-          Expanded(
-            child: Column(
-              children: [
-                const SizedBox(height: 70),
-                SizedBox(
-                  width: 360,
-                  child: Row(
-                    children: [
-                      const Text(
-                        '사진에 메뉴판 사진을 추가하였나요?',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: ColorStyles.silver,
-                          fontSize: 13,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
+          Column(
+            children: [
+              const SizedBox(height: 30),
+              SizedBox(
+                width: 360,
+                child: Row(
+                  children: [
+                    const Text(
+                      '사진에 메뉴판 사진을 추가하였나요?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: ColorStyles.silver,
+                        fontSize: 13,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
                       ),
-                      const Spacer(),
-                      Switch(
-                          inactiveTrackColor: ColorStyles.gray,
-                          activeTrackColor: ColorStyles.red,
-                          activeColor: Colors.white,
-                          value: selectedImages.isNotEmpty,
-                          onChanged: (v) {})
-                    ],
-                  ),
-                )
-              ],
-            ),
+                    ),
+                    const Spacer(),
+                    Switch(
+                        inactiveTrackColor: ColorStyles.gray,
+                        activeTrackColor: ColorStyles.red,
+                        activeColor: Colors.white,
+                        value: selectedImages.isNotEmpty,
+                        onChanged: (v) {})
+                  ],
+                ),
+              )
+            ],
           ),
         ]),
       ),
@@ -763,7 +744,7 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
     );
   }
 
-  Widget photoAddContainer(BuildContext context) {
+  Widget _photoAddContainer(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12),
       child: SizedBox(
@@ -780,8 +761,12 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
               Expanded(
                 child: TextButton(
                     style: ButtonStyles.transparenBtuttonStyle,
-                    onPressed: () {
-                      getImages();
+                    onPressed: () async {
+                      List<File> images = await getImages();
+                      for (File image in images) {
+                        selectedImages.add(image);
+                      }
+                      setState(() {});
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -888,7 +873,7 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
               child: Text(
                 buttonName,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 25,
                   fontFamily: 'Inter',
@@ -914,7 +899,7 @@ class _ReviewWritingPageState extends State<ReviewWritingPage> {
                   child: Text(
                     buttonName,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 25,
                       fontFamily: 'Inter',

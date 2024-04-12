@@ -9,6 +9,7 @@ import 'package:proto_just_design/providers/guide_provider/guide_page_provider.d
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/restaurant_page/restaurant_page.dart';
+import 'package:proto_just_design/widget_datas/add_misiklist.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:provider/provider.dart';
@@ -150,7 +151,12 @@ class _RestaurantButtonState extends State<RestaurantButton> {
                       await context.read<NetworkProvider>().checkNetwork();
                   if (!isNetwork) return;
                   if (await checkLogin(context)) {
-                    print('추가필요');
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return const AddMisiklistBottom();
+                      },
+                    );
                   }
                 },
                 child: const Icon(Icons.add, color: ColorStyles.gray, size: 18),

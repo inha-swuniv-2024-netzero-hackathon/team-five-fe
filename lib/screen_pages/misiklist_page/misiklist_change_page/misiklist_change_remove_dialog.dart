@@ -41,20 +41,18 @@ class _MisiklistRemoveDialogState extends State<MisiklistRemoveDialog> {
                       TextSpan(
                         text: '1개 항목',
                         style: TextStyle(
-                          color: Color(0xFFF25757),
-                          fontSize: 15,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                        ),
+                            color: Color(0xFFF25757),
+                            fontSize: 15,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600),
                       ),
                       TextSpan(
                         text: '에 대해 삭제하시겠습니까?',
                         style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 15,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                        ),
+                            color: Color(0xFF333333),
+                            fontSize: 15,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -70,19 +68,18 @@ class _MisiklistRemoveDialogState extends State<MisiklistRemoveDialog> {
               alignment: Alignment.center,
               width: 310,
               height: 53,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: ColorStyles.red,
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(15),
                       bottomRight: Radius.circular(15))),
-              child: Text(
+              child: const Text(
                 '삭제하기',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w700,
-                ),
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700),
               ),
             ),
           )

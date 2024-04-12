@@ -5,7 +5,6 @@ import 'package:proto_just_design/datas/default_sorting.dart';
 class MisiklistProvider extends ChangeNotifier {
   List<Misiklist> misiklists = [];
   List<String> favMisiklists = [];
-  List<Misiklist> myMisiklists = [];
   SortState sorting = SortState.sortRecent;
 
   changeData(List<Misiklist> misiklistList) {
@@ -47,6 +46,4 @@ class MisiklistProvider extends ChangeNotifier {
     sorting = state;
     notifyListeners();
   }
-
-  
 }
