@@ -276,6 +276,7 @@ class _GuidePageState extends State<GuidePage> {
         maxChildSize: guidePageProvider.withMap ? 0.85 : 1,
         builder: (context, scrollController) {
           return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               controller: guidePageProvider.withMap ? scrollController : null,
               child: Container(
                 height: guidePageProvider.withMap
