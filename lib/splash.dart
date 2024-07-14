@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
-import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:provider/provider.dart';
 
@@ -19,11 +18,11 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
+    appCheck();
     super.initState();
-    apcheck();
   }
 
-  apcheck() async {
+  appCheck() async {
     final next = await appVersionCheck();
     if (next == true) {
       getUserToken();
@@ -37,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
       showDialog(context: context, builder: (context) => const PopDialog());
       return false;
     }
-    final uri = Uri.parse('$rootURL/v1/version/android/');
+    final uri = Uri.parse('${rootURL}v1/version/android/');
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {

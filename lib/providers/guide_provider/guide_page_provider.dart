@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:proto_just_design/class/restaurant_class.dart';
+import 'package:proto_just_design/model/global/restaurant.dart';
 import 'package:proto_just_design/datas/default_location.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 
 class GuidePageProvider extends ChangeNotifier {
-  List<Restaurant> guidePageRestaurants = [];
   LocationList selectArea = LocationList.area1;
-  SortState sorting = SortState.sortRating;
-  String? nextUrl;
-  Set<Marker> markers = {};
   String bigArea = LocationList.area1.bigArea;
+
+  SortState sorting = SortState.sortRating;
   List<LocationList> areaList = [];
-  bool searchOpen = false;
+
   bool withMap = false;
+  Set<Marker> markers = {};
+
+  List<Restaurant> guidePageRestaurants = [];
+  String? nextUrl;
+  bool searchOpen = false;
 
   setRestaurants(List<Restaurant> restaurants) {
     guidePageRestaurants = restaurants;

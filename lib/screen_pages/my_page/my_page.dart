@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:proto_just_design/class/misiklist_class.dart';
-import 'package:proto_just_design/class/restaurant_review_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
+import 'package:proto_just_design/model/global/restaurant_review.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/my_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';

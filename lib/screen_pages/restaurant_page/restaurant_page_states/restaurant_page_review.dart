@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/restaurant_review_class.dart';
+import 'package:proto_just_design/model/global/restaurant_review.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
@@ -108,7 +108,7 @@ class _RestaurantPageReviewState extends State<RestaurantPageReview> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(review.userName,
+                              Text(review.nickname,
                                   style: const TextStyle(
                                       color: ColorStyles.black,
                                       fontSize: 15,

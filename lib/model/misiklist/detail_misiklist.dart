@@ -1,9 +1,9 @@
-import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
+import 'package:proto_just_design/model/misiklist/misiklist_restaurant.dart';
 
 class MisikListDetail {
   late String uuid;
   late String title;
-  String? username;
+  String? nickname;
   String? profileImage;
   late String thumbnail;
   late bool isPrivate;
@@ -16,10 +16,10 @@ class MisikListDetail {
     uuid = detailData['uuid'];
     title = detailData['title'];
     Map<String, dynamic> createdBy =
-        detailData['created_by'] ?? {'username': 'name'};
+        detailData['created_by'] ?? {'nickname': 'name'};
     isPrivate = detailData['is_private'];
     if (!isPrivate) {
-      username = createdBy['username'];
+      nickname = createdBy['nickname'];
       profileImage = createdBy['profile_image'] ??
           "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
     }
@@ -41,7 +41,7 @@ class MisikListDetail {
   MisikListDetail.copy(MisikListDetail source) {
     uuid = source.uuid;
     title = source.title;
-    username = source.username;
+    nickname = source.nickname;
     profileImage = source.profileImage;
     thumbnail = source.thumbnail;
     isPrivate = source.isPrivate;

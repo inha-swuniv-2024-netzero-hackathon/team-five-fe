@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:proto_just_design/class/detail_misiklist_class.dart';
-import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
+import 'package:proto_just_design/model/misiklist/detail_misiklist.dart';
+import 'package:proto_just_design/model/misiklist/misiklist_restaurant.dart';
 import 'package:proto_just_design/functions/get_image.dart';
 import 'package:proto_just_design/providers/misiklist_provider/detail_misiklist_provider.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_change_provider.dart';
@@ -95,7 +95,7 @@ class _MisiklistChangePageState extends State<MisiklistChangePage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          ('${misiklist.username}'),
+                                          ('${misiklist.nickname}'),
                                           style: const TextStyle(
                                             color: ColorStyles.white,
                                             fontSize: 15,

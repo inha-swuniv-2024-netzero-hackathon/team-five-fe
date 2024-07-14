@@ -1,7 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
 import 'package:proto_just_design/screen_pages/misiklist_page/misiklist_add_dialog.dart';

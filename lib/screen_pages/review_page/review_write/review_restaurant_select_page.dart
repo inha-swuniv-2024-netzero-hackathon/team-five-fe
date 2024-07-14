@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/restaurant_class.dart';
+import 'package:proto_just_design/model/global/restaurant.dart';
 import 'package:proto_just_design/screen_pages/review_page/review_write/review_write_restaurant_button.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 

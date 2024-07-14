@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 
 class MisiklistProvider extends ChangeNotifier {

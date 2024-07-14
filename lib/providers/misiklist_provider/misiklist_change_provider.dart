@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/detail_misiklist_class.dart';
-import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
+import 'package:proto_just_design/model/misiklist/detail_misiklist.dart';
+import 'package:proto_just_design/model/misiklist/misiklist_restaurant.dart';
 
 class MisiklistChangeProvider extends ChangeNotifier {
   late MisikListDetail copiedList;

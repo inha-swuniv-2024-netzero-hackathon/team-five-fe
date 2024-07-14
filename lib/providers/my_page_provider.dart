@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
-import 'package:proto_just_design/class/restaurant_review_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
+import 'package:proto_just_design/model/global/restaurant_review.dart';
 
 class MyPageProvider extends ChangeNotifier {
   List<dynamic> myPageReviews = [];

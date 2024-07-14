@@ -1,9 +1,9 @@
-import 'package:proto_just_design/class/misiklist_restaurant_class.dart';
+import 'package:proto_just_design/model/misiklist/misiklist_restaurant.dart';
 
-class MisiklogDetail {
+class MisikloguDetail {
   late String uuid;
   late String title;
-  String? username;
+  String? nickcname;
   String? profileImage;
   late String thumbnail;
   int totalLikes = 0;
@@ -14,14 +14,14 @@ class MisiklogDetail {
   late List<MisiklistRestaurant> restaurantList;
   int? totalRating;
 
-  MisiklogDetail(Map<String, dynamic> detailData) {
+  MisikloguDetail(Map<String, dynamic> detailData) {
     uuid = detailData['uuid'];
     title = detailData['title'];
     Map<String, dynamic> createdBy =
-        detailData['created_by'] ?? {'username': 'name'};
+        detailData['created_by'] ?? {'nickname': 'name'};
     isPrivate = detailData['is_private'];
     if (!isPrivate) {
-      username = createdBy['username'];
+      nickcname = createdBy['nickname'];
       profileImage = createdBy['profile_image'] ??
           "https://basak-image-bucket.s3.amazonaws.com/restaurant_thumbnails_sample/sample_ramen.jpg";
     }

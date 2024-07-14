@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
 
 class MisiklistAddButton extends StatefulWidget {
   final Misiklist misiklist;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:proto_just_design/class/detail_restaurant_class.dart';
-import 'package:proto_just_design/class/restaurant_review_class.dart';
+import 'package:proto_just_design/model/misiklogu/detail_restaurant.dart';
+import 'package:proto_just_design/model/global/restaurant_review.dart';
 
 enum RestaurantPageDetailState { menu, review, photo, map }
 

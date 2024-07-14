@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:proto_just_design/class/detail_misiklist_class.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/model/misiklist/detail_misiklist.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
 import 'package:proto_just_design/datas/default_sorting.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/main.dart';
@@ -155,7 +155,7 @@ class _MisiklistDetailPageState extends State<MisiklistDetailPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          ('${misiklist.username}'),
+                                          ('${misiklist.nickname}'),
                                           style: const TextStyle(
                                             color: ColorStyles.white,
                                             fontSize: 15,

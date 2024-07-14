@@ -1,21 +1,18 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:proto_just_design/class/restaurant_class.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:proto_just_design/model/global/restaurant.dart';
+import 'package:proto_just_design/model/misiklist/guidePInfo.dart';
 import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
-import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
-import 'package:proto_just_design/screen_pages/guide_page/change_area.dart';
 import 'package:proto_just_design/screen_pages/guide_page/guide_page_bottomsheet.dart';
 import 'package:proto_just_design/screen_pages/guide_page/guide_page_map.dart';
 import 'package:proto_just_design/screen_pages/guide_page/restaurant_button.dart';
+import 'package:proto_just_design/view_model/guide_page/guidePage.dart';
 import 'package:proto_just_design/widget_datas/default_boxshadow.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
-import 'package:proto_just_design/datas/default_location.dart';
-import 'package:proto_just_design/main.dart';
 import 'package:provider/provider.dart';
 
 class GuidePage extends StatefulWidget {
@@ -29,47 +26,6 @@ class _GuidePageState extends State<GuidePage> {
   bool isFirst = true;
   ScrollController listViewController = ScrollController();
   TextEditingController findControlloer = TextEditingController();
-
-  Future<void> getRestaurantList(
-      String? token, String? next, LocationList area) async {
-    bool isNetwork = await context.read<NetworkProvider>().checkNetwork();
-    if (!isNetwork) return;
-
-    Set<Restaurant> restaurantList =
-        context.read<GuidePageProvider>().guidePageRestaurants.toSet();
-    final url = Uri.parse(next ??
-        '${rootURL}v1/restaurants/?area__id=${area.areaNum}&ordering=restaurant_info__rating&page=1');
-    context.read<GuidePageProvider>().setNextUrl(null);
-    final response = (token == null)
-        ? await http.get(url)
-        : await http.get(url, headers: {"Authorization": "Bearer $token"});
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseData =
-          json.decode(utf8.decode(response.bodyBytes));
-      final responseRestaurantList = responseData['results'];
-      if (mounted) {
-        context.read<GuidePageProvider>().setNextUrl(responseData['next']);
-      }
-      for (var restaurantData in responseRestaurantList) {
-        Restaurant restaurant = Restaurant(restaurantData);
-        restaurantList.add(restaurant);
-        if (restaurant.isBookmarked) {
-          if (mounted) {
-            context.read<UserDataProvider>().addFavRestaurant(restaurant.uuid);
-          }
-        }
-      }
-      if (mounted) {
-        context
-            .read<GuidePageProvider>()
-            .setRestaurants(restaurantList.toList());
-      }
-    } else if (response.statusCode == 401) {
-      if (mounted) {
-        // if (!context.read<UserData>().isLogin) {}
-      }
-    }
-  }
 
   void setRestaurantMarker() {
     for (Restaurant restaurant
@@ -94,7 +50,7 @@ class _GuidePageState extends State<GuidePage> {
     }
   }
 
-  makeMarker() {
+  void makeMarker() {
     if (mounted) {
       final guidePageProvider = context.read<GuidePageProvider>();
       Marker marker = (Marker(
@@ -272,11 +228,11 @@ class _GuidePageState extends State<GuidePage> {
       child: DraggableScrollableSheet(
         snapAnimationDuration: const Duration(milliseconds: 200),
         initialChildSize: guidePageProvider.withMap ? 0.85 : 1,
-        minChildSize: guidePageProvider.withMap ? 0.05 : 1,
+        minChildSize: guidePageProvider.withMap ? 0.06 : 1,
         maxChildSize: guidePageProvider.withMap ? 0.85 : 1,
         builder: (context, scrollController) {
           return SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
+              // physics: const NeverScrollableScrollPhysics(),
               controller: guidePageProvider.withMap ? scrollController : null,
               child: Container(
                 height: guidePageProvider.withMap
@@ -457,5 +413,42 @@ class _GuidePageState extends State<GuidePage> {
 
               return const SizedBox(height: 10);
             }));
+  }
+}
+
+class GuideP extends ConsumerStatefulWidget {
+  const GuideP({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _GuidePState();
+}
+
+class _GuidePState extends ConsumerState<GuideP> {
+  bool isFirst = true;
+  ScrollController listViewController = ScrollController();
+  TextEditingController findControlloer = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(guidePageProvider.notifier).setInfo(ref.read(provider), value, area);
+  }
+
+  void setRestaurantMarker() {
+    for (Restaurant restaurant
+        in context.read<GuidePageProvider>().guidePageRestaurants) {
+      Marker marker = (Marker(
+          markerId: MarkerId(restaurant.name),
+          infoWindow: InfoWindow(title: restaurant.name),
+          position: LatLng(restaurant.latitude, restaurant.longitude)));
+      context.read<GuidePageProvider>().addMarker(marker);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    GuidePageVM guidePController = ref.read(guidePageProvider.notifier);
+    GuidePInfo guidePInfo = ref.watch(guidePageProvider);
+    return Container();
   }
 }

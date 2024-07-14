@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
@@ -89,7 +89,7 @@ class _MisiklistButtonState extends State<MisiklistButton> {
                     const SizedBox(width: 8),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Text(misiklist.username),
+                      child: Text(misiklist.nickname),
                     ),
                     const Spacer(),
                     Transform.translate(
@@ -127,7 +127,8 @@ class _MisiklistButtonState extends State<MisiklistButton> {
                     )
                   ],
                 ),
-                Text(misiklist.title, style: const TextStyle(fontSize: 15)),
+                Text(misiklist.title,
+                    style: const TextStyle(fontSize: 15), maxLines: 1),
                 const SizedBox(height: 5),
                 const Text('글이 올 자리',
                     style: TextStyle(fontSize: 13, color: Color(0xff8E8E93))),

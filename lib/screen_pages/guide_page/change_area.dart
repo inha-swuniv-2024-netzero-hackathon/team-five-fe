@@ -1,34 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:proto_just_design/functions/default_function.dart';
-import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
 import 'package:proto_just_design/providers/userdata.dart';
+import 'package:proto_just_design/view_model/guide_page/area/setCity.dart';
+import 'package:proto_just_design/view_model/guide_page/area/setArea.dart';
+import 'package:proto_just_design/view_model/guide_page/guidePage.dart';
 import 'package:proto_just_design/widget_datas/default_buttonstyle.dart';
 import 'package:proto_just_design/widget_datas/default_color.dart';
 import 'package:proto_just_design/datas/default_location.dart';
 import 'package:provider/provider.dart';
 
-class ChangeArea extends StatefulWidget {
-  const ChangeArea({super.key});
+class ChangeAreaPage extends ConsumerStatefulWidget {
+  const ChangeAreaPage({super.key});
 
   @override
-  State<ChangeArea> createState() => _ChangeAreaState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ChangeAreaPageState();
 }
 
-class _ChangeAreaState extends State<ChangeArea> {
+class _ChangeAreaPageState extends ConsumerState<ChangeAreaPage> {
   late LocationList initLocation;
   LocationList? loc;
+
   @override
   void initState() {
-    initLocation = context.read<GuidePageProvider>().selectArea;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    SetArea areaController = ref.read(areaProvider.notifier);
+    LocationList area = ref.watch(areaProvider);
+    GuidePageVM guidePController = ref.read(guidePageProvider.notifier);
+    SetCity cityController = ref.read(cityProvider.notifier);
+    String city = ref.read(cityProvider);
     return PopScope(
       onPopInvoked: (didPop) {
         if (loc == null) {
-          context.read<GuidePageProvider>().setArea(initLocation);
+          areaController.setArea(initLocation);
         }
       },
       child: Scaffold(
@@ -40,22 +48,28 @@ class _ChangeAreaState extends State<ChangeArea> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    changeAreaPageHeader(context),
-                    selectBigArea(context),
+                    changeAreaPageHeader(
+                        context, area, areaController, guidePController),
+                    selectCity(context, city, cityController),
                     const SizedBox(height: 20),
-                    selectSmallArea(context),
+                    selectArea(context, city, area, areaController),
                   ],
                 ),
               ),
             ),
           ),
-          checkButton(context)
+          checkButton(
+            context,
+            area,
+            guidePController,
+          )
         ],
       )),
     );
   }
 
-  Widget changeAreaPageHeader(BuildContext context) {
+  Widget changeAreaPageHeader(BuildContext context, LocationList areaSet,
+      SetArea areaController, GuidePageVM guidePController) {
     return Column(
       children: [
         Row(
@@ -63,13 +77,13 @@ class _ChangeAreaState extends State<ChangeArea> {
             const Icon(Icons.where_to_vote, size: 30, color: ColorStyles.red),
             Row(
               children: [
-                Text(context.watch<GuidePageProvider>().selectArea.bigArea,
+                Text(areaSet.bigArea,
                     style: const TextStyle(
                         color: ColorStyles.black,
                         fontSize: 25,
                         fontWeight: FontWeight.w700)),
                 const SizedBox(width: 8),
-                Text(context.read<GuidePageProvider>().selectArea.smallArea,
+                Text(areaSet.smallArea,
                     style: const TextStyle(
                         color: ColorStyles.black,
                         fontSize: 20,
@@ -98,8 +112,8 @@ class _ChangeAreaState extends State<ChangeArea> {
                     }
                   }
                   if (mounted) {
-                    context.read<GuidePageProvider>().setArea(area);
-                    context.read<GuidePageProvider>().setRestaurants([]);
+                    areaController.setArea(area);
+                    guidePController.changeList([]);
                     Navigator.pop(context, true);
                   }
                 },
@@ -123,7 +137,7 @@ class _ChangeAreaState extends State<ChangeArea> {
     );
   }
 
-  Widget selectBigArea(BuildContext context) {
+  Widget selectCity(BuildContext context, String city, SetCity cityController) {
     List<String> bigAreaList = LocationList.values
         .map((location) => location.bigArea)
         .toSet()
@@ -167,17 +181,17 @@ class _ChangeAreaState extends State<ChangeArea> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      bigAreaButton(
-                          bigAreaList[index], '${100000 + index + 1}'),
+                      bigAreaButton(bigAreaList[index], '${100000 + index + 1}',
+                          city, cityController),
                       const SizedBox(width: 27),
                       (bigAreaList.length % 3 != 1)
-                          ? bigAreaButton(
-                              bigAreaList[index + 1], '${100000 + index + 2}')
+                          ? bigAreaButton(bigAreaList[index + 1],
+                              '${100000 + index + 2}', city, cityController)
                           : const SizedBox(width: 102, height: 102),
                       const SizedBox(width: 27),
                       (bigAreaList.length % 3 == 0)
-                          ? bigAreaButton(
-                              bigAreaList[index + 2], '${100000 + index + 3}')
+                          ? bigAreaButton(bigAreaList[index + 2],
+                              '${100000 + index + 3}', city, cityController)
                           : const SizedBox(width: 102, height: 102),
                     ],
                   );
@@ -185,13 +199,14 @@ class _ChangeAreaState extends State<ChangeArea> {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    bigAreaButton(bigAreaList[index], '${100000 + index + 1}'),
+                    bigAreaButton(bigAreaList[index], '${100000 + index + 1}',
+                        city, cityController),
                     const SizedBox(width: 27),
-                    bigAreaButton(
-                        bigAreaList[index + 1], '${100000 + index + 2}'),
+                    bigAreaButton(bigAreaList[index + 1],
+                        '${100000 + index + 2}', city, cityController),
                     const SizedBox(width: 27),
-                    bigAreaButton(
-                        bigAreaList[index + 2], '${100000 + index + 2}'),
+                    bigAreaButton(bigAreaList[index + 2],
+                        '${100000 + index + 2}', city, cityController),
                   ],
                 );
               }
@@ -203,7 +218,8 @@ class _ChangeAreaState extends State<ChangeArea> {
     );
   }
 
-  Widget bigAreaButton(String area, String image) {
+  Widget bigAreaButton(
+      String area, String image, String city, SetCity cityController) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -237,7 +253,7 @@ class _ChangeAreaState extends State<ChangeArea> {
             ),
           ),
         ),
-        (context.read<GuidePageProvider>().bigArea == area)
+        (city == area)
             ? Container(
                 width: 102,
                 height: 102,
@@ -255,7 +271,7 @@ class _ChangeAreaState extends State<ChangeArea> {
                 child: TextButton(
                     style: ButtonStyles.transparenBtuttonStyle,
                     onPressed: () {
-                      context.read<GuidePageProvider>().setBigArea(area);
+                      cityController.setArea(area);
                     },
                     child: const SizedBox()),
               )
@@ -263,11 +279,10 @@ class _ChangeAreaState extends State<ChangeArea> {
     );
   }
 
-  Widget selectSmallArea(BuildContext context) {
-    List areaList = LocationList.values
-        .where((area) =>
-            area.bigArea == context.watch<GuidePageProvider>().bigArea)
-        .toList();
+  Widget selectArea(BuildContext context, String city, LocationList area,
+      SetArea areaController) {
+    List areaList =
+        LocationList.values.where((area) => area.bigArea == city).toList();
     return Column(
       children: [
         const Row(children: [
@@ -299,14 +314,16 @@ class _ChangeAreaState extends State<ChangeArea> {
                 if ((len % 4 > 0) && (index + 4 > len)) {
                   return Row(
                     children: [
-                      smallAreaButton(areaList[index]),
+                      smallAreaButton(areaList[index], area, areaController),
                       const SizedBox(width: 12),
                       (len % 4 > 1)
-                          ? smallAreaButton(areaList[index + 1])
+                          ? smallAreaButton(
+                              areaList[index + 1], area, areaController)
                           : Container(width: 80),
                       const SizedBox(width: 12),
                       (len % 4 > 2)
-                          ? smallAreaButton(areaList[index + 2])
+                          ? smallAreaButton(
+                              areaList[index + 2], area, areaController)
                           : Container(width: 80),
                       const SizedBox(width: 12),
                       Container(width: 80)
@@ -315,13 +332,13 @@ class _ChangeAreaState extends State<ChangeArea> {
                 }
                 return Row(
                   children: [
-                    smallAreaButton(areaList[index]),
+                    smallAreaButton(areaList[index], area, areaController),
                     const SizedBox(width: 12),
-                    smallAreaButton(areaList[index + 1]),
+                    smallAreaButton(areaList[index + 1], area, areaController),
                     const SizedBox(width: 12),
-                    smallAreaButton(areaList[index + 2]),
+                    smallAreaButton(areaList[index + 2], area, areaController),
                     const SizedBox(width: 12),
-                    smallAreaButton(areaList[index + 3])
+                    smallAreaButton(areaList[index + 3], area, areaController)
                   ],
                 );
               } else {
@@ -334,7 +351,8 @@ class _ChangeAreaState extends State<ChangeArea> {
     );
   }
 
-  Widget smallAreaButton(LocationList location) {
+  Widget smallAreaButton(
+      LocationList location, LocationList area, SetArea areaController) {
     return Column(
       children: [
         Stack(
@@ -350,7 +368,7 @@ class _ChangeAreaState extends State<ChangeArea> {
                           AssetImage('assets/images/${location.areaNum}.jpg'),
                       fit: BoxFit.cover)),
             ),
-            context.read<GuidePageProvider>().selectArea == location
+            area == location
                 ? Container(
                     width: 80,
                     height: 80,
@@ -370,7 +388,7 @@ class _ChangeAreaState extends State<ChangeArea> {
                     child: TextButton(
                         style: ButtonStyles.transparenBtuttonStyle,
                         onPressed: () {
-                          context.read<GuidePageProvider>().setArea(location);
+                          areaController.setArea(location);
                           loc = location;
                         },
                         child: Container()),
@@ -390,11 +408,12 @@ class _ChangeAreaState extends State<ChangeArea> {
     );
   }
 
-  Widget checkButton(BuildContext context) {
+  Widget checkButton(
+      BuildContext context, LocationList area, GuidePageVM guidePController) {
     return GestureDetector(
       onTap: () {
-        loc = context.read<GuidePageProvider>().selectArea;
-        context.read<GuidePageProvider>().setRestaurants([]);
+        loc = area;
+        guidePController.changeList([]);
         Navigator.pop(context, true);
       },
       child: Container(

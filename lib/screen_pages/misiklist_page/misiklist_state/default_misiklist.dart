@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/misiklist_class.dart';
+import 'package:proto_just_design/model/global/misiklist.dart';
 import 'package:proto_just_design/main.dart';
 import 'package:proto_just_design/providers/misiklist_provider/misiklist_page_provider.dart';
 import 'package:proto_just_design/providers/network_provider.dart';

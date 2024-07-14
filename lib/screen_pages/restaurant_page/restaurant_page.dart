@@ -3,7 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:proto_just_design/class/detail_restaurant_class.dart';
+import 'package:proto_just_design/model/misiklogu/detail_restaurant.dart';
 import 'package:proto_just_design/functions/default_function.dart';
 import 'package:proto_just_design/providers/network_provider.dart';
 import 'package:proto_just_design/providers/restaurant_provider/restaurant_page_provider.dart';
