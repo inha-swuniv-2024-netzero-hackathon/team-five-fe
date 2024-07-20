@@ -1,20 +1,16 @@
 class UserInfo {
-  String? token;
-  String? nickName;
   String? id;
-  double? latitude;
-  double? longitude;
+  String? qr =
+      'https://convenii.s3.ap-northeast-2.amazonaws.com/f27ac049-ffb8-42ac-a7d4-1909273f4275';
+  double latitude = 0;
+  double longitude = 0;
+  int coo = 1;
 
-  UserInfo({this.id, this.nickName, this.token, this.latitude, this.longitude});
-
-  factory UserInfo.fromJson(UserInfo info, Map<String, dynamic> json) {
-    return UserInfo(
-        nickName: json['nickName'],
-        id: json['id'],
-        token: json['token'],
-        latitude: info.latitude,
-        longitude: info.longitude);
-  }
+  UserInfo({
+    required this.coo,
+    this.id,
+    this.qr,
+    required this.latitude,
+    required this.longitude,
+  });
 }
-
-UserInfo dummyUserinfo = UserInfo();

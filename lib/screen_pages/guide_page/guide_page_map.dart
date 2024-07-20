@@ -2,46 +2,52 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:proto_just_design/providers/guide_provider/guide_page_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:proto_just_design/model/global/restaurant.dart';
+import 'package:proto_just_design/model/global/user.dart';
+import 'package:proto_just_design/model/misiklist/guidePInfo.dart';
+import 'package:proto_just_design/view_model/global/userVM.dart';
+import 'package:proto_just_design/view_model/guide_page/guidePage.dart';
 
-class GuidePageMap extends StatefulWidget {
-  const GuidePageMap({Key? key}) : super(key: key);
+class GuidePageMap extends ConsumerStatefulWidget {
+  const GuidePageMap({super.key});
 
   @override
-  State<GuidePageMap> createState() => _GuidePageMapState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _GuidePageMapState();
 }
 
-class _GuidePageMapState extends State<GuidePageMap> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _GuidePageMapState extends ConsumerState<GuidePageMap> {
   @override
   Widget build(BuildContext context) {
+    UserInfo user = ref.watch(userProvider);
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final guidePageData = context.read<GuidePageProvider>();
+    GuidePInfo guidePageVM = ref.watch(guidePageProvider);
     return SizedBox(
-        height: screenHeight * 0.85,
+        height: screenHeight - 60,
         child: GoogleMap(
             scrollGesturesEnabled: true,
             zoomGesturesEnabled: true,
-            markers: context.watch<GuidePageProvider>().markers,
+            markers: guidePageVM.restList
+                .map(
+                  (value) {
+                    return restToMarker(value);
+                  },
+                )
+                .toList()
+                .toSet(),
             initialCameraPosition: CameraPosition(
-                target: LatLng(guidePageData.selectArea.latitude,
-                    guidePageData.selectArea.longitude),
-                zoom: 16),
-            //스크롤 우선권 부여 코드
+                target: LatLng(user.latitude!, user.longitude!), zoom: 16),
             gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
               Factory<OneSequenceGestureRecognizer>(
                   () => EagerGestureRecognizer())
             },
             mapType: MapType.normal));
   }
+}
+
+Marker restToMarker(Restaurant restaurant) {
+  return Marker(
+      markerId: MarkerId(restaurant.uuid),
+      infoWindow: InfoWindow(title: restaurant.name),
+      position: LatLng(restaurant.latitude, restaurant.longitude));
 }

@@ -46,15 +46,13 @@
             android:value="2" />
         <!-- google map sdk  -->
         <!-- 개인키 -->
-        <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyCciiCGfG8CvnhAwU8eamSGdV4ETXjptz0"/>
-        <!-- 배포키 -->
         <!-- <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyCkcLoi0fz85wN9iB697qbS6Rnlw0Zs3jk"/> 
-        -->
+               android:value="AIzaSyCciiCGfG8CvnhAwU8eamSGdV4ETXjptz0"/> -->
+        <!-- 배포키 -->
+         <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyB0hcekTW0d6Aj0SoCXmiXnrgAFTXLNESg"/> 
+      
                
         <!-- google map sdk  -->
-        <meta-data android:name="com.kakao.sdk.AppKey"
-        android:value="2877c074948b1c5bf00e656eae65ab32" />
     </application>
 </manifest>
